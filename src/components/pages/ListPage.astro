@@ -11,8 +11,8 @@ interface Props { lang: Lang; kind: Kind }
 const { lang, kind } = Astro.props;
 const t = UI[lang];
 const items = (await allItems(lang)).filter((i) => i.kind === kind);
-const title = kind === 'analysis' ? t.analysis : kind === 'commentary' ? t.commentary : t.charts;
-const intro = kind === 'analysis' ? t.analysisIntro : kind === 'commentary' ? t.commentaryIntro : t.chartsIntro;
+const title = { analysis: t.analysis, commentary: t.commentary, chart: t.charts, video: t.videos }[kind];
+const intro = { analysis: t.analysisIntro, commentary: t.commentaryIntro, chart: t.chartsIntro, video: t.videosIntro }[kind];
 ---
 <Base lang={lang} title={title} description={intro} section={kind} alternate={path.list(other(lang), kind)}>
   <PageHead lang={lang} title={title} intro={intro}>
@@ -24,7 +24,7 @@ const intro = kind === 'analysis' ? t.analysisIntro : kind === 'commentary' ? t.
   <section class="section">
     <div class="wrap">
       {items.length === 0 && <p class="empty">{t.empty}</p>}
-      {kind === 'chart'
+      {kind === 'chart' || kind === 'video'
         ? <div class="grid">{items.map((i) => <Card item={i} lang={lang} />)}</div>
         : <div class="rows">{items.map((i) => <Card item={i} lang={lang} variant="row" />)}</div>}
     </div>

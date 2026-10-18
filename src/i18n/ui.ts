@@ -6,7 +6,7 @@ export const other = (l: Lang): Lang => (l === 'en' ? 'fr' : 'en');
 
 export const UI = {
   en: {
-    home: 'Home', analysis: 'Analysis', commentary: 'Reflections', charts: 'Charts', topics: 'Topics', about: 'About',
+    home: 'Home', analysis: 'Analysis', commentary: 'Reflections', charts: 'Charts', videos: 'Videos', topics: 'Topics', about: 'About',
     subscribe: 'Subscribe', menu: 'Menu', subtitle: 'Economics & Finance',
     featured: 'Featured', latest: 'Latest', seeAll: 'See all', readAnalysis: 'Read the analysis',
     chartOfWeek: 'Chart of the week', exploreTopics: 'Explore by topic', aboutAuthor: 'About the author', moreAbout: 'More about Mohamed',
@@ -21,12 +21,14 @@ export const UI = {
     analysisIntro: 'Long-form analysis. One thesis per piece, every number sourced.',
     commentaryIntro: 'Short reflections, quotes and tributes.',
     chartsIntro: 'One chart, one idea.',
+    videosIntro: 'My videos, and a selection of the best conversations on finance, markets and AI.',
+    myVideo: 'My video', selected: 'Selected', watch: 'Watch the video', watchOn: 'Watch on YouTube', myTake: 'My take', elsewhere: 'Elsewhere', latestVideos: 'Videos',
     topicsIntro: 'Every publication, by topic.',
     breadcrumbHome: 'Home', lang: 'Language',
     pdf: 'Download PDF', search: 'Search', searchIntro: 'Search every analysis, reflection and chart.',
   },
   fr: {
-    home: 'Accueil', analysis: 'Analyses', commentary: 'Réflexions', charts: 'Graphiques', topics: 'Rubriques', about: 'À propos',
+    home: 'Accueil', analysis: 'Analyses', commentary: 'Réflexions', charts: 'Graphiques', videos: 'Vidéos', topics: 'Rubriques', about: 'À propos',
     subscribe: 'S’abonner', menu: 'Menu', subtitle: 'Économie et finance',
     featured: 'À la une', latest: 'Dernières publications', seeAll: 'Tout voir', readAnalysis: 'Lire l’analyse',
     chartOfWeek: 'Le graphique de la semaine', exploreTopics: 'Explorer par rubrique', aboutAuthor: 'L’auteur', moreAbout: 'En savoir plus',
@@ -41,6 +43,8 @@ export const UI = {
     analysisIntro: 'Analyses de fond. Une thèse par article, chaque chiffre sourcé.',
     commentaryIntro: 'Réflexions courtes, citations et hommages.',
     chartsIntro: 'Un graphique, une idée.',
+    videosIntro: 'Mes vidéos, et une sélection des meilleures discussions sur la finance, les marchés et l\u2019IA.',
+    myVideo: 'Ma vidéo', selected: 'Sélection', watch: 'Voir la vidéo', watchOn: 'Voir sur YouTube', myTake: 'Mon avis', elsewhere: 'Ailleurs', latestVideos: 'Vidéos',
     topicsIntro: 'Toutes les publications, par rubrique.',
     breadcrumbHome: 'Accueil', lang: 'Langue',
     pdf: 'Télécharger en PDF', search: 'Rechercher', searchIntro: 'Chercher dans toutes les analyses, réflexions et graphiques.',
@@ -48,19 +52,21 @@ export const UI = {
 } as const;
 
 export const TOPIC_INFO: Record<Topic, { en: string; fr: string; den: string; dfr: string }> = {
-  uk: { en: 'London & UK', fr: 'Londres et Royaume-Uni', den: 'Gilts, the Bank of England, the City.', dfr: 'Gilts, Banque d’Angleterre, la City.' },
-  africa: { en: 'Africa', fr: 'Afrique', den: 'CEMAC, WAEMU, Nigeria, Kenya, South Africa.', dfr: 'CEMAC, UEMOA, Nigeria, Kenya, Afrique du Sud.' },
-  asia: { en: 'Asia', fr: 'Asie', den: 'China, India, the Gulf, and their capital in Africa.', dfr: 'Chine, Inde, Golfe, et leurs capitaux en Afrique.' },
-  ai: { en: 'AI & Leadership', fr: 'IA et leadership', den: 'The people and decisions shaping AI in finance.', dfr: 'Les personnes et les choix qui façonnent l’IA en finance.' },
-  markets: { en: 'Markets & Rates', fr: 'Marchés et taux', den: 'Rates, currencies, commodities.', dfr: 'Taux, devises, matières premières.' },
-  payments: { en: 'Payments', fr: 'Paiements', den: 'Remittances, mobile money, cross-border rails.', dfr: 'Transferts, mobile money, paiements transfrontaliers.' },
-  debt: { en: 'Debt', fr: 'Dette', den: 'Sovereign and corporate borrowing.', dfr: 'Dette souveraine et des entreprises.' },
+  us: { en: 'United States', fr: 'États-Unis', den: 'Wall Street, the Fed and America\u2019s largest companies.', dfr: 'Wall Street, la Fed et les grandes entreprises américaines.' },
+  deals: { en: 'IPOs & M&A', fr: 'IPO et fusions', den: 'Listings, mergers, acquisitions and fundraising.', dfr: 'Introductions en bourse, fusions, acquisitions et levées de fonds.' },
+  funds: { en: 'Hedge Funds & Investing', fr: 'Fonds et investissement', den: 'Hedge funds, private equity, private credit and where capital is deployed.', dfr: 'Hedge funds, private equity, dette privée et déploiement des capitaux.' },
+  ai: { en: 'AI & Finance', fr: 'IA et finance', den: 'The AI companies, how they are funded, and what they change in finance.', dfr: 'Les entreprises de l\u2019IA, leur financement, et ce qu\u2019elles changent en finance.' },
+  debt: { en: 'Debt & Rates', fr: 'Dette et taux', den: 'Sovereign and corporate debt, central banks and interest rates.', dfr: 'Dette des États et des entreprises, banques centrales et taux.' },
+  uk: { en: 'London & UK', fr: 'Londres et Royaume-Uni', den: 'Gilts, the Bank of England and the City.', dfr: 'Gilts, Banque d\u2019Angleterre et la City.' },
+  africa: { en: 'Africa', fr: 'Afrique', den: 'Capital markets, debt and investment across the continent.', dfr: 'Marchés de capitaux, dette et investissement sur le continent.' },
+  asia: { en: 'Asia', fr: 'Asie', den: 'China, India, the Gulf, and their capital abroad.', dfr: 'Chine, Inde, Golfe, et leurs capitaux à l\u2019étranger.' },
 };
 
 export const KIND_NAME: Record<Kind, { en: string; fr: string }> = {
   analysis: { en: 'Analysis', fr: 'Analyse' },
   commentary: { en: 'Reflection', fr: 'Réflexion' },
   chart: { en: 'Chart', fr: 'Graphique' },
+  video: { en: 'Video', fr: 'Vidéo' },
 };
 
 // Adresses des pages
@@ -68,6 +74,7 @@ const seg = {
   analysis: { en: 'analysis', fr: 'analyses' },
   commentary: { en: 'reflections', fr: 'reflexions' },
   chart: { en: 'charts', fr: 'graphiques' },
+  video: { en: 'videos', fr: 'videos' },
 } as const;
 const base = (l: Lang) => (l === 'fr' ? '/fr' : '');
 export const path = {

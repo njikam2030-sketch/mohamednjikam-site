@@ -55,4 +55,19 @@ const graphiques = defineCollection({
   }),
 });
 
-export const collections = { analyses, reflexions, graphiques };
+// Vidéos : les vôtres, ou une sélection YouTube (lien + votre commentaire)
+const videos = defineCollection({
+  loader: glob({ pattern, base: './src/content/videos' }),
+  schema: z.object({
+    titre: z.string(),
+    date: z.coerce.date(),
+    langue: z.enum(['en', 'fr']),
+    youtube: z.string(),
+    origine: z.enum(['moi', 'selection']).default('selection'),
+    chaine: z.string().optional(),
+    rubriques: z.array(topic).default([]),
+    brouillon: z.boolean().default(false),
+  }),
+});
+
+export const collections = { analyses, reflexions, graphiques, videos };

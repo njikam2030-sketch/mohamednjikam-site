@@ -19,7 +19,7 @@ interface Props {
   type?: 'website' | 'article';
   date?: Date;
   alternate?: string;
-  section?: 'home' | 'analysis' | 'commentary' | 'chart' | 'topics' | 'about';
+  section?: 'home' | 'analysis' | 'commentary' | 'chart' | 'video' | 'topics' | 'about';
 }
 
 const { lang, title, description, image, type = 'website', date, alternate, section } = Astro.props;
@@ -27,13 +27,14 @@ const t = UI[lang];
 const p = profil[lang];
 const o = other(lang);
 const fullTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | ${p.accroche}`;
-const desc = description ?? `${p.titre}. ${p.bio}`;
+const desc = description ?? p.bio;
 const canonical = new URL(Astro.url.pathname, SITE.url).href;
 const ogImage = new URL(image ?? '/images/og.jpg', SITE.url).href;
 const otherUrl = alternate ?? path.home(o);
 const nav = [
   { key: 'analysis', href: path.list(lang, 'analysis'), label: t.analysis },
   { key: 'commentary', href: path.list(lang, 'commentary'), label: t.commentary },
+  { key: 'video', href: path.list(lang, 'video'), label: t.videos },
   { key: 'chart', href: path.list(lang, 'chart'), label: t.charts },
   { key: 'topics', href: path.topics(lang), label: t.topics },
   { key: 'about', href: path.about(lang), label: t.about },
@@ -130,7 +131,7 @@ const year = new Date().getFullYear();
             <span class="mark" aria-hidden="true">MN</span>
             <span class="brand-text"><strong>{SITE.name}</strong><small>{t.subtitle}</small></span>
           </a>
-          <p>{p.titre}. {p.bio}</p>
+          <p>{p.bio}</p>
         </div>
         <div>
           <h2>{t.topics}</h2>

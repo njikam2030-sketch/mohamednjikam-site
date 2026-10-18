@@ -8,7 +8,10 @@ const { item, lang, ratio = '16 / 9', eager = false } = Astro.props;
 const topic = item.topics[0];
 ---
 {item.image ? (
-  <div class="vis img" style={`aspect-ratio:${ratio}`}><img src={item.image} alt="" loading={eager ? 'eager' : 'lazy'} /></div>
+  <div class="vis img" style={`aspect-ratio:${ratio}`}>
+    <img src={item.image} alt="" loading={eager ? 'eager' : 'lazy'} />
+    {item.kind === 'video' && <span class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>}
+  </div>
 ) : item.kind === 'commentary' ? (
   <div class="vis quote" style={`aspect-ratio:${ratio}`}>{item.quote && <span class="q" aria-hidden="true">{'“'}</span>}<p>{(() => { const s = (item.quote ?? item.title).replace(/^“|”$/g, ''); return s.length > 120 ? s.slice(0, 120).replace(/\s+\S*$/, '') + '…' : s; })()}</p></div>
 ) : (
@@ -20,7 +23,10 @@ const topic = item.topics[0];
 
 <style>
   .vis { width: 100%; max-width: 100%; overflow: hidden; border-radius: 4px; background: var(--soft); }
+  .img { position: relative; }
   .img img { width: 100%; height: 100%; object-fit: cover; }
+  .play { position: absolute; left: 14px; bottom: 14px; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(10, 37, 64, 0.88); color: #fff; }
+  .play svg { width: 22px; height: 22px; margin-left: 3px; }
   .plain { display: grid; align-content: space-between; padding: 18px 20px; background: var(--navy); color: var(--white); }
   .plain.commentary { background: #12395F; }
   .plain.chart { background: #0B5CAD; }

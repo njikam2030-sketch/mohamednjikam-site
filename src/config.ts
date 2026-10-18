@@ -17,9 +17,9 @@ export const SITE = {
 };
 
 // Rubriques (thèmes) communes à toutes les publications
-export const TOPICS = ['uk', 'africa', 'asia', 'ai', 'markets', 'payments', 'debt'] as const;
+export const TOPICS = ['us', 'deals', 'funds', 'ai', 'debt', 'uk', 'africa', 'asia'] as const;
 export type Topic = (typeof TOPICS)[number];
 
 // Types de publications
-export const KINDS = ['analysis', 'commentary', 'chart'] as const;
+export const KINDS = ['analysis', 'commentary', 'chart', 'video'] as const;
 export type Kind = (typeof KINDS)[number];
