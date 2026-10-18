@@ -25,7 +25,7 @@ export const UI = {
     myVideo: 'My video', selected: 'Selected', watch: 'Watch the video', watchOn: 'Watch on YouTube', myTake: 'My take', elsewhere: 'Elsewhere', latestVideos: 'Videos',
     topicsIntro: 'Every publication, by topic.',
     breadcrumbHome: 'Home', lang: 'Language',
-    pdf: 'Download PDF', search: 'Search', searchIntro: 'Search every analysis, reflection and chart.',
+    pdf: 'Download PDF', edition: 'Edition', global: 'Global', alsoOn: 'Also published on LinkedIn', keyReads: 'Key reads', followMe: 'Follow', inThisEdition: 'In this edition', topStories: 'Top stories', latestNews: 'Latest', moreIn: 'More in', allPublications: 'All publications', search: 'Search', searchIntro: 'Search every analysis, reflection and chart.',
   },
   fr: {
     home: 'Accueil', analysis: 'Analyses', commentary: 'Réflexions', charts: 'Graphiques', videos: 'Vidéos', topics: 'Rubriques', about: 'À propos',
@@ -47,7 +47,7 @@ export const UI = {
     myVideo: 'Ma vidéo', selected: 'Sélection', watch: 'Voir la vidéo', watchOn: 'Voir sur YouTube', myTake: 'Mon avis', elsewhere: 'Ailleurs', latestVideos: 'Vidéos',
     topicsIntro: 'Toutes les publications, par rubrique.',
     breadcrumbHome: 'Accueil', lang: 'Langue',
-    pdf: 'Télécharger en PDF', search: 'Rechercher', searchIntro: 'Chercher dans toutes les analyses, réflexions et graphiques.',
+    pdf: 'Télécharger en PDF', edition: 'Édition', global: 'Monde', alsoOn: 'Publié aussi sur LinkedIn', keyReads: 'À lire', followMe: 'Suivre', inThisEdition: 'Dans cette édition', topStories: 'À la une', latestNews: 'Dernière minute', moreIn: 'Plus dans', allPublications: 'Toutes les publications', search: 'Rechercher', searchIntro: 'Chercher dans toutes les analyses, réflexions et graphiques.',
   },
 } as const;
 
@@ -60,6 +60,16 @@ export const TOPIC_INFO: Record<Topic, { en: string; fr: string; den: string; df
   uk: { en: 'London & UK', fr: 'Londres et Royaume-Uni', den: 'Gilts, the Bank of England and the City.', dfr: 'Gilts, Banque d\u2019Angleterre et la City.' },
   africa: { en: 'Africa', fr: 'Afrique', den: 'Capital markets, debt and investment across the continent.', dfr: 'Marchés de capitaux, dette et investissement sur le continent.' },
   asia: { en: 'Asia', fr: 'Asie', den: 'China, India, the Gulf, and their capital abroad.', dfr: 'Chine, Inde, Golfe, et leurs capitaux à l\u2019étranger.' },
+};
+
+// Éditions (pays et régions), comme les éditions du FT
+export const REGIONS = ['us', 'uk', 'africa', 'asia'] as const;
+export type Region = (typeof REGIONS)[number];
+export const REGION_NAME: Record<Region, { en: string; fr: string }> = {
+  us: { en: 'US', fr: 'États-Unis' },
+  uk: { en: 'UK', fr: 'Royaume-Uni' },
+  africa: { en: 'Africa', fr: 'Afrique' },
+  asia: { en: 'Asia', fr: 'Asie' },
 };
 
 export const KIND_NAME: Record<Kind, { en: string; fr: string }> = {
@@ -84,6 +94,7 @@ export const path = {
   topics: (l: Lang) => `${base(l)}/${l === 'fr' ? 'rubriques' : 'topics'}/`,
   topic: (l: Lang, t: Topic) => `${base(l)}/${l === 'fr' ? 'rubriques' : 'topics'}/${t}/`,
   about: (l: Lang) => `${base(l)}/${l === 'fr' ? 'a-propos' : 'about'}/`,
+  edition: (l: Lang, r: Region) => `${base(l)}/edition/${r}/`,
   search: (l: Lang) => `${base(l)}/${l === 'fr' ? 'recherche' : 'search'}/`,
 };
 

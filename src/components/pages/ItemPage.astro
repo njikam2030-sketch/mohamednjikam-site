@@ -64,13 +64,14 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
               <span>{t.by} <a href={path.about(lang)}>{SITE.name}</a></span>
               <span class="date"><time datetime={item.date.toISOString()}>{formatDate(item.date, lang)}</time>{kind === 'analysis' && !item.coming && <> · {readingTime(props.entry.body)} {t.minRead}</>}</span>
             </div>
+            {analysis?.linkedin && <a class="alt li" href={analysis.linkedin} target="_blank" rel="noopener">{t.alsoOn}</a>}
             {analysis?.traduction && <a class="alt" href={alternate}>{lang === 'en' ? 'Version française' : 'English version'}</a>}
           </div>
         </div>
       </div>
     </header>
 
-    {(analysis?.image || reflection?.image) && (
+    {(analysis?.image || reflection?.image) && !(analysis?.image ?? '').includes('/charts/') && (
       <figure class="wrap cover">
         <img src={analysis?.image ?? reflection?.image} alt="" />
         {analysis?.legendeImage && <figcaption>{analysis.legendeImage}</figcaption>}
@@ -161,6 +162,7 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
   .byline span { display: block; }
   .byline a { color: var(--blue); text-decoration: none; font-weight: 600; }
   .byline .alt { margin-left: auto; font-size: 14px; border: 1px solid #CBD5E1; border-radius: 4px; padding: 6px 12px; color: var(--ink); font-weight: 500; }
+  .alt.li { color: #0A66C2; border-color: #0A66C2; font-weight: 600; }
   .cover { margin-block: 32px 0; }
   .cover img { width: 100%; max-height: 560px; object-fit: cover; border-radius: 4px; }
   .cover figcaption { font-size: 14px; color: var(--muted); margin-top: 8px; }

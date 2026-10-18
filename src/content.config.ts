@@ -20,6 +20,7 @@ const analyses = defineCollection({
     image: z.string().optional(),
     legendeImage: z.string().optional(),
     traduction: z.string().optional(),
+    linkedin: z.string().optional(),
     aLaUne: z.boolean().default(false),
     aParaitre: z.boolean().default(false),
     brouillon: z.boolean().default(false),

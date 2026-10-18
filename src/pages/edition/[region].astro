@@ -1,0 +1,10 @@
+---
+import HomePage from '../../components/pages/HomePage.astro';
+import { REGIONS, type Region } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return REGIONS.map((region) => ({ params: { region } }));
+}
+const region = Astro.params.region as Region;
+---
+<HomePage lang="en" edition={region} />

@@ -43,6 +43,7 @@ collections:
       - { name: image, label: "Image de couverture (facultatif)", widget: image, required: false }
       - { name: legendeImage, label: "Légende de l'image", widget: string, required: false }
       - { name: traduction, label: "Version dans l'autre langue : son adresse courte (facultatif)", widget: string, required: false }
+      - { name: linkedin, label: "Lien de l'article sur LinkedIn (facultatif)", widget: string, required: false }
       - { name: aLaUne, label: "Mettre à la une de l'accueil", widget: boolean, default: false }
       - { name: aParaitre, label: "Annoncer « À paraître » (sans texte)", widget: boolean, default: false }
       - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
