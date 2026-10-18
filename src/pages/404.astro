@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import { UI } from '../i18n/ui';
+---
+<Base lang="en" title="404">
+  <main class="gutter"><div class="read box">
+    <h1>404</h1>
+    <p>{UI.en.notFound} <a href="/">{UI.en.home}</a></p>
+    <p lang="fr">{UI.fr.notFound} <a href="/fr/">{UI.fr.home}</a></p>
+  </div></main>
+</Base>
+<style>
+  .box { padding-block: 80px; display: grid; gap: 12px; }
+  h1 { font-size: 80px; font-weight: 900; color: var(--accent); letter-spacing: -0.05em; }
+  p { margin: 0; font-size: 18px; }
+</style>

@@ -1,0 +1,62 @@
+# Espace de publication : https://mohamednjikam.com/admin
+# Connexion avec GitHub (jeton d'accès personnel, voir le README).
+backend:
+  name: github
+  repo: njikam2030-sketch/mohamednjikam-site
+  branch: main
+
+locale: fr
+media_folder: public/images/uploads
+public_folder: /images/uploads
+
+collections:
+  - name: reflexions
+    label: Réflexions
+    label_singular: Réflexion
+    folder: src/content/reflexions
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}"
+    summary: "{{date}} · {{citation}}"
+    sortable_fields: [date]
+    fields:
+      - { name: date, label: Date, widget: datetime }
+      - { name: langue, label: Langue, widget: select, options: [{ label: Français, value: fr }, { label: English, value: en }], default: fr }
+      - { name: citation, label: "Citation (facultatif)", widget: text, required: false }
+      - { name: auteur, label: "Auteur de la citation (facultatif)", widget: string, required: false }
+      - { name: image, label: "Image (facultatif)", widget: image, required: false }
+      - { name: legende, label: "Légende de l'image (facultatif)", widget: string, required: false }
+      - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
+      - { name: body, label: "Votre texte", widget: markdown }
+
+  - name: analyses
+    label: Analyses
+    label_singular: Analyse
+    folder: src/content/analyses
+    create: true
+    identifier_field: titre
+    slug: "{{slug}}"
+    summary: "{{titre}} ({{langue}})"
+    sortable_fields: [date, titre]
+    fields:
+      - { name: titre, label: Titre, widget: string }
+      - { name: sousTitre, label: "Sous-titre", widget: string, required: false }
+      - { name: description, label: "Résumé (Google, LinkedIn : 150 caractères)", widget: text }
+      - { name: date, label: Date, widget: datetime }
+      - { name: langue, label: Langue, widget: select, options: [{ label: Français, value: fr }, { label: English, value: en }], default: fr }
+      - name: rubrique
+        label: Rubrique
+        widget: select
+        options: &rubriques
+          - { label: "Londres et Royaume-Uni", value: uk }
+          - { label: Afrique, value: africa }
+          - { label: Asie, value: asia }
+          - { label: "IA et leadership", value: ai }
+          - { label: "Marchés et taux", value: markets }
+          - { label: Paiements, value: payments }
+          - { label: Dette, value: debt }
+      - { name: rubrique2, label: "Deuxième rubrique (facultatif)", widget: select, options: *rubriques, required: false }
+      - { name: chiffreCle, label: "Chiffre clé de la couverture (ex. 6 %)", widget: string, required: false }
+      - { name: couverture, label: "Image de couverture (facultatif)", widget: image, required: false }
+      - { name: traduction, label: "Nom du fichier de la version dans l'autre langue (facultatif)", widget: string, required: false }
+      - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
+      - { name: body, label: "Texte (thèse, preuves, objections, que faire, ## Sources)", widget: markdown }

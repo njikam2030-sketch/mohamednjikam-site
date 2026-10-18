@@ -1,0 +1,53 @@
+---
+// À propos : photo, présentation, repères, liens.
+import Base from '../../layouts/Base.astro';
+import Newsletter from '../Newsletter.astro';
+import { SITE } from '../../config';
+import { UI, path, type Lang } from '../../i18n/ui';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = UI[lang];
+---
+<Base lang={lang} title={t.aboutTitle} section="about" alternate={path.about(lang === 'en' ? 'fr' : 'en')}>
+  <main class="gutter">
+    <div class="wide about">
+      <div class="photo"><img src="/images/standing.jpg" alt={SITE.name} width="640" height="800" /></div>
+      <div class="text">
+        <span class="eyebrow">{t.location}</span>
+        <h1>{SITE.name}<span>.</span></h1>
+        <p class="role">{t.role}</p>
+        {t.aboutText.map((p) => <p>{p}</p>)}
+        <dl class="facts">
+          <div><dt>{t.basedIn}</dt><dd>{t.basedInV}</dd></div>
+          <div><dt>{t.education}</dt><dd>Université Paris-Panthéon-Assas</dd></div>
+          <div><dt>{t.writesIn}</dt><dd>{t.writesInV}</dd></div>
+        </dl>
+        <div class="links">
+          <a class="pill" href={SITE.linkedin} target="_blank" rel="me noopener">LinkedIn</a>
+          <a class="pill" href={SITE.x} target="_blank" rel="me noopener">X · @{SITE.xHandle}</a>
+        </div>
+      </div>
+    </div>
+    <div class="wide nl"><Newsletter lang={lang} /></div>
+  </main>
+</Base>
+
+<style>
+  .about { display: grid; gap: 32px; padding-block: 40px 8px; }
+  .photo { max-width: 420px; position: relative; }
+  .photo::after { content: ""; position: absolute; left: -12px; bottom: -12px; width: 40%; height: 40%; background: var(--accent); z-index: -1; border-radius: 3px; }
+  .photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 0; border-radius: 3px; }
+  .text { min-width: 0; max-width: 640px; }
+  h1 { font-size: clamp(38px, 7vw, 64px); font-weight: 900; line-height: 1; letter-spacing: -0.045em; margin-top: 10px; }
+  h1 span { color: var(--accent); }
+  .role { margin: 14px 0 22px; font-size: 16px; color: var(--brown); font-weight: 600; }
+  .text > p { font-size: 18px; line-height: 1.65; margin: 0 0 1em; }
+  .text > p.muted { color: var(--brown); font-size: 16px; }
+  .facts { margin: 22px 0 0; border-top: 1px solid var(--line); }
+  .facts div { display: grid; grid-template-columns: 120px 1fr; gap: 12px; padding-block: 10px; border-bottom: 1px solid var(--line); font-size: 15px; }
+  .facts dt { color: var(--warm-grey); font-weight: 600; } .facts dd { margin: 0; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  .nl { margin-top: 48px; }
+  @media (min-width: 860px) { .about { grid-template-columns: 420px 1fr; gap: 56px; align-items: start; } }
+</style>

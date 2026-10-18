@@ -1,0 +1,35 @@
+---
+// Inscription à la newsletter (Buttondown). Sans compte configuré : « bientôt ».
+import { SITE } from '../config';
+import { UI, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; compact?: boolean }
+const { lang, compact = false } = Astro.props;
+const t = UI[lang];
+const action = SITE.buttondown ? `https://buttondown.com/api/emails/embed-subscribe/${SITE.buttondown}` : '';
+---
+<section class:list={['nl', { compact }]}>
+  <h2>{t.newsletterTitle}</h2>
+  <p>{t.newsletterText}</p>
+  {action ? (
+    <form action={action} method="post" target="_blank">
+      <input type="email" name="email" required placeholder={t.email} aria-label={t.email} autocomplete="email" />
+      <input type="hidden" name="tag" value={lang} />
+      <button type="submit">{t.newsletterButton}</button>
+    </form>
+  ) : (
+    <p class="soon">{t.newsletterSoon}</p>
+  )}
+</section>
+
+<style>
+  .nl { background: var(--ink); color: var(--cream); border-radius: 4px; padding: 26px 22px; display: grid; gap: 10px; }
+  h2 { font-size: 24px; font-weight: 900; }
+  p { margin: 0; color: var(--beige); }
+  .compact h2 { font-size: 19px; }
+  .compact p { font-size: 15px; }
+  form { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+  input[type=email] { flex: 1 1 200px; min-width: 0; font: 16px var(--font); padding: 11px 14px; border-radius: 999px; border: 1px solid var(--warm-grey); background: var(--paper); color: var(--ink); }
+  button { font: 700 15px var(--font); border: 0; border-radius: 999px; padding: 11px 20px; background: var(--accent); color: var(--paper); cursor: pointer; }
+  .soon { font-weight: 700; color: var(--cream); }
+</style>

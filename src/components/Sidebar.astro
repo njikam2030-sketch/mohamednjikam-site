@@ -1,0 +1,38 @@
+---
+// Colonne de droite : dernières analyses, rubriques, newsletter.
+import AnalysisCard from './AnalysisCard.astro';
+import Newsletter from './Newsletter.astro';
+import { TOPICS } from '../config';
+import { UI, TOPIC_NAMES, path, type Lang } from '../i18n/ui';
+import type { Analysis } from '../lib/content';
+
+interface Props { lang: Lang; analyses: Analysis[] }
+const { lang, analyses } = Astro.props;
+const t = UI[lang];
+const [first, ...rest] = analyses;
+---
+<aside class="side">
+  <section>
+    <div class="head rule"><span class="label">{t.latestAnalysis}</span>{analyses.length > 0 && <a href={path.analyses(lang)} class="meta">{t.seeAll}</a>}</div>
+    {analyses.length === 0 && <p class="empty">{t.noAnalysis}</p>}
+    {first && <AnalysisCard entry={first} lang={lang} size="small" />}
+    {rest.slice(0, 3).map((a) => <AnalysisCard entry={a} lang={lang} size="line" />)}
+  </section>
+  <section>
+    <div class="head rule"><span class="label">{t.topics}</span></div>
+    <div class="topics">{TOPICS.map((tp) => <a href={path.topic(lang, tp)}>{TOPIC_NAMES[tp][lang]}</a>)}</div>
+  </section>
+  <Newsletter lang={lang} compact />
+</aside>
+
+<style>
+  .side { display: grid; gap: 34px; align-content: start; padding-top: 24px; min-width: 0; }
+  @media (min-width: 960px) { .side { position: sticky; top: 80px; } }
+  section { display: grid; gap: 14px; }
+  .head { display: flex; justify-content: space-between; align-items: baseline; }
+  .head a { text-decoration: none; } .head a:hover { color: var(--accent); }
+  .topics { display: flex; flex-wrap: wrap; gap: 8px; }
+  .topics a { font-size: 14px; font-weight: 600; text-decoration: none; color: var(--brown); border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 5px 12px; }
+  .topics a:hover { border-color: var(--accent); color: var(--accent); }
+  .empty { padding: 4px 0; }
+</style>

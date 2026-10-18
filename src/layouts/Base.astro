@@ -1,0 +1,131 @@
+---
+// Gabarit commun : référencement, en-tête, pied de page.
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+import '@fontsource/inter/800.css';
+import '@fontsource/inter/900.css';
+import '../styles/global.css';
+import { SITE } from '../config';
+import { UI, path, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  date?: Date;
+  // Adresse de la même page dans l'autre langue (sinon : accueil de l'autre langue)
+  alternate?: string;
+  section?: 'home' | 'reflections' | 'analysis' | 'about';
+}
+
+const { lang, title, description, image, type = 'website', date, alternate, section } = Astro.props;
+const t = UI[lang];
+const other: Lang = lang === 'en' ? 'fr' : 'en';
+const fullTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | ${t.tagline}`;
+const desc = description ?? t.bio;
+const canonical = new URL(Astro.url.pathname, SITE.url).href;
+const ogImage = new URL(image ?? '/images/og-default.jpg', SITE.url).href;
+const otherUrl = alternate ?? path.home(other);
+const nav = [
+  { key: 'reflections', href: path.reflections(lang), label: t.reflections },
+  { key: 'analysis', href: path.analyses(lang), label: t.analysis },
+  { key: 'about', href: path.about(lang), label: t.about },
+] as const;
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang={lang} href={canonical} />
+    <link rel="alternate" hreflang={other} href={new URL(otherUrl, SITE.url).href} />
+    <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
+    <meta name="theme-color" content="#F7F3EE" />
+    <meta name="author" content={SITE.name} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title ?? SITE.name} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={lang === 'fr' ? 'fr_FR' : 'en_GB'} />
+    {date && <meta property="article:published_time" content={date.toISOString()} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={`@${SITE.xHandle}`} />
+    <meta name="twitter:creator" content={`@${SITE.xHandle}`} />
+    <meta name="twitter:title" content={title ?? SITE.name} />
+    <meta name="twitter:description" content={desc} />
+    <meta name="twitter:image" content={ogImage} />
+    <script type="application/ld+json" set:html={JSON.stringify(
+      type === 'article'
+        ? { '@context': 'https://schema.org', '@type': 'Article', headline: title, description: desc, image: ogImage, datePublished: date?.toISOString(), author: { '@type': 'Person', name: SITE.name, url: SITE.url }, inLanguage: lang }
+        : { '@context': 'https://schema.org', '@type': 'Person', name: SITE.name, url: SITE.url, image: new URL('/images/portrait.jpg', SITE.url).href, jobTitle: 'Capital markets and debt advisory', address: { '@type': 'PostalAddress', addressLocality: 'London', addressCountry: 'GB' }, sameAs: [SITE.linkedin, SITE.x] }
+    )} />
+  </head>
+  <body>
+    <header class="site gutter">
+      <div class="bar wide">
+        <a class="brand" href={path.home(lang)}>{SITE.name}<span>.</span></a>
+        <nav class="links" aria-label="Menu">
+          {nav.map((n) => <a href={n.href} aria-current={section === n.key ? 'page' : undefined}>{n.label}</a>)}
+        </nav>
+        <label class="lang">
+          <span class="sr">Language</span>
+          <select id="lang-select" aria-label="Language" data-other={otherUrl}>
+            <option value={lang} selected>{lang === 'en' ? 'English' : 'Français'}</option>
+            <option value={other}>{other === 'en' ? 'English' : 'Français'}</option>
+          </select>
+        </label>
+      </div>
+      <nav class="mobile-nav wide" aria-label="Menu">
+        {nav.map((n) => <a href={n.href} aria-current={section === n.key ? 'page' : undefined}>{n.label}</a>)}
+      </nav>
+    </header>
+
+    <slot />
+
+    <footer class="gutter">
+      <div class="foot wide">
+        <span>© {new Date().getFullYear()} {SITE.name}</span>
+        <a href={SITE.linkedin} rel="me noopener" target="_blank">LinkedIn</a>
+        <a href={SITE.x} rel="me noopener" target="_blank">X</a>
+        <a href="/rss.xml">RSS</a>
+        <span>{t.footer}</span>
+      </div>
+    </footer>
+
+    <script>
+      // Changement de langue : on ouvre la même page dans l'autre langue (ou son accueil).
+      const sel = document.getElementById('lang-select') as HTMLSelectElement | null;
+      sel?.addEventListener('change', () => { if (sel.dataset.other) location.href = sel.dataset.other; });
+    </script>
+  </body>
+</html>
+
+<style>
+  header.site { position: sticky; top: 0; z-index: 10; background: var(--cream); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top); }
+  .bar { display: flex; align-items: center; gap: 22px; padding-block: 14px; }
+  .brand { font-weight: 900; font-size: 20px; letter-spacing: -0.03em; text-decoration: none; margin-right: auto; }
+  .brand span { color: var(--accent); }
+  .links { display: flex; gap: 22px; font-size: 15px; font-weight: 600; }
+  .links a, .mobile-nav a { text-decoration: none; color: var(--brown); }
+  .links a:hover, .links a[aria-current], .mobile-nav a[aria-current] { color: var(--accent); }
+  .lang { position: relative; }
+  .lang select { appearance: none; font: 600 13px var(--font); color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 6px 30px 6px 12px; cursor: pointer; }
+  .lang::after { content: ""; position: absolute; right: 12px; top: 50%; width: 6px; height: 6px; border-right: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); transform: translateY(-70%) rotate(45deg); pointer-events: none; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .mobile-nav { display: none; gap: 22px; padding-bottom: 10px; font-size: 15px; font-weight: 600; }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-bottom: env(safe-area-inset-bottom); }
+  .foot { display: flex; flex-wrap: wrap; gap: 8px 22px; padding-block: 26px 36px; font-size: 14px; color: var(--warm-grey); }
+  .foot a { text-decoration: none; } .foot a:hover { color: var(--accent); }
+  @media (max-width: 640px) { .links { display: none; } .mobile-nav { display: flex; } }
+</style>

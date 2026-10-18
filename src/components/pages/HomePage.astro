@@ -1,0 +1,33 @@
+---
+// Accueil : profil puis fil des réflexions ; à côté, dernières analyses, rubriques, newsletter.
+import Base from '../../layouts/Base.astro';
+import Profile from '../Profile.astro';
+import PostCard from '../PostCard.astro';
+import Sidebar from '../Sidebar.astro';
+import { UI, path, type Lang } from '../../i18n/ui';
+import { getReflections, getAnalysesFor } from '../../lib/content';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = UI[lang];
+const reflections = await getReflections();
+const analyses = await getAnalysesFor(lang);
+---
+<Base lang={lang} section="home" alternate={path.home(lang === 'en' ? 'fr' : 'en')}>
+  <div class="gutter">
+    <div class="wide layout">
+      <main class="feed">
+        <Profile lang={lang} reflections={reflections.length} analyses={analyses.length} tab="reflections" />
+        {reflections.length === 0 && <p class="empty">{t.noReflections}</p>}
+        {reflections.map((r) => <PostCard entry={r} lang={lang} />)}
+      </main>
+      <Sidebar lang={lang} analyses={analyses} />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .layout { display: grid; gap: 40px; }
+  .feed { min-width: 0; }
+  @media (min-width: 960px) { .layout { grid-template-columns: minmax(0, 640px) 1fr; gap: 56px; } }
+</style>

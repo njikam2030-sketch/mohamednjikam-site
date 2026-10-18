@@ -1,0 +1,64 @@
+---
+// En-tête de profil, à la manière d'une page X : bandeau, photo ronde, nom, présentation, liens, onglets.
+import { SITE } from '../config';
+import { UI, path, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; reflections: number; analyses: number; tab: 'reflections' | 'analysis' | 'about' }
+const { lang, reflections, analyses, tab } = Astro.props;
+const t = UI[lang];
+---
+<section class="profile">
+  <div class="banner" aria-hidden="true">
+    <span class="banner-text">{t.tagline}</span>
+  </div>
+  <div class="head">
+    <img class="avatar" src="/images/avatar.jpg" alt={SITE.name} width="148" height="148" />
+    <div class="actions">
+      <a class="pill" href={SITE.linkedin} target="_blank" rel="me noopener">LinkedIn</a>
+      <a class="pill" href={SITE.x} target="_blank" rel="me noopener">X</a>
+    </div>
+  </div>
+  <h1>{SITE.name}</h1>
+  <p class="handle">{SITE.domain}</p>
+  <p class="bio">{t.bio}</p>
+  <ul class="facts">
+    <li>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="2.5" fill="currentColor"/></svg>
+      {t.location}
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v12H4zM9 7V5h6v2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+      {lang === 'fr' ? 'Marchés de capitaux · Conseil en dette' : 'Capital markets · Debt advisory'}
+    </li>
+  </ul>
+  <p class="counts"><strong>{reflections}</strong> {t.reflectionsCount} <span>·</span> <strong>{analyses}</strong> {t.analysisCount}</p>
+  <nav class="tabs" aria-label={t.reflections}>
+    <a href={path.home(lang)} aria-current={tab === 'reflections' ? 'page' : undefined}>{t.reflections}</a>
+    <a href={path.analyses(lang)} aria-current={tab === 'analysis' ? 'page' : undefined}>{t.analysis}</a>
+    <a href={path.about(lang)} aria-current={tab === 'about' ? 'page' : undefined}>{t.about}</a>
+  </nav>
+</section>
+
+<style>
+  .profile { display: grid; }
+  .banner { aspect-ratio: 3 / 1; max-height: 220px; width: 100%; background: var(--brown); border-radius: 0 0 4px 4px; position: relative; overflow: hidden; display: flex; align-items: flex-end; justify-content: flex-end; padding: 16px 18px; }
+  .banner::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: var(--accent); }
+  .banner-text { position: relative; color: var(--beige); font-weight: 800; font-size: clamp(14px, 2.4vw, 20px); letter-spacing: -0.01em; text-align: right; max-width: 60%; }
+  .head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: -64px; padding-left: 4px; }
+  .avatar { width: 132px; height: 132px; border-radius: 50%; object-fit: cover; border: 5px solid var(--cream); background: var(--cream); position: relative; }
+  .actions { display: flex; gap: 8px; padding-bottom: 8px; }
+  h1 { font-size: clamp(28px, 5vw, 38px); font-weight: 900; letter-spacing: -0.035em; margin-top: 12px; }
+  .handle { margin: 0; color: var(--warm-grey); font-size: 15px; }
+  .bio { margin: 12px 0 0; font-size: 17px; line-height: 1.55; max-width: 40em; }
+  .facts { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 6px 20px; color: var(--warm-grey); font-size: 15px; }
+  .facts li { display: flex; align-items: center; gap: 6px; }
+  .facts svg { width: 17px; height: 17px; }
+  .counts { margin: 10px 0 0; font-size: 15px; color: var(--warm-grey); }
+  .counts strong { color: var(--ink); font-weight: 800; }
+  .counts span { margin: 0 6px; }
+  .tabs { display: flex; gap: 0; margin-top: 18px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+  .tabs a { flex: 1; min-width: max-content; text-align: center; text-decoration: none; padding: 14px 16px; font-weight: 700; font-size: 15px; color: var(--warm-grey); border-bottom: 3px solid transparent; }
+  .tabs a:hover { color: var(--ink); }
+  .tabs a[aria-current] { color: var(--ink); border-bottom-color: var(--accent); }
+  @media (max-width: 520px) { .avatar { width: 104px; height: 104px; } .head { margin-top: -48px; } .banner-text { display: none; } }
+</style>

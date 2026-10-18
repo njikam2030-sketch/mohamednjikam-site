@@ -1,0 +1,32 @@
+---
+// Une réflexion seule, avec son adresse propre (pour la partager).
+import Base from '../../layouts/Base.astro';
+import PostCard from '../PostCard.astro';
+import Newsletter from '../Newsletter.astro';
+import { UI, path, type Lang } from '../../i18n/ui';
+import type { Reflection } from '../../lib/content';
+
+interface Props { entry: Reflection; lang: Lang }
+const { entry, lang } = Astro.props;
+const t = UI[lang];
+const d = entry.data;
+const plain = (entry.body ?? '').replace(/[#>*_`]/g, '').replace(/\s+/g, ' ').trim();
+const title = d.citation ? `“${d.citation.slice(0, 90)}${d.citation.length > 90 ? '…' : ''}”` : plain.slice(0, 70) + (plain.length > 70 ? '…' : '');
+const description = (d.citation ? `${d.citation} ${d.auteur ?? ''} ${plain}` : plain).slice(0, 180);
+---
+<Base lang={lang} title={title} description={description} image={d.image} type="article" date={d.date} section="reflections">
+  <main class="gutter">
+    <div class="read wrap">
+      <a class="back meta" href={path.reflections(lang)}>{'←'} {t.reflections}</a>
+      <PostCard entry={entry} lang={lang} full />
+      <div class="nl"><Newsletter lang={lang} /></div>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .wrap { padding-top: 28px; }
+  .back { text-decoration: none; font-weight: 600; }
+  .back:hover { color: var(--accent); }
+  .nl { margin-top: 32px; }
+</style>

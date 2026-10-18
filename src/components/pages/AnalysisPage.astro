@@ -1,0 +1,81 @@
+---
+// Une analyse : en-tête, couverture, texte (thèse, preuves, objections, conseils), sources, partage, auteur, analyses similaires.
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Cover from '../Cover.astro';
+import Share from '../Share.astro';
+import AnalysisCard from '../AnalysisCard.astro';
+import Newsletter from '../Newsletter.astro';
+import { SITE } from '../../config';
+import { UI, TOPIC_NAMES, formatDate, path, readingTime, type Lang } from '../../i18n/ui';
+import { getAnalysesFor, slugOf, type Analysis } from '../../lib/content';
+
+interface Props { entry: Analysis }
+const { entry } = Astro.props;
+const d = entry.data;
+const lang: Lang = d.langue;
+const t = UI[lang];
+const other: Lang = lang === 'en' ? 'fr' : 'en';
+const { Content } = await render(entry);
+const url = new URL(path.analysis(lang, slugOf(entry.id)), SITE.url).href;
+const all = await getAnalysesFor(lang);
+const related = all
+  .filter((a) => a.id !== entry.id)
+  .sort((a, b) => Number(b.data.rubrique === d.rubrique) - Number(a.data.rubrique === d.rubrique))
+  .slice(0, 3);
+const alternate = d.traduction ? path.analysis(other, d.traduction) : path.analyses(other);
+---
+<Base lang={lang} title={d.titre} description={d.description} image={d.couverture} type="article" date={d.date} alternate={alternate} section="analysis">
+  <main>
+    <article>
+      <header class="gutter"><div class="read head">
+        <span class="eyebrow">
+          <a href={path.topic(lang, d.rubrique)}>{TOPIC_NAMES[d.rubrique][lang]}</a>
+          {d.rubrique2 && <> · <a href={path.topic(lang, d.rubrique2)}>{TOPIC_NAMES[d.rubrique2][lang]}</a></>}
+          {d.modele && <span class="badge">{t.template}</span>}
+        </span>
+        <h1>{d.titre}</h1>
+        {d.sousTitre && <p class="sub">{d.sousTitre}</p>}
+        <div class="byline">
+          <img src="/images/avatar.jpg" alt="" width="46" height="46" />
+          <div><strong>{SITE.name}</strong><span class="meta">{formatDate(d.date, lang)} · {readingTime(entry.body)} {t.minRead}</span></div>
+          {d.traduction && <a class="pill alt" href={alternate}>{other === 'fr' ? 'Version française' : 'English version'}</a>}
+        </div>
+      </div></header>
+      <div class="gutter"><div class="wide cover"><Cover entry={entry} lang={lang} size="hero" /></div></div>
+      <div class="gutter"><div class="read prose analysis body"><Content /></div></div>
+      <div class="gutter"><div class="read share"><Share lang={lang} url={url} text={d.titre} /></div></div>
+      <div class="gutter"><div class="read author">
+        <img src="/images/avatar.jpg" alt="" width="72" height="72" />
+        <div><strong>{SITE.name}</strong><p>{t.bio}</p></div>
+      </div></div>
+    </article>
+    {related.length > 0 && (
+      <section class="gutter"><div class="wide more">
+        <span class="label rule">{t.related}</span>
+        <div class="grid">{related.map((a) => <AnalysisCard entry={a} lang={lang} />)}</div>
+      </div></section>
+    )}
+    <div class="gutter"><div class="wide nl"><Newsletter lang={lang} /></div></div>
+  </main>
+</Base>
+
+<style>
+  .head { display: grid; gap: 14px; padding-block: 36px 26px; }
+  .eyebrow a { text-decoration: none; } .eyebrow a:hover { text-decoration: underline; }
+  h1 { font-size: clamp(34px, 6.6vw, 56px); font-weight: 900; line-height: 1.03; letter-spacing: -0.035em; }
+  .sub { margin: 0; font-size: 21px; line-height: 1.45; color: var(--brown); }
+  .byline { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .byline img { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; }
+  .byline strong { display: block; font-size: 15px; }
+  .alt { margin-left: auto; font-size: 13px; padding: 6px 12px; }
+  .body { padding-block: 36px 12px; }
+  .share { padding-block: 22px; border-top: 1px solid var(--line); }
+  .author { display: grid; grid-template-columns: 72px 1fr; gap: 16px; align-items: center; padding-block: 22px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .author img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; }
+  .author p { margin: 2px 0 0; font-size: 15px; color: var(--brown); }
+  .more { margin-top: 40px; display: grid; gap: 20px; }
+  .grid { display: grid; gap: 28px; }
+  @media (min-width: 720px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  .nl { margin-top: 40px; }
+</style>

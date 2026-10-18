@@ -1,0 +1,67 @@
+---
+// Une réflexion dans le fil : photo, nom, date, texte, citation éventuelle, image éventuelle.
+import { render } from 'astro:content';
+import { SITE } from '../config';
+import { UI, formatDate, path, type Lang } from '../i18n/ui';
+import { slugOf, type Reflection } from '../lib/content';
+import Share from './Share.astro';
+
+interface Props { entry: Reflection; lang: Lang; full?: boolean }
+const { entry, lang, full = false } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const t = UI[lang];
+const href = path.reflection(d.langue, slugOf(entry.id));
+const shareText = (d.citation ? `“${d.citation}” ${d.auteur ?? ''}` : (entry.body ?? '').slice(0, 180)).trim();
+---
+<article class:list={['post', { full }]} lang={d.langue}>
+  <img class="av" src="/images/avatar.jpg" alt="" width="48" height="48" />
+  <div class="main">
+    <header>
+      <strong>{SITE.name}</strong>
+      <a class="date meta" href={href}><time datetime={d.date.toISOString()}>{formatDate(d.date, lang)}</time></a>
+      {d.langue !== lang && <span class="badge">{d.langue.toUpperCase()}</span>}
+      {d.modele && <span class="badge">{t.template}</span>}
+    </header>
+    {d.citation && (
+      <blockquote class="quote">
+        <p>{`“${d.citation}”`}</p>
+        {d.auteur && <footer>{d.auteur}</footer>}
+      </blockquote>
+    )}
+    <div class="text prose"><Content /></div>
+    {d.image && (
+      <figure class="media">
+        <img src={d.image} alt={d.legende ?? ''} loading="lazy" />
+        {d.legende && <figcaption>{d.legende}</figcaption>}
+      </figure>
+    )}
+    <div class="foot">
+      {!full && <a class="open meta" href={href}>{t.permalink}</a>}
+      <Share lang={lang} url={new URL(href, SITE.url).href} text={shareText} compact={!full} />
+    </div>
+  </div>
+</article>
+
+<style>
+  .post { display: grid; grid-template-columns: 48px 1fr; gap: 14px; padding-block: 22px; border-bottom: 1px solid var(--line); }
+  .av { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+  .main { min-width: 0; }
+  header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+  header strong { font-weight: 800; font-size: 16px; }
+  .date { text-decoration: none; }
+  .date:hover { color: var(--accent); }
+  .quote { margin: 10px 0 0; padding: 0; border: 0; }
+  .quote p { margin: 0; font-size: 21px; line-height: 1.4; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); }
+  .quote footer { margin-top: 6px; font-size: 15px; font-weight: 600; color: var(--accent); }
+  .text { margin-top: 10px; font-size: 17px; line-height: 1.6; }
+  .text :global(p + p) { margin-top: 0.8em; }
+  .full .text { font-size: 19px; }
+  .full .quote p { font-size: 26px; }
+  .media { margin: 14px 0 0; }
+  .media img { border-radius: 10px; border: 1px solid var(--line); width: 100%; max-height: 520px; object-fit: cover; }
+  .media figcaption { font-size: 13px; color: var(--warm-grey); margin-top: 6px; }
+  .foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+  .open { text-decoration: none; font-weight: 600; }
+  .open:hover { color: var(--accent); }
+</style>
