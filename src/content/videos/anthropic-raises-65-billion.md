@@ -7,3 +7,4 @@ langue: en
 rubriques: [ai, deals, us]
 pays: [US]
 ---
+Coverage of Anthropic's $65 billion funding round, which valued the company above OpenAI.

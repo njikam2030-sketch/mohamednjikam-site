@@ -6,7 +6,7 @@ const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
 export const SITE_URL = (process.env.SITE_URL || (vercelUrl ? `https://${vercelUrl}` : 'https://mohamednjikam.com')).replace(/\/$/, '');
 
 export const SITE = {
-  name: 'Mohamed Njikam',
+  name: 'Mohamed Ramadan',
   domain: new URL(SITE_URL).host,
   url: SITE_URL,
   linkedin: 'https://www.linkedin.com/in/moha-rama',

@@ -74,7 +74,7 @@ export function videoItem(e: Video): Item {
 export function reportItem(e: Report): Item {
   const d = e.data;
   return { kind: 'report', id: e.id, title: d.titre, excerpt: d.chapeau ?? (cut(plain(e.body), 160) || undefined), date: d.date, lang: d.langue, topics: d.rubriques, countries: d.pays,
-    href: path.item(d.langue, 'report', e.id), image: d.couverture, coming: false, featured: false, pdf: d.pdf };
+    href: path.item(d.langue, 'report', e.id), image: d.couverture ?? `/covers/${e.id}.png`, coming: false, featured: false, pdf: d.pdf };
 }
 
 // Analyses visibles dans une langue : celles de cette langue, plus celles de l'autre langue sans traduction.

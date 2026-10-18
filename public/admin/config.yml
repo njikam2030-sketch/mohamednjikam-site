@@ -294,12 +294,12 @@ collections:
       - { name: pays, label: "Pays concernés (facultatif)", widget: select, multiple: true, required: false, options: *pays }
       - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
       - { name: pointsCles, label: "Points clés de la vidéo (facultatif)", widget: list, required: false, field: { name: point, label: "Point", widget: string } }
-      - { name: body, label: "Votre analyse et votre commentaire", widget: markdown, required: false }
+      - { name: body, label: "Votre petit commentaire (affiché sous la vidéo)", widget: markdown, required: false }
 
   - name: rapports
     label: "Rapports (PDF)"
     label_singular: "Rapport"
-    description: "Documents PDF : notes, études, présentations."
+    description: "Rapports à la manière du FMI ou des Nations Unies : PDF téléchargeable ou rapport écrit directement ici."
     folder: src/content/rapports
     create: true
     identifier_field: titre
@@ -310,16 +310,19 @@ collections:
     sortable_fields: [date, titre]
     fields:
       - { name: titre, label: "Titre", widget: string }
+      - { name: serie, label: "Collection (ex. Research Report, Policy Note, Working Paper)", widget: string, default: "Report" }
+      - { name: numero, label: "Numéro (ex. No. 2, facultatif)", widget: string, required: false }
       - { name: chapeau, label: "Résumé en une ou deux phrases", widget: text, required: false }
-      - { name: pdf, label: "Fichier PDF", widget: file }
-      - { name: couverture, label: "Image de couverture (facultatif)", widget: image, required: false }
+      - { name: messagesCles, label: "Messages clés (facultatif)", widget: list, required: false, field: { name: m, label: "Message", widget: text } }
+      - { name: pdf, label: "Fichier PDF (facultatif : sans PDF, le rapport se lit sur le site et s'imprime en PDF avec sa couverture)", widget: file, required: false }
+      - { name: couverture, label: "Image de couverture (facultatif : sinon une couverture est créée automatiquement)", widget: image, required: false }
       - { name: pages, label: "Nombre de pages (facultatif)", widget: number, required: false }
       - { name: date, label: "Date", widget: datetime, time_format: false, date_format: "DD/MM/YYYY" }
       - { name: langue, label: "Langue", widget: select, options: *langues, default: en }
       - { name: rubriques, label: "Rubriques", widget: select, multiple: true, required: false, options: *rubriques }
       - { name: pays, label: "Pays concernés (facultatif)", widget: select, multiple: true, required: false, options: *pays }
       - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
-      - { name: body, label: "Présentation du document (facultatif)", widget: markdown, required: false }
+      - { name: body, label: "Texte du rapport ou présentation du PDF (titres ## = sommaire)", widget: markdown, required: false }
 
   - name: graphiques
     label: "Graphiques"

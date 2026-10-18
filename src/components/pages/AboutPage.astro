@@ -21,9 +21,9 @@ const groups = [
 <Base lang={lang} title={t.about} description={p.bio} section="about" alternate={path.about(other(lang))}>
   <section class="section">
     <div class="wrap about">
-      <img class="photo" src="/images/headshot.jpg" alt="Mohamed Njikam" width="640" height="800" />
+      <img class="photo" src="/images/headshot.jpg" alt={SITE.name} width="640" height="800" />
       <div class="text">
-        <h1>Mohamed Njikam</h1>
+        <h1>{SITE.name}</h1>
         {p.apropos.map((x) => <p>{x}</p>)}
 
         {groups.map((g) => (

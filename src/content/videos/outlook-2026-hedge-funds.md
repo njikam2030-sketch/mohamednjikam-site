@@ -7,3 +7,4 @@ langue: en
 rubriques: [funds]
 pays: []
 ---
+An outlook on hedge fund strategies for 2026 and how they can be used to diversify a portfolio.

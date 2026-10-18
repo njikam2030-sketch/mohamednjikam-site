@@ -1,6 +1,6 @@
 # mohamednjikam.com
 
-Site personnel de Mohamed Njikam : analyses, réflexions et graphiques, en anglais et en français.
+Site personnel de Mohamed Ramadan : analyses, réflexions et graphiques, en anglais et en français.
 Le site est fabriqué en pages HTML (avec Astro) et se publie depuis un espace admin, sans toucher au code.
 
 ## 1. Mettre le site en ligne (une seule fois, environ 15 minutes)
@@ -31,8 +31,8 @@ Le navigateur la garde : on ne la donne qu'une fois par appareil.
 | --- | --- |
 | **Analyses** | Articles de fond. Titre, chapeau, rubriques, points clés, image, texte, puis un titre « Sources » en fin de texte. « Mettre à la une » le place en grand sur l'accueil. |
 | **Réflexions** | Textes courts, citations (avec auteur), hommages, photo facultative. |
-| **Vidéos** | Lien YouTube (votre vidéo ou une sélection), points clés et votre analyse et commentaire. |
-| **Rapports (PDF)** | Un fichier PDF avec titre, résumé et image de couverture : téléchargeable et lisible sur le site. |
+| **Vidéos** | Lien YouTube (votre vidéo ou une sélection), points clés et un petit commentaire affiché sous la vidéo. |
+| **Rapports** | À la manière du FMI : collection, numéro, messages clés, PDF (facultatif). Sans PDF, le rapport se lit sur le site et s'imprime avec sa couverture. Couverture créée automatiquement. |
 | **Graphiques** | Un graphique (PNG/JPG) avec son titre, sa source et un commentaire : « le graphique de la semaine ». |
 | **Mon profil** | Présentation de l'accueil et de la page À propos, en anglais et en français. |
 

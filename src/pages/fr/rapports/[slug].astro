@@ -1,5 +1,5 @@
 ---
-import ItemPage from '../../../components/pages/ItemPage.astro';
+import ReportPage from '../../../components/pages/ReportPage.astro';
 import { getReports } from '../../../lib/content';
 
 export async function getStaticPaths() {
@@ -8,4 +8,4 @@ export async function getStaticPaths() {
 }
 const { entry } = Astro.props;
 ---
-<ItemPage kind="report" entry={entry} />
+<ReportPage entry={entry} />
