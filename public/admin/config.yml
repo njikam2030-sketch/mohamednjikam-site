@@ -1,4 +1,4 @@
-# Espace de publication : https://mohamednjikam.com/admin
+# Espace de publication : adresse-du-site/admin
 # Connexion avec un jeton GitHub (voir LISEZMOI.md). Chaque enregistrement met le site à jour automatiquement.
 backend:
   name: github

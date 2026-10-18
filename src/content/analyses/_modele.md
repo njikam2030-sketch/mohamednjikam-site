@@ -1,5 +1,5 @@
 ---
-# MODÈLE (jamais publié). Plus simple : publiez depuis mohamednjikam.com/admin.
+# MODÈLE (jamais publié). Plus simple : publiez depuis l.espace admin (adresse-du-site/admin).
 titre: "Titre : une thèse, pas un sujet"
 chapeau: "Une ou deux phrases qui résument l'article (affichées sous le titre, sur Google et LinkedIn)."
 date: 2026-10-18
