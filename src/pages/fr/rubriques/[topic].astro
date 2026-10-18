@@ -1,5 +1,5 @@
 ---
-import AnalysesPage from '../../../components/pages/AnalysesPage.astro';
+import TopicPage from '../../../components/pages/TopicPage.astro';
 import { TOPICS, type Topic } from '../../../config';
 
 export function getStaticPaths() {
@@ -7,4 +7,4 @@ export function getStaticPaths() {
 }
 const topic = Astro.params.topic as Topic;
 ---
-<AnalysesPage lang="en" topic={topic} />
+<TopicPage lang="fr" topic={topic} />

@@ -1,0 +1,26 @@
+{
+  "en": {
+    "titre": "Capital markets and debt advisory",
+    "accroche": "Economics and finance, from London to Douala.",
+    "bio": "I write about money moving between Africa, Asia and the City, and about the leaders deciding how AI will reshape finance.",
+    "role": "Institutional client management · Capital markets · Debt advisory · Emerging markets · Structured finance",
+    "apropos": [
+      "I work in capital markets and debt advisory in London, close to the institutions that price risk for emerging markets.",
+      "From London I follow three stories at once: how Africa finances itself, how Asian capital is changing that, and how the leaders of the AI era are rewriting the rules of finance. This site is where I write about them, in English and in French."
+    ],
+    "ville": "London, United Kingdom",
+    "formation": "Université Paris-Panthéon-Assas"
+  },
+  "fr": {
+    "titre": "Marchés de capitaux et conseil en dette",
+    "accroche": "L'économie et la finance, de Londres à Douala.",
+    "bio": "J'écris sur l'argent qui circule entre l'Afrique, l'Asie et la City, et sur les dirigeants qui décident comment l'IA va transformer la finance.",
+    "role": "Gestion de clients institutionnels · Marchés de capitaux · Conseil en dette · Marchés émergents · Finance structurée",
+    "apropos": [
+      "Je travaille dans les marchés de capitaux et le conseil en dette à Londres, au plus près des institutions qui évaluent le risque des marchés émergents.",
+      "Depuis Londres, je suis trois histoires à la fois : comment l'Afrique se finance, comment les capitaux asiatiques changent la donne, et comment les dirigeants de l'ère de l'IA réécrivent les règles de la finance. C'est ici que j'écris à leur sujet, en anglais et en français."
+    ],
+    "ville": "Londres, Royaume-Uni",
+    "formation": "Université Paris-Panthéon-Assas"
+  }
+}

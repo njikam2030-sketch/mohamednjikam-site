@@ -1,33 +1,176 @@
 ---
-// Accueil : profil puis fil des réflexions ; à côté, dernières analyses, rubriques, newsletter.
+// Accueil : à la une, dernières publications, réflexions et graphique de la semaine, rubriques, l'auteur.
 import Base from '../../layouts/Base.astro';
-import Profile from '../Profile.astro';
-import PostCard from '../PostCard.astro';
-import Sidebar from '../Sidebar.astro';
-import { UI, path, type Lang } from '../../i18n/ui';
-import { getReflections, getAnalysesFor } from '../../lib/content';
+import Card from '../Card.astro';
+import Visual from '../Visual.astro';
+import { TOPICS } from '../../config';
+import { UI, KIND_NAME, TOPIC_INFO, formatDate, other, path, type Lang } from '../../i18n/ui';
+import { allItems } from '../../lib/content';
+import profil from '../../data/profil.json';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = UI[lang];
-const reflections = await getReflections();
-const analyses = await getAnalysesFor(lang);
+const p = profil[lang];
+const items = await allItems(lang);
+const analyses = items.filter((i) => i.kind === 'analysis');
+const hero = analyses.find((i) => i.featured) ?? analyses[0];
+const latest = items.filter((i) => i !== hero).slice(0, 3);
+const reflections = items.filter((i) => i.kind === 'commentary').slice(0, 4);
+const chart = items.find((i) => i.kind === 'chart');
+const count = (tp: string) => items.filter((i) => (i.topics as string[]).includes(tp)).length;
 ---
-<Base lang={lang} section="home" alternate={path.home(lang === 'en' ? 'fr' : 'en')}>
-  <div class="gutter">
-    <div class="wide layout">
-      <main class="feed">
-        <Profile lang={lang} reflections={reflections.length} analyses={analyses.length} tab="reflections" />
-        {reflections.length === 0 && <p class="empty">{t.noReflections}</p>}
-        {reflections.map((r) => <PostCard entry={r} lang={lang} />)}
-      </main>
-      <Sidebar lang={lang} analyses={analyses} />
+<Base lang={lang} section="home" alternate={path.home(other(lang))}>
+
+  <!-- À la une -->
+  <section class="hero">
+    <div class="wrap hero-in">
+      <div class="hero-text">
+        {hero ? (
+          <>
+            <div class="hero-labels">
+              <span class="hl">{t.featured}</span>
+              <span class="hl2">{KIND_NAME[hero.kind][lang]} · {TOPIC_INFO[hero.topics[0]][lang]}</span>
+              {hero.coming && <span class="pill">{t.coming}</span>}
+            </div>
+            <h1><a href={hero.href}>{hero.title}</a></h1>
+            {hero.excerpt && <p class="lede">{hero.excerpt}</p>}
+            <div class="hero-foot">
+              <a class="btn btn-light" href={hero.href}>{t.readAnalysis}</a>
+              <time datetime={hero.date.toISOString()}>{formatDate(hero.date, lang)}</time>
+            </div>
+          </>
+        ) : (
+          <>
+            <div class="hero-labels"><span class="hl">{t.subtitle}</span></div>
+            <h1>{p.accroche}</h1>
+            <p class="lede">{p.bio}</p>
+          </>
+        )}
+      </div>
+      <div class="hero-side">
+        {hero?.image ? (
+          <Visual item={hero} lang={lang} ratio="4 / 3" eager />
+        ) : (
+          <a class="author-card" href={path.about(lang)}>
+            <img src="/images/portrait.jpg" alt="Mohamed Njikam" width="640" height="800" />
+            <span class="ac-txt"><strong>Mohamed Njikam</strong><span>{p.titre}</span></span>
+          </a>
+        )}
+      </div>
     </div>
-  </div>
+  </section>
+
+  <!-- Dernières publications -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head"><h2>{t.latest}</h2><a class="more" href={path.list(lang, 'analysis')}>{t.seeAll}</a></div>
+      {latest.length === 0 && <p class="empty">{t.emptyHome}</p>}
+      {latest.length > 0 && <div class="grid3">{latest.map((i) => <Card item={i} lang={lang} />)}</div>}
+    </div>
+  </section>
+
+  <!-- Réflexions + graphique de la semaine -->
+  {(reflections.length > 0 || chart) && (
+    <section class="section grey">
+      <div class:list={['wrap', 'split', { single: !chart || reflections.length === 0 }]}>
+        {reflections.length > 0 && (
+          <div>
+            <div class="section-head"><h2>{t.commentary}</h2><a class="more" href={path.list(lang, 'commentary')}>{t.seeAll}</a></div>
+            <div class="stack">{reflections.map((i) => <Card item={i} lang={lang} variant="compact" />)}</div>
+          </div>
+        )}
+        {chart && (
+          <div>
+            <div class="section-head"><h2>{t.chartOfWeek}</h2><a class="more" href={path.list(lang, 'chart')}>{t.seeAll}</a></div>
+            <a class="chart" href={chart.href}>
+              <img src={chart.image} alt="" loading="lazy" />
+              <strong>{chart.title}</strong>
+              <time class="date" datetime={chart.date.toISOString()}>{formatDate(chart.date, lang)}</time>
+            </a>
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+
+  <!-- Rubriques -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head"><h2>{t.exploreTopics}</h2><a class="more" href={path.topics(lang)}>{t.seeAll}</a></div>
+      <div class="topics">
+        {TOPICS.map((tp) => (
+          <a class="topic" href={path.topic(lang, tp)}>
+            <strong>{TOPIC_INFO[tp][lang]}</strong>
+            <span>{lang === 'fr' ? TOPIC_INFO[tp].dfr : TOPIC_INFO[tp].den}</span>
+            <small>{count(tp)} {t.publications}</small>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- L'auteur -->
+  <section class="section grey">
+    <div class="wrap about">
+      <img src="/images/portrait.jpg" alt="Mohamed Njikam" width="640" height="800" loading="lazy" />
+      <div>
+        <span class="label">{t.aboutAuthor}</span>
+        <h2>Mohamed Njikam</h2>
+        <p class="role">{p.role}</p>
+        <p class="bio">{p.apropos[0]}</p>
+        <a class="btn btn-outline" href={path.about(lang)}>{t.moreAbout}</a>
+      </div>
+    </div>
+  </section>
 </Base>
 
 <style>
-  .layout { display: grid; gap: 40px; }
-  .feed { min-width: 0; }
-  @media (min-width: 960px) { .layout { grid-template-columns: minmax(0, 640px) 1fr; gap: 56px; } }
+  .hero { background: var(--navy); color: var(--white); }
+  .hero-in { display: grid; gap: 36px; padding-block: 56px 60px; align-items: center; }
+  .hero-labels { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 18px; }
+  .hl { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--navy); background: #8FB8E8; padding: 4px 10px; border-radius: 3px; }
+  .hl2 { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #A9C2DE; }
+  .pill { font-size: 12px; font-weight: 700; color: var(--white); border: 1px solid #5E7DA0; border-radius: 3px; padding: 3px 9px; }
+  .hero h1 { font-size: clamp(32px, 4.6vw, 52px); font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; }
+  .hero h1 a { color: var(--white); text-decoration: none; }
+  .hero h1 a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; }
+  .lede { font-size: 19px; line-height: 1.55; color: #D3DEEA; margin-top: 18px; max-width: 36em; }
+  .hero-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; margin-top: 30px; }
+  .hero-foot time { font-size: 14px; color: #A9C2DE; }
+  .author-card { display: grid; text-decoration: none; color: var(--white); max-width: 360px; margin-left: auto; border-radius: 4px; overflow: hidden; background: #0F3157; }
+  .author-card img { width: 100%; aspect-ratio: 4 / 4.2; object-fit: cover; object-position: 50% 8%; }
+  .ac-txt { display: grid; gap: 2px; padding: 14px 16px; font-size: 14px; color: #C7D2E0; }
+  .ac-txt strong { font-size: 16px; color: var(--white); }
+  @media (min-width: 900px) { .hero-in { grid-template-columns: 1.5fr 1fr; gap: 64px; } }
+  @media (max-width: 899px) { .author-card { margin: 0; max-width: 300px; } }
+
+  .grid3 { display: grid; gap: 36px 28px; grid-template-columns: 1fr; }
+  @media (min-width: 680px) { .grid3 { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .grid3 { grid-template-columns: repeat(3, 1fr); } }
+
+  .split { display: grid; gap: 48px; }
+  @media (min-width: 900px) { .split:not(.single) { grid-template-columns: 1.2fr 1fr; gap: 64px; } }
+  .stack { border-top: 1px solid var(--line); }
+  .chart { display: grid; gap: 10px; text-decoration: none; background: var(--white); border: 1px solid var(--line); border-radius: 4px; padding: 16px; }
+  .chart img { width: 100%; border-radius: 2px; }
+  .chart strong { font-size: 18px; line-height: 1.35; }
+  .chart:hover strong { color: var(--blue); text-decoration: underline; }
+
+  .topics { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 620px) { .topics { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .topics { grid-template-columns: repeat(4, 1fr); } }
+  .topic { display: grid; gap: 6px; align-content: start; text-decoration: none; padding: 20px; border: 1px solid var(--line); border-top: 3px solid var(--navy); border-radius: 4px; background: var(--white); min-height: 150px; }
+  .topic strong { font-size: 18px; font-weight: 700; color: var(--navy); }
+  .topic span { font-size: 15px; color: var(--muted); line-height: 1.5; }
+  .topic small { font-size: 13px; color: var(--faint); margin-top: auto; padding-top: 8px; }
+  .topic:hover { border-top-color: var(--blue); box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08); }
+  .topic:hover strong { color: var(--blue); }
+
+  .about { display: grid; gap: 32px; align-items: center; }
+  .about img { width: 100%; max-width: 280px; aspect-ratio: 1; object-fit: cover; object-position: 50% 10%; border-radius: 50%; }
+  .about h2 { font-size: 30px; font-weight: 800; margin-top: 8px; }
+  .role { color: var(--muted); font-size: 15px; margin-top: 8px; }
+  .bio { font-size: 18px; line-height: 1.65; margin: 16px 0 22px; max-width: 40em; }
+  @media (min-width: 760px) { .about { grid-template-columns: 280px 1fr; gap: 56px; } }
 </style>

@@ -1,11 +1,11 @@
 ---
-import AnalysisPage from '../../../components/pages/AnalysisPage.astro';
-import { getAnalyses, slugOf } from '../../../lib/content';
+import ItemPage from '../../../components/pages/ItemPage.astro';
+import { getAnalyses } from '../../../lib/content';
 
 export async function getStaticPaths() {
   const all = await getAnalyses();
-  return all.filter((e) => e.data.langue === 'fr').map((entry) => ({ params: { slug: slugOf(entry.id) }, props: { entry } }));
+  return all.filter((e) => e.data.langue === 'fr').map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 const { entry } = Astro.props;
 ---
-<AnalysisPage entry={entry} />
+<ItemPage kind="analysis" entry={entry} />

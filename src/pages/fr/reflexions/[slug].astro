@@ -1,11 +1,11 @@
 ---
-import ReflectionPage from '../../../components/pages/ReflectionPage.astro';
-import { getReflections, slugOf } from '../../../lib/content';
+import ItemPage from '../../../components/pages/ItemPage.astro';
+import { getReflections } from '../../../lib/content';
 
 export async function getStaticPaths() {
   const all = await getReflections();
-  return all.filter((e) => e.data.langue === 'fr').map((entry) => ({ params: { slug: slugOf(entry.id) }, props: { entry } }));
+  return all.filter((e) => e.data.langue === 'fr').map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 const { entry } = Astro.props;
 ---
-<ReflectionPage entry={entry} lang="fr" />
+<ItemPage kind="commentary" entry={entry} />

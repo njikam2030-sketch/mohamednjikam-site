@@ -1,5 +1,5 @@
 # Espace de publication : https://mohamednjikam.com/admin
-# Connexion avec GitHub (jeton d'accès personnel, voir le README).
+# Connexion avec un jeton GitHub (voir LISEZMOI.md). Chaque enregistrement met le site à jour automatiquement.
 backend:
   name: github
   repo: njikam2030-sketch/mohamednjikam-site
@@ -10,53 +10,103 @@ media_folder: public/images/uploads
 public_folder: /images/uploads
 
 collections:
-  - name: reflexions
-    label: Réflexions
-    label_singular: Réflexion
-    folder: src/content/reflexions
-    create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}"
-    summary: "{{date}} · {{citation}}"
-    sortable_fields: [date]
-    fields:
-      - { name: date, label: Date, widget: datetime }
-      - { name: langue, label: Langue, widget: select, options: [{ label: Français, value: fr }, { label: English, value: en }], default: fr }
-      - { name: citation, label: "Citation (facultatif)", widget: text, required: false }
-      - { name: auteur, label: "Auteur de la citation (facultatif)", widget: string, required: false }
-      - { name: image, label: "Image (facultatif)", widget: image, required: false }
-      - { name: legende, label: "Légende de l'image (facultatif)", widget: string, required: false }
-      - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
-      - { name: body, label: "Votre texte", widget: markdown }
-
   - name: analyses
-    label: Analyses
-    label_singular: Analyse
+    label: "Analyses"
+    label_singular: "Analyse"
+    description: "Articles de fond : thèse, preuves, objections, que faire, sources."
     folder: src/content/analyses
     create: true
     identifier_field: titre
     slug: "{{slug}}"
-    summary: "{{titre}} ({{langue}})"
+    summary: "{{titre}} · {{langue}}"
     sortable_fields: [date, titre]
     fields:
-      - { name: titre, label: Titre, widget: string }
-      - { name: sousTitre, label: "Sous-titre", widget: string, required: false }
-      - { name: description, label: "Résumé (Google, LinkedIn : 150 caractères)", widget: text }
-      - { name: date, label: Date, widget: datetime }
-      - { name: langue, label: Langue, widget: select, options: [{ label: Français, value: fr }, { label: English, value: en }], default: fr }
-      - name: rubrique
-        label: Rubrique
+      - { name: titre, label: "Titre", widget: string }
+      - { name: chapeau, label: "Chapeau (résumé sous le titre, Google, LinkedIn)", widget: text, required: false }
+      - { name: date, label: "Date", widget: datetime, time_format: false, date_format: "DD/MM/YYYY" }
+      - { name: langue, label: "Langue", widget: select, options: &langues [{ label: "English", value: en }, { label: "Français", value: fr }], default: en }
+      - name: rubriques
+        label: "Rubriques"
         widget: select
+        multiple: true
+        min: 1
         options: &rubriques
           - { label: "Londres et Royaume-Uni", value: uk }
-          - { label: Afrique, value: africa }
-          - { label: Asie, value: asia }
+          - { label: "Afrique", value: africa }
+          - { label: "Asie", value: asia }
           - { label: "IA et leadership", value: ai }
           - { label: "Marchés et taux", value: markets }
-          - { label: Paiements, value: payments }
-          - { label: Dette, value: debt }
-      - { name: rubrique2, label: "Deuxième rubrique (facultatif)", widget: select, options: *rubriques, required: false }
-      - { name: chiffreCle, label: "Chiffre clé de la couverture (ex. 6 %)", widget: string, required: false }
-      - { name: couverture, label: "Image de couverture (facultatif)", widget: image, required: false }
-      - { name: traduction, label: "Nom du fichier de la version dans l'autre langue (facultatif)", widget: string, required: false }
+          - { label: "Paiements", value: payments }
+          - { label: "Dette", value: debt }
+      - { name: pointsCles, label: "Points clés (encadré en haut de l'article)", widget: list, required: false, field: { name: point, label: "Point", widget: string } }
+      - { name: image, label: "Image de couverture (facultatif)", widget: image, required: false }
+      - { name: legendeImage, label: "Légende de l'image", widget: string, required: false }
+      - { name: traduction, label: "Version dans l'autre langue : son adresse courte (facultatif)", widget: string, required: false }
+      - { name: aLaUne, label: "Mettre à la une de l'accueil", widget: boolean, default: false }
+      - { name: aParaitre, label: "Annoncer « À paraître » (sans texte)", widget: boolean, default: false }
       - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
-      - { name: body, label: "Texte (thèse, preuves, objections, que faire, ## Sources)", widget: markdown }
+      - { name: body, label: "Texte (les graphiques s'insèrent avec le bouton image ; terminer par un titre « Sources »)", widget: markdown, required: false }
+
+  - name: reflexions
+    label: "Réflexions"
+    label_singular: "Réflexion"
+    description: "Textes courts, citations, hommages."
+    folder: src/content/reflexions
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}"
+    summary: "{{date}} · {{titre}}{{citation}}"
+    sortable_fields: [date]
+    fields:
+      - { name: date, label: "Date", widget: datetime, time_format: false, date_format: "DD/MM/YYYY" }
+      - { name: langue, label: "Langue", widget: select, options: *langues, default: fr }
+      - { name: titre, label: "Titre (facultatif)", widget: string, required: false }
+      - { name: citation, label: "Citation (facultatif)", widget: text, required: false }
+      - { name: auteur, label: "Auteur de la citation", widget: string, required: false }
+      - { name: image, label: "Photo (facultatif)", widget: image, required: false }
+      - { name: rubriques, label: "Rubriques (facultatif)", widget: select, multiple: true, required: false, options: *rubriques }
+      - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
+      - { name: body, label: "Votre texte", widget: markdown }
+
+  - name: graphiques
+    label: "Graphiques"
+    label_singular: "Graphique"
+    description: "Un graphique commenté (le graphique de la semaine)."
+    folder: src/content/graphiques
+    create: true
+    identifier_field: titre
+    slug: "{{slug}}"
+    summary: "{{titre}}"
+    sortable_fields: [date, titre]
+    fields:
+      - { name: titre, label: "Titre", widget: string }
+      - { name: date, label: "Date", widget: datetime, time_format: false, date_format: "DD/MM/YYYY" }
+      - { name: langue, label: "Langue", widget: select, options: *langues, default: en }
+      - { name: image, label: "Graphique (PNG ou JPG)", widget: image }
+      - { name: source, label: "Source", widget: string, required: false }
+      - { name: rubriques, label: "Rubriques", widget: select, multiple: true, required: false, options: *rubriques }
+      - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
+      - { name: body, label: "Commentaire", widget: markdown, required: false }
+
+  - name: profil
+    label: "Mon profil"
+    description: "Présentation affichée sur l'accueil et la page À propos."
+    files:
+      - name: profil
+        label: "Présentation (anglais et français)"
+        file: src/data/profil.json
+        fields:
+          - name: en
+            label: "English"
+            widget: object
+            fields: &profil
+              - { name: titre, label: "Métier (une ligne)", widget: string }
+              - { name: accroche, label: "Accroche", widget: string }
+              - { name: bio, label: "Présentation courte", widget: text }
+              - { name: role, label: "Domaines", widget: string }
+              - { name: apropos, label: "Paragraphes de la page À propos", widget: list, field: { name: p, label: "Paragraphe", widget: text } }
+              - { name: ville, label: "Ville", widget: string }
+              - { name: formation, label: "Formation", widget: string }
+          - name: fr
+            label: "Français"
+            widget: object
+            fields: *profil

@@ -1,0 +1,11 @@
+---
+import ItemPage from '../../components/pages/ItemPage.astro';
+import { getCharts } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const all = await getCharts();
+  return all.filter((e) => e.data.langue === 'en').map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+<ItemPage kind="chart" entry={entry} />

@@ -1,10 +1,10 @@
 ---
-// Boutons de partage : LinkedIn, X, WhatsApp, copier le lien.
+// Partage : LinkedIn, X, WhatsApp, email, copier le lien.
 import { SITE } from '../config';
 import { UI, type Lang } from '../i18n/ui';
 
-interface Props { lang: Lang; url: string; text: string; compact?: boolean }
-const { lang, url, text, compact = false } = Astro.props;
+interface Props { lang: Lang; url: string; text: string }
+const { lang, url, text } = Astro.props;
 const t = UI[lang];
 const u = encodeURIComponent(url);
 const tx = encodeURIComponent(text);
@@ -12,30 +12,18 @@ const links = [
   { name: 'LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}` },
   { name: 'X', href: `https://x.com/intent/post?text=${tx}&url=${u}&via=${SITE.xHandle}` },
   { name: 'WhatsApp', href: `https://wa.me/?text=${tx}%20${u}` },
+  { name: 'Email', href: `mailto:?subject=${tx}&body=${u}` },
 ];
 ---
-<div class:list={['share', { compact }]}>
-  {!compact && <span class="lbl">{t.share}</span>}
-  {links.map((l) => <a class="s" href={l.href} target="_blank" rel="noopener">{l.name}</a>)}
-  <button class="s copy" type="button" data-url={url} data-done={t.copied}>{t.copy}</button>
+<div class="share">
+  <span>{t.share}</span>
+  {links.map((l) => <a href={l.href} target="_blank" rel="noopener">{l.name}</a>)}
+  <button type="button" data-copy={url} data-done={t.copied}>{t.copy}</button>
 </div>
-
-<script>
-  document.querySelectorAll<HTMLButtonElement>('.share .copy').forEach((b) => {
-    b.addEventListener('click', async () => {
-      const label = b.textContent;
-      try { await navigator.clipboard.writeText(b.dataset.url ?? ''); b.textContent = b.dataset.done ?? 'OK'; }
-      catch { window.prompt('', b.dataset.url ?? ''); }
-      setTimeout(() => { b.textContent = label; }, 1800);
-    });
-  });
-</script>
 
 <style>
   .share { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-  .lbl { font-size: 14px; font-weight: 700; margin-right: 4px; }
-  .s { font: 600 14px var(--font); color: var(--ink); text-decoration: none; background: none; border: 1px solid var(--ink); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
-  .s:hover { background: var(--ink); color: var(--cream); }
-  .compact .s { border: 0; padding: 4px 6px; font-size: 13px; color: var(--warm-grey); }
-  .compact .s:hover { background: none; color: var(--accent); }
+  span { font-size: 14px; font-weight: 700; margin-right: 6px; }
+  a, button { font: 500 14px var(--font); color: var(--ink); text-decoration: none; background: var(--white); border: 1px solid #CBD5E1; border-radius: 4px; padding: 7px 14px; cursor: pointer; }
+  a:hover, button:hover { border-color: var(--blue); color: var(--blue); }
 </style>

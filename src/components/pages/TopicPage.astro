@@ -1,0 +1,57 @@
+---
+// Rubriques : sans `topic`, la liste des rubriques ; avec `topic`, toutes les publications de la rubrique.
+import Base from '../../layouts/Base.astro';
+import PageHead from '../PageHead.astro';
+import Card from '../Card.astro';
+import { TOPICS, type Topic } from '../../config';
+import { UI, TOPIC_INFO, other, path, type Lang } from '../../i18n/ui';
+import { allItems } from '../../lib/content';
+
+interface Props { lang: Lang; topic?: Topic }
+const { lang, topic } = Astro.props;
+const t = UI[lang];
+const all = await allItems(lang);
+const items = topic ? all.filter((i) => i.topics.includes(topic)) : [];
+const info = topic ? TOPIC_INFO[topic] : undefined;
+const title = info ? info[lang] : t.topics;
+const intro = info ? (lang === 'fr' ? info.dfr : info.den) : t.topicsIntro;
+---
+<Base lang={lang} title={title} description={intro} section="topics" alternate={topic ? path.topic(other(lang), topic) : path.topics(other(lang))}>
+  <PageHead lang={lang} title={title} intro={intro} crumbs={topic ? [{ label: t.topics, href: path.topics(lang) }] : []}>
+    {topic && (
+      <nav class="chips" aria-label={t.topics}>
+        {TOPICS.map((tp) => <a href={path.topic(lang, tp)} aria-current={tp === topic ? 'page' : undefined}>{TOPIC_INFO[tp][lang]}</a>)}
+      </nav>
+    )}
+  </PageHead>
+  <section class="section">
+    <div class="wrap">
+      {!topic && (
+        <div class="topics">
+          {TOPICS.map((tp) => (
+            <a class="topic" href={path.topic(lang, tp)}>
+              <strong>{TOPIC_INFO[tp][lang]}</strong>
+              <span>{lang === 'fr' ? TOPIC_INFO[tp].dfr : TOPIC_INFO[tp].den}</span>
+              <small>{all.filter((i) => i.topics.includes(tp)).length} {t.publications}</small>
+            </a>
+          ))}
+        </div>
+      )}
+      {topic && items.length === 0 && <p class="empty">{t.empty}</p>}
+      {topic && <div class="rows">{items.map((i) => <Card item={i} lang={lang} variant="row" />)}</div>}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .section { padding-top: 24px; }
+  .rows { max-width: 920px; }
+  .topics { display: grid; gap: 16px; padding-top: 24px; }
+  @media (min-width: 620px) { .topics { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .topics { grid-template-columns: repeat(3, 1fr); } }
+  .topic { display: grid; gap: 6px; text-decoration: none; padding: 22px; border: 1px solid var(--line); border-top: 3px solid var(--navy); border-radius: 4px; }
+  .topic strong { font-size: 20px; color: var(--navy); }
+  .topic span { color: var(--muted); font-size: 15px; }
+  .topic small { color: var(--faint); font-size: 13px; padding-top: 6px; }
+  .topic:hover { border-top-color: var(--blue); box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08); }
+</style>

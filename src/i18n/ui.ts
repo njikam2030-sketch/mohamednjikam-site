@@ -1,84 +1,80 @@
-// Textes de l'interface (anglais par défaut, français) et adresses des pages.
-import type { Topic } from '../config';
+// Textes de l'interface (anglais par défaut, français), noms des rubriques et adresses des pages.
+import type { Kind, Topic } from '../config';
 
 export type Lang = 'en' | 'fr';
+export const other = (l: Lang): Lang => (l === 'en' ? 'fr' : 'en');
 
 export const UI = {
   en: {
-    tagline: 'Economics and finance, from London to Douala.',
-    location: 'London · Douala',
-    bio: 'Capital markets and debt advisory. I write about money moving between Africa, Asia and the City, and about the leaders deciding how AI will reshape finance.',
-    bioMore: 'Institutional client management, capital markets, debt advisory, emerging markets and structured finance. Université Paris-Panthéon-Assas. Views are my own.',
-    reflections: 'Reflections', analysis: 'Analysis', about: 'About',
-    latestAnalysis: 'Latest analysis', allAnalysis: 'All analysis', topics: 'Topics',
-    noReflections: 'The first reflections are on their way.',
-    noAnalysis: 'The first analysis is on its way.',
-    noTopic: 'No analysis in this topic yet.',
-    seeAll: 'See all', readMore: 'Read', minRead: 'min read',
-    share: 'Share', copy: 'Copy link', copied: 'Link copied', sources: 'Sources',
-    back: 'Back', related: 'More analysis', permalink: 'Open',
-    newsletterTitle: 'One analysis, every two weeks.',
-    newsletterText: 'London, Africa, Asia. The new piece and the numbers behind it, nothing else.',
-    newsletterButton: 'Subscribe', newsletterSoon: 'The newsletter opens soon.',
-    email: 'Your email', template: 'Template', otherLang: 'In French',
-    footer: 'Views are my own.', notFound: 'This page does not exist.', home: 'Home',
-    aboutTitle: 'About', basedIn: 'Based in', basedInV: 'London, United Kingdom',
-    education: 'Education', writesIn: 'Writes in', writesInV: 'English, French',
-    reflectionsCount: 'reflections', analysisCount: 'analyses',
-    aboutText: [
-      'I work in capital markets and debt advisory in London, close to the institutions that price risk for emerging markets.',
-      'From London I follow three stories at once: how Africa finances itself, how Asian capital is changing that, and how the leaders of the AI era are rewriting the rules of finance. This site is where I write about them, in English and in French.',
-    ],
-    role: 'Institutional client management · Capital markets · Debt advisory · Emerging markets · Structured finance',
+    home: 'Home', analysis: 'Analysis', commentary: 'Reflections', charts: 'Charts', topics: 'Topics', about: 'About',
+    subscribe: 'Subscribe', menu: 'Menu', subtitle: 'Economics & Finance',
+    featured: 'Featured', latest: 'Latest', seeAll: 'See all', readAnalysis: 'Read the analysis',
+    chartOfWeek: 'Chart of the week', exploreTopics: 'Explore by topic', aboutAuthor: 'About the author', moreAbout: 'More about Mohamed',
+    keyPoints: 'Key points', sources: 'Sources', share: 'Share', copy: 'Copy link', copied: 'Link copied',
+    related: 'Related', minRead: 'min read', coming: 'Coming soon', comingText: 'This analysis will be published shortly. Subscribe to receive it.',
+    by: 'By', publications: 'publications', all: 'All', source: 'Source',
+    empty: 'Nothing published here yet.', emptyHome: 'The first publications are on their way.',
+    nlTitle: 'Get the next analysis by email', nlText: 'One analysis every two weeks. London, Africa, Asia. No noise.',
+    nlButton: 'Subscribe', nlSoon: 'The newsletter opens soon.', email: 'Email address',
+    footerNote: 'Views expressed are my own.', follow: 'Follow', site: 'Site',
+    notFound: 'This page does not exist.', basedIn: 'Based in', education: 'Education', writesIn: 'Writes in', writesInV: 'English, French',
+    analysisIntro: 'Long-form analysis. One thesis per piece, every number sourced.',
+    commentaryIntro: 'Short reflections, quotes and tributes.',
+    chartsIntro: 'One chart, one idea.',
+    topicsIntro: 'Every publication, by topic.',
+    breadcrumbHome: 'Home', lang: 'Language',
   },
   fr: {
-    tagline: 'L’économie et la finance, de Londres à Douala.',
-    location: 'Londres · Douala',
-    bio: 'Marchés de capitaux et conseil en dette. J’écris sur l’argent qui circule entre l’Afrique, l’Asie et la City, et sur les dirigeants qui décident comment l’IA va transformer la finance.',
-    bioMore: 'Gestion de clients institutionnels, marchés de capitaux, conseil en dette, marchés émergents et finance structurée. Université Paris-Panthéon-Assas. Les opinions n’engagent que moi.',
-    reflections: 'Réflexions', analysis: 'Analyses', about: 'À propos',
-    latestAnalysis: 'Dernières analyses', allAnalysis: 'Toutes les analyses', topics: 'Rubriques',
-    noReflections: 'Les premières réflexions arrivent.',
-    noAnalysis: 'La première analyse arrive.',
-    noTopic: 'Pas encore d’analyse dans cette rubrique.',
-    seeAll: 'Tout voir', readMore: 'Lire', minRead: 'min de lecture',
-    share: 'Partager', copy: 'Copier le lien', copied: 'Lien copié', sources: 'Sources',
-    back: 'Retour', related: 'Autres analyses', permalink: 'Ouvrir',
-    newsletterTitle: 'Une analyse toutes les deux semaines.',
-    newsletterText: 'Londres, l’Afrique, l’Asie. Le nouvel article et les chiffres derrière, rien d’autre.',
-    newsletterButton: 'M’inscrire', newsletterSoon: 'La newsletter ouvre bientôt.',
-    email: 'Votre email', template: 'Modèle', otherLang: 'En anglais',
-    footer: 'Les opinions exprimées n’engagent que moi.', notFound: 'Cette page n’existe pas.', home: 'Accueil',
-    aboutTitle: 'À propos', basedIn: 'Basé à', basedInV: 'Londres, Royaume-Uni',
-    education: 'Formation', writesIn: 'Écrit en', writesInV: 'anglais, français',
-    reflectionsCount: 'réflexions', analysisCount: 'analyses',
-    aboutText: [
-      'Je travaille dans les marchés de capitaux et le conseil en dette à Londres, au plus près des institutions qui évaluent le risque des marchés émergents.',
-      'Depuis Londres, je suis trois histoires à la fois : comment l’Afrique se finance, comment les capitaux asiatiques changent la donne, et comment les dirigeants de l’ère de l’IA réécrivent les règles de la finance. C’est ici que j’écris à leur sujet, en anglais et en français.',
-    ],
-    role: 'Gestion de clients institutionnels · Marchés de capitaux · Conseil en dette · Marchés émergents · Finance structurée',
+    home: 'Accueil', analysis: 'Analyses', commentary: 'Réflexions', charts: 'Graphiques', topics: 'Rubriques', about: 'À propos',
+    subscribe: 'S’abonner', menu: 'Menu', subtitle: 'Économie et finance',
+    featured: 'À la une', latest: 'Dernières publications', seeAll: 'Tout voir', readAnalysis: 'Lire l’analyse',
+    chartOfWeek: 'Le graphique de la semaine', exploreTopics: 'Explorer par rubrique', aboutAuthor: 'L’auteur', moreAbout: 'En savoir plus',
+    keyPoints: 'Points clés', sources: 'Sources', share: 'Partager', copy: 'Copier le lien', copied: 'Lien copié',
+    related: 'À lire aussi', minRead: 'min de lecture', coming: 'À paraître', comingText: 'Cette analyse sera publiée très prochainement. Abonnez-vous pour la recevoir.',
+    by: 'Par', publications: 'publications', all: 'Tout', source: 'Source',
+    empty: 'Rien de publié ici pour l’instant.', emptyHome: 'Les premières publications arrivent.',
+    nlTitle: 'Recevoir la prochaine analyse par email', nlText: 'Une analyse toutes les deux semaines. Londres, l’Afrique, l’Asie. Pas de bruit.',
+    nlButton: 'S’abonner', nlSoon: 'La newsletter ouvre bientôt.', email: 'Adresse email',
+    footerNote: 'Les opinions exprimées n’engagent que moi.', follow: 'Suivre', site: 'Site',
+    notFound: 'Cette page n’existe pas.', basedIn: 'Basé à', education: 'Formation', writesIn: 'Écrit en', writesInV: 'anglais, français',
+    analysisIntro: 'Analyses de fond. Une thèse par article, chaque chiffre sourcé.',
+    commentaryIntro: 'Réflexions courtes, citations et hommages.',
+    chartsIntro: 'Un graphique, une idée.',
+    topicsIntro: 'Toutes les publications, par rubrique.',
+    breadcrumbHome: 'Accueil', lang: 'Langue',
   },
 } as const;
 
-export const TOPIC_NAMES: Record<Topic, { en: string; fr: string }> = {
-  uk: { en: 'London & UK', fr: 'Londres et Royaume-Uni' },
-  africa: { en: 'Africa', fr: 'Afrique' },
-  asia: { en: 'Asia', fr: 'Asie' },
-  ai: { en: 'AI & Leadership', fr: 'IA et leadership' },
-  markets: { en: 'Markets & Rates', fr: 'Marchés et taux' },
-  payments: { en: 'Payments', fr: 'Paiements' },
-  debt: { en: 'Debt', fr: 'Dette' },
+export const TOPIC_INFO: Record<Topic, { en: string; fr: string; den: string; dfr: string }> = {
+  uk: { en: 'London & UK', fr: 'Londres et Royaume-Uni', den: 'Gilts, the Bank of England, the City.', dfr: 'Gilts, Banque d’Angleterre, la City.' },
+  africa: { en: 'Africa', fr: 'Afrique', den: 'CEMAC, WAEMU, Nigeria, Kenya, South Africa.', dfr: 'CEMAC, UEMOA, Nigeria, Kenya, Afrique du Sud.' },
+  asia: { en: 'Asia', fr: 'Asie', den: 'China, India, the Gulf, and their capital in Africa.', dfr: 'Chine, Inde, Golfe, et leurs capitaux en Afrique.' },
+  ai: { en: 'AI & Leadership', fr: 'IA et leadership', den: 'The people and decisions shaping AI in finance.', dfr: 'Les personnes et les choix qui façonnent l’IA en finance.' },
+  markets: { en: 'Markets & Rates', fr: 'Marchés et taux', den: 'Rates, currencies, commodities.', dfr: 'Taux, devises, matières premières.' },
+  payments: { en: 'Payments', fr: 'Paiements', den: 'Remittances, mobile money, cross-border rails.', dfr: 'Transferts, mobile money, paiements transfrontaliers.' },
+  debt: { en: 'Debt', fr: 'Dette', den: 'Sovereign and corporate borrowing.', dfr: 'Dette souveraine et des entreprises.' },
 };
 
-// Adresses des pages dans chaque langue
+export const KIND_NAME: Record<Kind, { en: string; fr: string }> = {
+  analysis: { en: 'Analysis', fr: 'Analyse' },
+  commentary: { en: 'Reflection', fr: 'Réflexion' },
+  chart: { en: 'Chart', fr: 'Graphique' },
+};
+
+// Adresses des pages
+const seg = {
+  analysis: { en: 'analysis', fr: 'analyses' },
+  commentary: { en: 'reflections', fr: 'reflexions' },
+  chart: { en: 'charts', fr: 'graphiques' },
+} as const;
+const base = (l: Lang) => (l === 'fr' ? '/fr' : '');
 export const path = {
-  home: (l: Lang) => (l === 'fr' ? '/fr/' : '/'),
-  reflections: (l: Lang) => (l === 'fr' ? '/fr/reflexions/' : '/reflections/'),
-  reflection: (l: Lang, slug: string) => (l === 'fr' ? `/fr/reflexions/${slug}/` : `/reflections/${slug}/`),
-  analyses: (l: Lang) => (l === 'fr' ? '/fr/analyses/' : '/analysis/'),
-  analysis: (l: Lang, slug: string) => (l === 'fr' ? `/fr/analyses/${slug}/` : `/analysis/${slug}/`),
-  topic: (l: Lang, t: Topic) => (l === 'fr' ? `/fr/analyses/rubrique/${t}/` : `/analysis/topic/${t}/`),
-  about: (l: Lang) => (l === 'fr' ? '/fr/a-propos/' : '/about/'),
+  home: (l: Lang) => `${base(l)}/`,
+  list: (l: Lang, k: Kind) => `${base(l)}/${seg[k][l]}/`,
+  item: (l: Lang, k: Kind, slug: string) => `${base(l)}/${seg[k][l]}/${slug}/`,
+  topics: (l: Lang) => `${base(l)}/${l === 'fr' ? 'rubriques' : 'topics'}/`,
+  topic: (l: Lang, t: Topic) => `${base(l)}/${l === 'fr' ? 'rubriques' : 'topics'}/${t}/`,
+  about: (l: Lang) => `${base(l)}/${l === 'fr' ? 'a-propos' : 'about'}/`,
 };
 
 export function formatDate(d: Date, l: Lang) {

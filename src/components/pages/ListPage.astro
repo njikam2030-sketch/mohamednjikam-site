@@ -1,0 +1,40 @@
+---
+// Liste d'un type de publication (analyses, réflexions ou graphiques), avec filtres par rubrique.
+import Base from '../../layouts/Base.astro';
+import PageHead from '../PageHead.astro';
+import Card from '../Card.astro';
+import { TOPICS, type Kind } from '../../config';
+import { UI, TOPIC_INFO, other, path, type Lang } from '../../i18n/ui';
+import { allItems } from '../../lib/content';
+
+interface Props { lang: Lang; kind: Kind }
+const { lang, kind } = Astro.props;
+const t = UI[lang];
+const items = (await allItems(lang)).filter((i) => i.kind === kind);
+const title = kind === 'analysis' ? t.analysis : kind === 'commentary' ? t.commentary : t.charts;
+const intro = kind === 'analysis' ? t.analysisIntro : kind === 'commentary' ? t.commentaryIntro : t.chartsIntro;
+---
+<Base lang={lang} title={title} description={intro} section={kind} alternate={path.list(other(lang), kind)}>
+  <PageHead lang={lang} title={title} intro={intro}>
+    <nav class="chips" aria-label={t.topics}>
+      <a href={path.list(lang, kind)} aria-current="page">{t.all}</a>
+      {TOPICS.map((tp) => <a href={path.topic(lang, tp)}>{TOPIC_INFO[tp][lang]}</a>)}
+    </nav>
+  </PageHead>
+  <section class="section">
+    <div class="wrap">
+      {items.length === 0 && <p class="empty">{t.empty}</p>}
+      {kind === 'chart'
+        ? <div class="grid">{items.map((i) => <Card item={i} lang={lang} />)}</div>
+        : <div class="rows">{items.map((i) => <Card item={i} lang={lang} variant="row" />)}</div>}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .section { padding-top: 24px; }
+  .rows { max-width: 920px; }
+  .grid { display: grid; gap: 36px 28px; padding-top: 24px; }
+  @media (min-width: 680px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+</style>

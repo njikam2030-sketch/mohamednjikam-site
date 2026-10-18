@@ -1,35 +1,41 @@
 ---
-// Inscription à la newsletter (Buttondown). Sans compte configuré : « bientôt ».
+// Bandeau d'inscription à la newsletter (Buttondown), présent en bas de chaque page.
 import { SITE } from '../config';
 import { UI, type Lang } from '../i18n/ui';
 
-interface Props { lang: Lang; compact?: boolean }
-const { lang, compact = false } = Astro.props;
+interface Props { lang: Lang }
+const { lang } = Astro.props;
 const t = UI[lang];
 const action = SITE.buttondown ? `https://buttondown.com/api/emails/embed-subscribe/${SITE.buttondown}` : '';
 ---
-<section class:list={['nl', { compact }]}>
-  <h2>{t.newsletterTitle}</h2>
-  <p>{t.newsletterText}</p>
-  {action ? (
-    <form action={action} method="post" target="_blank">
-      <input type="email" name="email" required placeholder={t.email} aria-label={t.email} autocomplete="email" />
-      <input type="hidden" name="tag" value={lang} />
-      <button type="submit">{t.newsletterButton}</button>
-    </form>
-  ) : (
-    <p class="soon">{t.newsletterSoon}</p>
-  )}
+<section class="nl" id="newsletter">
+  <div class="wrap nl-in">
+    <div>
+      <h2>{t.nlTitle}</h2>
+      <p>{t.nlText}</p>
+    </div>
+    {action ? (
+      <form action={action} method="post" target="_blank">
+        <label class="sr" for={`nl-${lang}`}>{t.email}</label>
+        <input id={`nl-${lang}`} type="email" name="email" required placeholder={t.email} autocomplete="email" />
+        <input type="hidden" name="tag" value={lang} />
+        <button class="btn btn-primary" type="submit">{t.nlButton}</button>
+      </form>
+    ) : (
+      <p class="soon">{t.nlSoon}</p>
+    )}
+  </div>
 </section>
 
 <style>
-  .nl { background: var(--ink); color: var(--cream); border-radius: 4px; padding: 26px 22px; display: grid; gap: 10px; }
-  h2 { font-size: 24px; font-weight: 900; }
-  p { margin: 0; color: var(--beige); }
-  .compact h2 { font-size: 19px; }
-  .compact p { font-size: 15px; }
-  form { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
-  input[type=email] { flex: 1 1 200px; min-width: 0; font: 16px var(--font); padding: 11px 14px; border-radius: 999px; border: 1px solid var(--warm-grey); background: var(--paper); color: var(--ink); }
-  button { font: 700 15px var(--font); border: 0; border-radius: 999px; padding: 11px 20px; background: var(--accent); color: var(--paper); cursor: pointer; }
-  .soon { font-weight: 700; color: var(--cream); }
+  .nl { background: var(--blue-light); border-top: 1px solid #D5E3F4; }
+  .nl-in { display: grid; gap: 20px; align-items: center; padding-block: 44px; }
+  h2 { font-size: 24px; font-weight: 800; color: var(--navy); }
+  p { color: var(--muted); margin-top: 6px; }
+  form { display: flex; flex-wrap: wrap; gap: 10px; }
+  input[type=email] { flex: 1 1 240px; min-width: 0; font: 16px var(--font); padding: 12px 14px; border: 1px solid #B8C7DA; border-radius: 4px; background: var(--white); color: var(--ink); }
+  input[type=email]:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(11, 92, 173, 0.15); }
+  .soon { font-weight: 600; color: var(--navy); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (min-width: 860px) { .nl-in { grid-template-columns: 1fr 1fr; gap: 48px; } }
 </style>

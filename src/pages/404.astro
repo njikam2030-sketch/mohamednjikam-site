@@ -3,14 +3,16 @@ import Base from '../layouts/Base.astro';
 import { UI } from '../i18n/ui';
 ---
 <Base lang="en" title="404">
-  <main class="gutter"><div class="read box">
-    <h1>404</h1>
-    <p>{UI.en.notFound} <a href="/">{UI.en.home}</a></p>
-    <p lang="fr">{UI.fr.notFound} <a href="/fr/">{UI.fr.home}</a></p>
-  </div></main>
+  <section class="section"><div class="wrap box">
+    <span class="label">404</span>
+    <h1>{UI.en.notFound}</h1>
+    <p lang="fr">{UI.fr.notFound}</p>
+    <div class="links"><a class="btn btn-primary" href="/">{UI.en.home}</a><a class="btn btn-outline" href="/fr/">{UI.fr.home}</a></div>
+  </div></section>
 </Base>
 <style>
-  .box { padding-block: 80px; display: grid; gap: 12px; }
-  h1 { font-size: 80px; font-weight: 900; color: var(--accent); letter-spacing: -0.05em; }
-  p { margin: 0; font-size: 18px; }
+  .box { display: grid; gap: 12px; padding-block: 40px; }
+  h1 { font-size: 40px; font-weight: 800; color: var(--navy); }
+  p { color: var(--muted); font-size: 18px; }
+  .links { display: flex; gap: 10px; margin-top: 12px; }
 </style>

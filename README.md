@@ -1,56 +1,65 @@
 # mohamednjikam.com
 
-Site personnel de Mohamed Njikam : réflexions courtes (le fil, comme sur X) et analyses longues, en anglais et en français.
+Site personnel de Mohamed Njikam : analyses, réflexions et graphiques, en anglais et en français.
+Le site est fabriqué en pages HTML (avec Astro) et se publie depuis un espace admin, sans toucher au code.
 
-## Publier
+## 1. Mettre le site en ligne (une seule fois, environ 15 minutes)
 
-Deux façons, au choix.
+1. Aller sur **vercel.com** > « Sign up » > « Continue with GitHub » (compte `njikam2030-sketch`).
+2. « Add New… » > « Project » > choisir le dépôt **mohamednjikam-site** > « Deploy ». Vercel reconnaît Astro tout seul.
+3. Dans le projet Vercel : **Settings > Domains** > ajouter `mohamednjikam.com` (et `www.mohamednjikam.com`).
+4. Chez **Hostinger** (hPanel > Domaines > mohamednjikam.com > DNS) :
+   - enregistrement **A**, nom `@`, valeur `76.76.21.21` (supprimer les autres A sur `@`) ;
+   - enregistrement **CNAME**, nom `www`, valeur `cname.vercel-dns.com`.
+   Vercel affiche « Valid Configuration » après quelques minutes (parfois quelques heures).
 
-### 1. Depuis le navigateur ou le téléphone : `mohamednjikam.com/admin`
+Ensuite, chaque publication met le site à jour automatiquement, en une minute environ.
 
-1. Une seule fois : créer un jeton GitHub (GitHub > Settings > Developer settings > Personal access tokens > Fine-grained tokens), avec accès **Contents : Read and write** sur le dépôt `mohamednjikam-site`.
-2. Ouvrir `https://mohamednjikam.com/admin`, choisir « Se connecter avec un jeton », coller le jeton.
-3. « Réflexions » ou « Analyses » > « Nouveau », écrire, « Enregistrer ». Le site se met à jour tout seul en une minute environ.
+## 2. Publier : l'espace admin `mohamednjikam.com/admin`
 
-Le dépôt est réglé dans `public/admin/config.yml` (`njikam2030-sketch/mohamednjikam-site`).
+**Une seule fois : créer la clé d'accès**
+GitHub > photo de profil > Settings > Developer settings > Personal access tokens > **Fine-grained tokens** > Generate new token :
+- Repository access : « Only select repositories » > `mohamednjikam-site` ;
+- Permissions > Repository permissions > **Contents : Read and write** ;
+- Generate, puis copier la clé (elle commence par `github_pat_`).
 
-### 2. En ajoutant un fichier sur GitHub
+**Ensuite, à chaque fois**
+Ouvrir `https://mohamednjikam.com/admin` > « Sign in with Token » (se connecter avec une clé) > coller la clé.
+Le navigateur la garde : on ne la donne qu'une fois par appareil.
 
-- **Réflexion** : un fichier dans `src/content/reflexions/`, par exemple `2026-10-20-yondo-black.md`. Modèles : `_modele-citation.md`, `_modele-question.md`, `_modele-english.md`.
-- **Analyse** : un fichier dans `src/content/analyses/`, par exemple `the-price-of-time.md`. Modèle : `_modele-analyse.md` (thèse, preuves, objections, que faire, sources).
-- Graphiques et photos : dans `public/images/analyses/`, puis `![légende](/images/analyses/graphique-1.png)` ou le bloc `<figure>` du modèle.
-- Les fichiers dont le nom commence par `_` ne sont **jamais publiés**. `brouillon: true` cache aussi une publication.
-- Une analyse dans les deux langues : deux fichiers, chacun avec `traduction:` qui donne le nom de l'autre (sans `.md`).
+| Menu | Ce que c'est |
+| --- | --- |
+| **Analyses** | Articles de fond. Titre, chapeau, rubriques, points clés, image, texte, puis un titre « Sources » en fin de texte. « Mettre à la une » le place en grand sur l'accueil. |
+| **Réflexions** | Textes courts, citations (avec auteur), hommages, photo facultative. |
+| **Graphiques** | Un graphique (PNG/JPG) avec son titre, sa source et un commentaire : « le graphique de la semaine ». |
+| **Mon profil** | Présentation de l'accueil et de la page À propos, en anglais et en français. |
 
-## Adresses
+« Brouillon » garde une publication hors du site. Pour supprimer : ouvrir la publication > Supprimer.
+
+## 3. Pages du site
 
 | Page | Anglais | Français |
 | --- | --- | --- |
-| Accueil (profil + fil) | `/` | `/fr/` |
-| Réflexions | `/reflections/` | `/fr/reflexions/` |
+| Accueil | `/` | `/fr/` |
 | Analyses | `/analysis/` | `/fr/analyses/` |
-| Rubrique | `/analysis/topic/africa/` | `/fr/analyses/rubrique/africa/` |
+| Réflexions | `/reflections/` | `/fr/reflexions/` |
+| Graphiques | `/charts/` | `/fr/graphiques/` |
+| Rubriques | `/topics/` | `/fr/rubriques/` |
 | À propos | `/about/` | `/fr/a-propos/` |
 
-Rubriques : `uk`, `africa`, `asia`, `ai`, `markets`, `payments`, `debt`. Flux RSS : `/rss.xml`. Plan du site : `/sitemap-index.xml`.
+Rubriques : Londres et Royaume-Uni, Afrique, Asie, IA et leadership, Marchés et taux, Paiements, Dette.
+Aussi : flux RSS `/rss.xml`, plan du site `/sitemap-index.xml`, image de partage LinkedIn / X / WhatsApp.
 
-## Réglages
+## 4. Réglages
 
-`src/config.ts` : liens LinkedIn et X, newsletter (`buttondown` : nom d'utilisateur d'un compte gratuit sur buttondown.com ; vide = « bientôt »).
-Textes de l'interface et présentation : `src/i18n/ui.ts`. Couleurs : `src/styles/global.css`. Photos : `public/images/`.
+- `src/config.ts` : liens LinkedIn et X, newsletter (`buttondown` : nom d'utilisateur d'un compte gratuit sur buttondown.com ; vide = « bientôt »).
+- `src/styles/global.css` : couleurs (bleu nuit `#0A2540`, bleu `#0B5CAD`), en haut du fichier.
+- `public/images/` : photos du site.
 
-## Mise en ligne
-
-**Vercel (conseillé)** : importer le dépôt GitHub sur vercel.com (Astro est détecté seul), puis Settings > Domains > `mohamednjikam.com`, et chez Hostinger (DNS) : enregistrement `A` `@` vers `76.76.21.21` et `CNAME` `www` vers `cname.vercel-dns.com`. Chaque publication remet le site à jour.
-
-**Hostinger seul** : `npm run build`, puis envoyer le contenu du dossier `dist/` dans `public_html` (gestionnaire de fichiers). À refaire à chaque publication.
-
-## Développement
+## Pour un développeur
 
 ```bash
 npm install
-npm run dev                     # http://localhost:4321
-SHOW_TEMPLATES=1 npm run dev    # avec les modèles affichés
-npm run build                   # site final dans dist/
-npx astro check                 # vérification des types
+npm run dev     # http://localhost:4321
+npm run build   # pages HTML finales dans dist/
 ```

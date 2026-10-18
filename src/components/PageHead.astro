@@ -1,0 +1,19 @@
+---
+// En-tête gris des pages de liste : fil d'Ariane, titre, introduction, filtres.
+import { UI, path, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; title: string; intro?: string; crumbs?: { label: string; href: string }[] }
+const { lang, title, intro, crumbs = [] } = Astro.props;
+const t = UI[lang];
+---
+<section class="page-head">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href={path.home(lang)}>{t.breadcrumbHome}</a>
+      {crumbs.map((c) => <><span aria-hidden="true">/</span><a href={c.href}>{c.label}</a></>)}
+    </nav>
+    <h1>{title}</h1>
+    {intro && <p>{intro}</p>}
+    <slot />
+  </div>
+</section>

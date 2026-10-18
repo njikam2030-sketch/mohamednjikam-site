@@ -1,14 +1,15 @@
 ---
-// Gabarit commun : référencement, en-tête, pied de page.
+// Gabarit commun : référencement, barre supérieure, en-tête et menu, pied de page.
 import '@fontsource/inter/400.css';
 import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 import '@fontsource/inter/800.css';
-import '@fontsource/inter/900.css';
 import '../styles/global.css';
-import { SITE } from '../config';
-import { UI, path, type Lang } from '../i18n/ui';
+import { SITE, TOPICS } from '../config';
+import { UI, TOPIC_INFO, other, path, type Lang } from '../i18n/ui';
+import profil from '../data/profil.json';
+import Newsletter from '../components/Newsletter.astro';
 
 interface Props {
   lang: Lang;
@@ -17,24 +18,27 @@ interface Props {
   image?: string;
   type?: 'website' | 'article';
   date?: Date;
-  // Adresse de la même page dans l'autre langue (sinon : accueil de l'autre langue)
   alternate?: string;
-  section?: 'home' | 'reflections' | 'analysis' | 'about';
+  section?: 'home' | 'analysis' | 'commentary' | 'chart' | 'topics' | 'about';
 }
 
 const { lang, title, description, image, type = 'website', date, alternate, section } = Astro.props;
 const t = UI[lang];
-const other: Lang = lang === 'en' ? 'fr' : 'en';
-const fullTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | ${t.tagline}`;
-const desc = description ?? t.bio;
+const p = profil[lang];
+const o = other(lang);
+const fullTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | ${p.accroche}`;
+const desc = description ?? `${p.titre}. ${p.bio}`;
 const canonical = new URL(Astro.url.pathname, SITE.url).href;
-const ogImage = new URL(image ?? '/images/og-default.jpg', SITE.url).href;
-const otherUrl = alternate ?? path.home(other);
+const ogImage = new URL(image ?? '/images/og.jpg', SITE.url).href;
+const otherUrl = alternate ?? path.home(o);
 const nav = [
-  { key: 'reflections', href: path.reflections(lang), label: t.reflections },
-  { key: 'analysis', href: path.analyses(lang), label: t.analysis },
+  { key: 'analysis', href: path.list(lang, 'analysis'), label: t.analysis },
+  { key: 'commentary', href: path.list(lang, 'commentary'), label: t.commentary },
+  { key: 'chart', href: path.list(lang, 'chart'), label: t.charts },
+  { key: 'topics', href: path.topics(lang), label: t.topics },
   { key: 'about', href: path.about(lang), label: t.about },
 ] as const;
+const year = new Date().getFullYear();
 ---
 <!doctype html>
 <html lang={lang}>
@@ -45,11 +49,11 @@ const nav = [
     <meta name="description" content={desc} />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang={lang} href={canonical} />
-    <link rel="alternate" hreflang={other} href={new URL(otherUrl, SITE.url).href} />
+    <link rel="alternate" hreflang={o} href={new URL(otherUrl, SITE.url).href} />
     <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
-    <meta name="theme-color" content="#F7F3EE" />
+    <meta name="theme-color" content="#0A2540" />
     <meta name="author" content={SITE.name} />
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:type" content={type} />
@@ -62,70 +66,166 @@ const nav = [
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content={`@${SITE.xHandle}`} />
     <meta name="twitter:creator" content={`@${SITE.xHandle}`} />
-    <meta name="twitter:title" content={title ?? SITE.name} />
-    <meta name="twitter:description" content={desc} />
     <meta name="twitter:image" content={ogImage} />
     <script type="application/ld+json" set:html={JSON.stringify(
       type === 'article'
-        ? { '@context': 'https://schema.org', '@type': 'Article', headline: title, description: desc, image: ogImage, datePublished: date?.toISOString(), author: { '@type': 'Person', name: SITE.name, url: SITE.url }, inLanguage: lang }
-        : { '@context': 'https://schema.org', '@type': 'Person', name: SITE.name, url: SITE.url, image: new URL('/images/portrait.jpg', SITE.url).href, jobTitle: 'Capital markets and debt advisory', address: { '@type': 'PostalAddress', addressLocality: 'London', addressCountry: 'GB' }, sameAs: [SITE.linkedin, SITE.x] }
+        ? { '@context': 'https://schema.org', '@type': 'Article', headline: title, description: desc, image: ogImage, datePublished: date?.toISOString(), inLanguage: lang, author: { '@type': 'Person', name: SITE.name, url: SITE.url } }
+        : { '@context': 'https://schema.org', '@type': 'Person', name: SITE.name, url: SITE.url, image: new URL('/images/portrait.jpg', SITE.url).href, jobTitle: p.titre, sameAs: [SITE.linkedin, SITE.x] }
     )} />
   </head>
   <body>
-    <header class="site gutter">
-      <div class="bar wide">
-        <a class="brand" href={path.home(lang)}>{SITE.name}<span>.</span></a>
-        <nav class="links" aria-label="Menu">
+    <a class="skip" href="#contenu">{lang === 'fr' ? 'Aller au contenu' : 'Skip to content'}</a>
+
+    <div class="topbar">
+      <div class="wrap topbar-in">
+        <span class="tagline">{p.accroche}</span>
+        <div class="topbar-links">
+          <a href={SITE.linkedin} target="_blank" rel="me noopener">LinkedIn</a>
+          <a href={SITE.x} target="_blank" rel="me noopener">X</a>
+          <span class="sep" aria-hidden="true"></span>
+          <a href={lang === 'en' ? Astro.url.pathname : otherUrl} aria-current={lang === 'en' ? 'true' : undefined} lang="en" hreflang="en">EN</a>
+          <a href={lang === 'fr' ? Astro.url.pathname : otherUrl} aria-current={lang === 'fr' ? 'true' : undefined} lang="fr" hreflang="fr">FR</a>
+        </div>
+      </div>
+    </div>
+
+    <header class="masthead">
+      <div class="wrap masthead-in">
+        <a class="brand" href={path.home(lang)}>
+          <span class="mark" aria-hidden="true">MN</span>
+          <span class="brand-text"><strong>{SITE.name}</strong><small>{t.subtitle}</small></span>
+        </a>
+        <nav class="mainnav" aria-label={t.menu}>
           {nav.map((n) => <a href={n.href} aria-current={section === n.key ? 'page' : undefined}>{n.label}</a>)}
         </nav>
-        <label class="lang">
-          <span class="sr">Language</span>
-          <select id="lang-select" aria-label="Language" data-other={otherUrl}>
-            <option value={lang} selected>{lang === 'en' ? 'English' : 'Français'}</option>
-            <option value={other}>{other === 'en' ? 'English' : 'Français'}</option>
-          </select>
-        </label>
+        <a class="btn btn-primary sub" href="#newsletter">{t.subscribe}</a>
+        <details class="mobile">
+          <summary aria-label={t.menu}><span></span><span></span><span></span></summary>
+          <div class="mobile-panel">
+            {nav.map((n) => <a href={n.href} aria-current={section === n.key ? 'page' : undefined}>{n.label}</a>)}
+            <div class="mobile-topics">
+              {TOPICS.map((tp) => <a href={path.topic(lang, tp)}>{TOPIC_INFO[tp][lang]}</a>)}
+            </div>
+            <a class="btn btn-primary" href="#newsletter">{t.subscribe}</a>
+          </div>
+        </details>
       </div>
-      <nav class="mobile-nav wide" aria-label="Menu">
-        {nav.map((n) => <a href={n.href} aria-current={section === n.key ? 'page' : undefined}>{n.label}</a>)}
-      </nav>
     </header>
 
-    <slot />
+    <main id="contenu">
+      <slot />
+    </main>
 
-    <footer class="gutter">
-      <div class="foot wide">
-        <span>© {new Date().getFullYear()} {SITE.name}</span>
-        <a href={SITE.linkedin} rel="me noopener" target="_blank">LinkedIn</a>
-        <a href={SITE.x} rel="me noopener" target="_blank">X</a>
-        <a href="/rss.xml">RSS</a>
-        <span>{t.footer}</span>
+    <Newsletter lang={lang} />
+
+    <footer class="footer">
+      <div class="wrap footer-grid">
+        <div class="footer-brand">
+          <a class="brand light" href={path.home(lang)}>
+            <span class="mark" aria-hidden="true">MN</span>
+            <span class="brand-text"><strong>{SITE.name}</strong><small>{t.subtitle}</small></span>
+          </a>
+          <p>{p.titre}. {p.bio}</p>
+        </div>
+        <div>
+          <h2>{t.topics}</h2>
+          <ul>{TOPICS.map((tp) => <li><a href={path.topic(lang, tp)}>{TOPIC_INFO[tp][lang]}</a></li>)}</ul>
+        </div>
+        <div>
+          <h2>{t.site}</h2>
+          <ul>
+            {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+            <li><a href="/rss.xml">RSS</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>{t.follow}</h2>
+          <ul>
+            <li><a href={SITE.linkedin} target="_blank" rel="me noopener">LinkedIn</a></li>
+            <li><a href={SITE.x} target="_blank" rel="me noopener">X · @{SITE.xHandle}</a></li>
+            <li><a href={otherUrl}>{o === 'fr' ? 'Version française' : 'English version'}</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="wrap footer-bottom">
+        <span>© {year} {SITE.name}</span>
+        <span>{t.footerNote}</span>
       </div>
     </footer>
 
     <script>
-      // Changement de langue : on ouvre la même page dans l'autre langue (ou son accueil).
-      const sel = document.getElementById('lang-select') as HTMLSelectElement | null;
-      sel?.addEventListener('change', () => { if (sel.dataset.other) location.href = sel.dataset.other; });
+      // Boutons « Copier le lien »
+      document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) => {
+        b.addEventListener('click', async () => {
+          const label = b.textContent;
+          try { await navigator.clipboard.writeText(b.dataset.copy || location.href); b.textContent = b.dataset.done || 'OK'; }
+          catch { window.prompt('', b.dataset.copy || location.href); }
+          setTimeout(() => { b.textContent = label; }, 1800);
+        });
+      });
+      // Le menu mobile se ferme quand on choisit un lien
+      document.querySelectorAll('.mobile-panel a').forEach((a) => a.addEventListener('click', () => a.closest('details')?.removeAttribute('open')));
     </script>
   </body>
 </html>
 
 <style>
-  header.site { position: sticky; top: 0; z-index: 10; background: var(--cream); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top); }
-  .bar { display: flex; align-items: center; gap: 22px; padding-block: 14px; }
-  .brand { font-weight: 900; font-size: 20px; letter-spacing: -0.03em; text-decoration: none; margin-right: auto; }
-  .brand span { color: var(--accent); }
-  .links { display: flex; gap: 22px; font-size: 15px; font-weight: 600; }
-  .links a, .mobile-nav a { text-decoration: none; color: var(--brown); }
-  .links a:hover, .links a[aria-current], .mobile-nav a[aria-current] { color: var(--accent); }
-  .lang { position: relative; }
-  .lang select { appearance: none; font: 600 13px var(--font); color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 6px 30px 6px 12px; cursor: pointer; }
-  .lang::after { content: ""; position: absolute; right: 12px; top: 50%; width: 6px; height: 6px; border-right: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); transform: translateY(-70%) rotate(45deg); pointer-events: none; }
-  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-  .mobile-nav { display: none; gap: 22px; padding-bottom: 10px; font-size: 15px; font-weight: 600; }
-  footer { border-top: 1px solid var(--line); margin-top: 48px; padding-bottom: env(safe-area-inset-bottom); }
-  .foot { display: flex; flex-wrap: wrap; gap: 8px 22px; padding-block: 26px 36px; font-size: 14px; color: var(--warm-grey); }
-  .foot a { text-decoration: none; } .foot a:hover { color: var(--accent); }
-  @media (max-width: 640px) { .links { display: none; } .mobile-nav { display: flex; } }
+  .skip { position: absolute; left: -9999px; top: 8px; background: var(--white); padding: 8px 12px; z-index: 50; }
+  .skip:focus { left: 8px; }
+
+  .topbar { background: var(--navy-deep); color: #C7D2E0; font-size: 13px; }
+  .topbar-in { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 38px; }
+  .tagline { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .topbar-links { display: flex; align-items: center; gap: 16px; }
+  .topbar-links a { color: #C7D2E0; text-decoration: none; font-weight: 500; }
+  .topbar-links a:hover { color: var(--white); }
+  .topbar-links a[aria-current] { color: var(--white); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+  .sep { width: 1px; height: 14px; background: #33475E; }
+
+  .masthead { position: sticky; top: 0; z-index: 20; background: var(--white); border-bottom: 1px solid var(--line); box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02); }
+  .masthead-in { display: flex; align-items: center; gap: 28px; min-height: 76px; }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; margin-right: auto; }
+  .mark { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 4px; background: var(--navy); color: var(--white); font-weight: 800; font-size: 16px; letter-spacing: 0.02em; flex: none; }
+  .brand-text { display: grid; line-height: 1.15; }
+  .brand-text strong { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; color: var(--navy); }
+  .brand-text small { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); margin-top: 2px; }
+  .mainnav { display: flex; gap: 26px; }
+  .mainnav a { position: relative; font-size: 15px; font-weight: 600; text-decoration: none; color: var(--ink); padding-block: 26px; }
+  .mainnav a:hover { color: var(--blue); }
+  .mainnav a[aria-current]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: var(--blue); }
+  .sub { padding: 10px 18px; font-size: 14px; }
+
+  .mobile { display: none; position: relative; }
+  .mobile summary { list-style: none; cursor: pointer; width: 44px; height: 44px; display: grid; place-content: center; gap: 5px; border: 1px solid var(--line); border-radius: 4px; }
+  .mobile summary::-webkit-details-marker { display: none; }
+  .mobile summary span { display: block; width: 20px; height: 2px; background: var(--ink); }
+  .mobile-panel { position: absolute; right: 0; top: 54px; width: min(86vw, 340px); background: var(--white); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 16px 40px rgba(15, 23, 42, 0.14); padding: 10px; display: grid; }
+  .mobile-panel > a:not(.btn) { padding: 12px 10px; font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--line); }
+  .mobile-panel > a[aria-current] { color: var(--blue); }
+  .mobile-topics { display: flex; flex-wrap: wrap; gap: 6px; padding: 14px 6px; }
+  .mobile-topics a { font-size: 13px; text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; }
+  .mobile-panel .btn { justify-content: center; margin: 4px 6px 6px; }
+
+  @media (max-width: 980px) { .mainnav { gap: 18px; } .mainnav a { font-size: 14px; } }
+  @media (max-width: 860px) {
+    .mainnav, .sub { display: none; }
+    .mobile { display: block; }
+    .masthead-in { min-height: 64px; }
+    .tagline { display: none; }
+    .topbar-in { justify-content: flex-end; }
+  }
+
+  .footer { background: var(--navy); color: #C7D2E0; margin-top: 0; }
+  .footer-grid { display: grid; gap: 36px; padding-block: 56px 40px; grid-template-columns: 1fr; }
+  .footer .brand { margin-bottom: 16px; }
+  .footer .mark { background: var(--white); color: var(--navy); }
+  .footer .brand-text strong { color: var(--white); }
+  .footer .brand-text small { color: #93A4B8; }
+  .footer-brand p { font-size: 15px; line-height: 1.6; max-width: 34em; }
+  .footer h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--white); margin-bottom: 14px; }
+  .footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; font-size: 15px; }
+  .footer a { color: #C7D2E0; text-decoration: none; }
+  .footer a:hover { color: var(--white); text-decoration: underline; }
+  .footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; border-top: 1px solid #22395A; padding-block: 20px 28px; font-size: 13px; color: #93A4B8; }
+  @media (min-width: 720px) { .footer-grid { grid-template-columns: 1.6fr 1fr 1fr 1fr; } }
 </style>
