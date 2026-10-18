@@ -17,6 +17,7 @@ const topic = item.topics[0];
     <div class="meta-line">
       <span class="label label-kind">{KIND_NAME[item.kind][lang]}</span>
       {topic && <span class="label">{TOPIC_INFO[topic][lang]}</span>}
+      {item.kind === 'video' && (item.mine ? <span class="badge">{t.myVideo}</span> : item.channel && <span class="date">{item.channel}</span>)}
       {item.lang !== lang && <span class="badge">{item.lang.toUpperCase()}</span>}
       {item.coming && <span class="badge">{t.coming}</span>}
     </div>
@@ -28,6 +29,7 @@ const topic = item.topics[0];
 
 <style>
   .c { position: relative; min-width: 0; }
+  .v { display: block; text-decoration: none; color: inherit; }
   .txt { display: grid; gap: 8px; min-width: 0; align-content: start; }
   .meta-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
   h3 a { text-decoration: none; color: var(--ink); }

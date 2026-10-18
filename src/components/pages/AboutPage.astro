@@ -1,33 +1,46 @@
 ---
-// À propos : photo, présentation (modifiable dans l'espace admin), repères, liens.
+// À propos, à la manière du site de Dario Amodei : une présentation courte, puis la liste des écrits.
 import Base from '../../layouts/Base.astro';
-import PageHead from '../PageHead.astro';
 import { SITE } from '../../config';
-import { UI, other, path, type Lang } from '../../i18n/ui';
+import { UI, formatDate, other, path, type Lang } from '../../i18n/ui';
+import { allItems } from '../../lib/content';
 import profil from '../../data/profil.json';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = UI[lang];
 const p = profil[lang];
+const items = (await allItems(lang)).filter((i) => !i.coming);
+const groups = [
+  { title: t.analysis, list: items.filter((i) => i.kind === 'analysis'), href: path.list(lang, 'analysis') },
+  { title: t.commentary, list: items.filter((i) => i.kind === 'commentary'), href: path.list(lang, 'commentary') },
+  { title: t.videos, list: items.filter((i) => i.kind === 'video'), href: path.list(lang, 'video') },
+].filter((g) => g.list.length > 0);
 ---
-<Base lang={lang} title={t.about} description={`${p.titre}. ${p.bio}`} section="about" alternate={path.about(other(lang))}>
-  <PageHead lang={lang} title="Mohamed Njikam" intro={p.role} />
+<Base lang={lang} title={t.about} description={p.bio} section="about" alternate={path.about(other(lang))}>
   <section class="section">
     <div class="wrap about">
       <img class="photo" src="/images/portrait.jpg" alt="Mohamed Njikam" width="640" height="800" />
       <div class="text">
-        <p class="lead">{p.titre}. {p.bio}</p>
+        <h1>Mohamed Njikam</h1>
         {p.apropos.map((x) => <p>{x}</p>)}
-        <dl class="facts">
-          <div><dt>{t.basedIn}</dt><dd>{p.ville}</dd></div>
-          <div><dt>{t.education}</dt><dd>{p.formation}</dd></div>
-          <div><dt>{t.writesIn}</dt><dd>{t.writesInV}</dd></div>
-        </dl>
-        <div class="links">
-          <a class="btn btn-primary" href={SITE.linkedin} target="_blank" rel="me noopener">LinkedIn</a>
-          <a class="btn btn-outline" href={SITE.x} target="_blank" rel="me noopener">X · @{SITE.xHandle}</a>
-        </div>
+
+        {groups.map((g) => (
+          <section class="group">
+            <h2><a href={g.href}>{g.title}</a></h2>
+            <ul>
+              {g.list.slice(0, 8).map((i) => <li><a href={i.href}>{i.title}</a> <span class="when">({formatDate(i.date, lang)})</span></li>)}
+            </ul>
+          </section>
+        ))}
+
+        <section class="group">
+          <h2>{t.elsewhere}</h2>
+          <ul>
+            <li><a href={SITE.linkedin} target="_blank" rel="me noopener">LinkedIn</a></li>
+            <li><a href={SITE.x} target="_blank" rel="me noopener">X · @{SITE.xHandle}</a></li>
+          </ul>
+        </section>
       </div>
     </div>
   </section>
@@ -35,15 +48,19 @@ const p = profil[lang];
 
 <style>
   .about { display: grid; gap: 40px; align-items: start; }
-  .photo { width: 100%; max-width: 380px; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 0; border-radius: 4px; }
-  .text { max-width: 680px; }
-  .text > p { font-size: 18px; line-height: 1.7; }
+  .photo { width: 100%; max-width: 340px; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 0; border-radius: 4px; }
+  .text { max-width: 640px; }
+  h1 { font-size: clamp(34px, 5vw, 46px); font-weight: 800; letter-spacing: -0.03em; color: var(--navy); margin-bottom: 22px; }
+  .text > p { font-size: 19px; line-height: 1.7; }
   .text > p + p { margin-top: 1em; }
-  .lead { font-size: 22px !important; line-height: 1.5 !important; font-weight: 600; color: var(--navy); }
-  .facts { margin: 32px 0 0; border-top: 1px solid var(--line); }
-  .facts div { display: grid; grid-template-columns: 140px 1fr; gap: 12px; padding-block: 12px; border-bottom: 1px solid var(--line); font-size: 16px; }
-  .facts dt { color: var(--faint); font-weight: 500; }
-  .facts dd { margin: 0; }
-  .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
-  @media (min-width: 860px) { .about { grid-template-columns: 380px 1fr; gap: 64px; } }
+  .group { margin-top: 36px; }
+  .group h2 { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+  .group h2 a { text-decoration: none; } .group h2 a:hover { color: var(--blue); }
+  .group ul { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; }
+  .group li { font-size: 17px; }
+  .group li::marker { color: var(--blue); }
+  .group li a { color: var(--ink); text-decoration-color: #CBD5E1; text-underline-offset: 3px; }
+  .group li a:hover { color: var(--blue); text-decoration-color: currentColor; }
+  .when { color: var(--faint); font-size: 15px; }
+  @media (min-width: 860px) { .about { grid-template-columns: 340px 1fr; gap: 64px; } }
 </style>

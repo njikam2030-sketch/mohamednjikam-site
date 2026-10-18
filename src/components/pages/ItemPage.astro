@@ -6,17 +6,18 @@ import Card from '../Card.astro';
 import Share from '../Share.astro';
 import { SITE } from '../../config';
 import { UI, KIND_NAME, TOPIC_INFO, formatDate, other, path, readingTime, type Lang } from '../../i18n/ui';
-import { allItems, analysisItem, chartItem, reflectionItem, type Analysis, type Chart, type Reflection } from '../../lib/content';
+import { allItems, analysisItem, chartItem, reflectionItem, videoItem, type Analysis, type Chart, type Reflection, type Video } from '../../lib/content';
 import profil from '../../data/profil.json';
 import { ogPath } from '../../lib/og';
 
 type Props =
   | { kind: 'analysis'; entry: Analysis }
   | { kind: 'commentary'; entry: Reflection }
-  | { kind: 'chart'; entry: Chart };
+  | { kind: 'chart'; entry: Chart }
+  | { kind: 'video'; entry: Video };
 const props = Astro.props;
 const { kind } = props;
-const item = props.kind === 'analysis' ? analysisItem(props.entry) : props.kind === 'commentary' ? reflectionItem(props.entry) : chartItem(props.entry);
+const item = props.kind === 'analysis' ? analysisItem(props.entry) : props.kind === 'commentary' ? reflectionItem(props.entry) : props.kind === 'chart' ? chartItem(props.entry) : videoItem(props.entry);
 const lang: Lang = item.lang;
 const t = UI[lang];
 const p = profil[lang];
@@ -25,12 +26,13 @@ const url = new URL(item.href, SITE.url).href;
 const analysis = props.kind === 'analysis' ? props.entry.data : undefined;
 const reflection = props.kind === 'commentary' ? props.entry.data : undefined;
 const chart = props.kind === 'chart' ? props.entry.data : undefined;
+const video = props.kind === 'video' ? props.entry.data : undefined;
 const alternate = analysis?.traduction ? path.item(other(lang), 'analysis', analysis.traduction) : path.list(other(lang), kind);
 const related = (await allItems(lang))
   .filter((i) => i.href !== item.href)
   .sort((a, b) => Number(b.topics.some((x) => item.topics.includes(x))) - Number(a.topics.some((x) => item.topics.includes(x))))
   .slice(0, 3);
-const listTitle = kind === 'analysis' ? t.analysis : kind === 'commentary' ? t.commentary : t.charts;
+const listTitle = { analysis: t.analysis, commentary: t.commentary, chart: t.charts, video: t.videos }[kind];
 const description = item.excerpt ?? (reflection?.citation ? `${reflection.citation} ${reflection.auteur ?? ''}` : p.bio);
 ---
 <Base lang={lang} title={item.title} description={description} image={item.image ?? ogPath(item)} type="article" date={item.date} alternate={alternate} section={kind}>
@@ -41,7 +43,7 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
           <a href={path.home(lang)}>{t.breadcrumbHome}</a><span aria-hidden="true">/</span>
           <a href={path.list(lang, kind)}>{listTitle}</a>
         </nav>
-        <div class="read">
+        <div class="read" data-pagefind-body>
           <div class="labels">
             <span class="label label-kind">{KIND_NAME[kind][lang]}</span>
             {item.topics.map((tp) => <a class="label" href={path.topic(lang, tp)}>{TOPIC_INFO[tp][lang]}</a>)}
@@ -77,6 +79,21 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
 
     <div class="wrap">
       <div class="read body">
+        {video && (
+          <div class="yt" data-yt={item.youtubeId}>
+            <button type="button" class="yt-play" aria-label={t.watch}>
+              <img src={item.image} alt="" />
+              <span class="yt-btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
+            </button>
+          </div>
+        )}
+        {video && (
+          <p class="yt-meta">
+            {item.mine ? <span class="badge">{t.myVideo}</span> : video.chaine && <span>{video.chaine}</span>}
+            <a href={`https://www.youtube.com/watch?v=${item.youtubeId}`} target="_blank" rel="noopener">{t.watchOn}</a>
+          </p>
+        )}
+        {video && !item.mine && props.entry.body?.trim() && <h2 class="take">{t.myTake}</h2>}
         {chart && (
           <figure class="chartfig">
             <img src={chart.image} alt={item.title} />
@@ -97,7 +114,7 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
         </div>
         <div class="author">
           <img src="/images/avatar.jpg" alt="" width="64" height="64" />
-          <div><strong><a href={path.about(lang)}>{SITE.name}</a></strong><p>{p.titre}. {p.bio}</p></div>
+          <div><strong><a href={path.about(lang)}>{SITE.name}</a></strong><p>{p.bio}</p></div>
         </div>
       </div>
     </div>
@@ -112,6 +129,20 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
     </section>
   )}
 </Base>
+
+<script>
+  // Vidéo YouTube : chargée seulement au clic (page plus rapide, aucun suivi avant le clic)
+  document.querySelectorAll<HTMLElement>('[data-yt]').forEach((box) => {
+    box.querySelector('button')?.addEventListener('click', () => {
+      const f = document.createElement('iframe');
+      f.src = `https://www.youtube-nocookie.com/embed/${box.dataset.yt}?autoplay=1&rel=0`;
+      f.title = 'YouTube';
+      f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      f.allowFullscreen = true;
+      box.replaceChildren(f);
+    });
+  });
+</script>
 
 <style>
   .head { border-bottom: 1px solid var(--line); padding-block: 28px 32px; }
@@ -137,6 +168,16 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
   .chartfig { margin: 0 0 28px; }
   .chartfig img { width: 100%; border: 1px solid var(--line); border-radius: 4px; }
   .chartfig figcaption { font-size: 14px; color: var(--muted); margin-top: 10px; }
+  .yt { position: relative; aspect-ratio: 16 / 9; background: #000; border-radius: 4px; overflow: hidden; }
+  .yt-play { all: unset; cursor: pointer; display: block; width: 100%; height: 100%; position: relative; }
+  .yt-play img { width: 100%; height: 100%; object-fit: cover; }
+  .yt-btn { position: absolute; inset: 0; margin: auto; width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; background: rgba(10, 37, 64, 0.9); color: #fff; }
+  .yt-btn svg { width: 34px; height: 34px; margin-left: 4px; }
+  .yt-play:hover .yt-btn, .yt-play:focus-visible .yt-btn { background: var(--blue); }
+  .yt :global(iframe) { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .yt-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin: 12px 0 28px; font-size: 14px; color: var(--muted); }
+  .yt-meta a { color: var(--blue); font-weight: 600; }
+  .take { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--navy); margin-bottom: 10px; }
   .keys { background: var(--blue-light); border-left: 4px solid var(--blue); border-radius: 0 4px 4px 0; padding: 20px 24px; margin-bottom: 32px; }
   .keys h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--navy); }
   .keys ul { margin: 12px 0 0; padding-left: 1.2em; display: grid; gap: 8px; font-size: 17px; }

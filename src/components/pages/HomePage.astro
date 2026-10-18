@@ -15,9 +15,10 @@ const p = profil[lang];
 const items = await allItems(lang);
 const analyses = items.filter((i) => i.kind === 'analysis');
 const hero = analyses.find((i) => i.featured) ?? analyses[0];
-const latest = items.filter((i) => i !== hero).slice(0, 3);
+const latest = items.filter((i) => i !== hero && i.kind !== 'video').slice(0, 3);
 const reflections = items.filter((i) => i.kind === 'commentary').slice(0, 4);
 const chart = items.find((i) => i.kind === 'chart');
+const videos = items.filter((i) => i.kind === 'video').slice(0, 3);
 const count = (tp: string) => items.filter((i) => (i.topics as string[]).includes(tp)).length;
 ---
 <Base lang={lang} section="home" alternate={path.home(other(lang))}>
@@ -53,7 +54,7 @@ const count = (tp: string) => items.filter((i) => (i.topics as string[]).include
           <Visual item={hero} lang={lang} ratio="4 / 3" eager />
         ) : (
           <a class="author-card" href={path.about(lang)}>
-            <img src="/images/portrait.jpg" alt="Mohamed Njikam" width="640" height="800" />
+            <img src="/images/headshot.jpg" alt="Mohamed Njikam" width="640" height="800" />
             <span class="ac-txt"><strong>Mohamed Njikam</strong><span>{p.titre}</span></span>
           </a>
         )}
@@ -69,6 +70,16 @@ const count = (tp: string) => items.filter((i) => (i.topics as string[]).include
       {latest.length > 0 && <div class="grid3">{latest.map((i) => <Card item={i} lang={lang} />)}</div>}
     </div>
   </section>
+
+  <!-- Vidéos -->
+  {videos.length > 0 && (
+    <section class="section videos">
+      <div class="wrap">
+        <div class="section-head"><h2>{t.latestVideos}</h2><a class="more" href={path.list(lang, 'video')}>{t.seeAll}</a></div>
+        <div class="grid3">{videos.map((i) => <Card item={i} lang={lang} />)}</div>
+      </div>
+    </section>
+  )}
 
   <!-- Réflexions + graphique de la semaine -->
   {(reflections.length > 0 || chart) && (
@@ -113,12 +124,12 @@ const count = (tp: string) => items.filter((i) => (i.topics as string[]).include
   <!-- L'auteur -->
   <section class="section grey">
     <div class="wrap about">
-      <img src="/images/portrait.jpg" alt="Mohamed Njikam" width="640" height="800" loading="lazy" />
+      <img src="/images/headshot.jpg" alt="Mohamed Njikam" width="640" height="800" loading="lazy" />
       <div>
         <span class="label">{t.aboutAuthor}</span>
         <h2>Mohamed Njikam</h2>
         <p class="role">{p.role}</p>
-        <p class="bio">{p.apropos[0]}</p>
+        <p class="bio">{p.apropos[1]}</p>
         <a class="btn btn-outline" href={path.about(lang)}>{t.moreAbout}</a>
       </div>
     </div>
@@ -145,6 +156,12 @@ const count = (tp: string) => items.filter((i) => (i.topics as string[]).include
   @media (min-width: 900px) { .hero-in { grid-template-columns: 1.5fr 1fr; gap: 64px; } }
   @media (max-width: 899px) { .author-card { margin: 0; max-width: 240px; } }
 
+  .videos { background: var(--navy); }
+  .videos .section-head h2 { color: var(--white); }
+  .videos .more { color: #8FB8E8; }
+  .videos :global(h3 a) { color: var(--white); }
+  .videos :global(.label), .videos :global(.date) { color: #A9C2DE; }
+  .videos :global(.c:hover h3 a) { color: #8FB8E8; }
   .grid3 { display: grid; gap: 36px 28px; grid-template-columns: 1fr; }
   @media (min-width: 680px) { .grid3 { grid-template-columns: repeat(2, 1fr); } }
   @media (min-width: 1000px) { .grid3 { grid-template-columns: repeat(3, 1fr); } }
@@ -168,7 +185,7 @@ const count = (tp: string) => items.filter((i) => (i.topics as string[]).include
   .topic:hover strong { color: var(--blue); }
 
   .about { display: grid; gap: 32px; align-items: center; }
-  .about img { width: 100%; max-width: 280px; aspect-ratio: 1; object-fit: cover; object-position: 50% 10%; border-radius: 50%; }
+  .about img { width: 100%; max-width: 280px; aspect-ratio: 1; object-fit: cover; object-position: 50% 6%; border-radius: 50%; }
   .about h2 { font-size: 30px; font-weight: 800; margin-top: 8px; }
   .role { color: var(--muted); font-size: 15px; margin-top: 8px; }
   .bio { font-size: 18px; line-height: 1.65; margin: 16px 0 22px; max-width: 40em; }

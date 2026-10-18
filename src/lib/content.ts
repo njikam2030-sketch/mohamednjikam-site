@@ -6,6 +6,7 @@ import { path, type Lang } from '../i18n/ui';
 export type Analysis = CollectionEntry<'analyses'>;
 export type Reflection = CollectionEntry<'reflexions'>;
 export type Chart = CollectionEntry<'graphiques'>;
+export type Video = CollectionEntry<'videos'>;
 
 export interface Item {
   kind: Kind;
@@ -21,6 +22,9 @@ export interface Item {
   featured: boolean;
   quote?: string;
   author?: string;
+  youtubeId?: string;
+  mine?: boolean;
+  channel?: string;
 }
 
 const byDate = (a: { date: Date }, b: { date: Date }) => b.date.getTime() - a.date.getTime();
@@ -29,6 +33,7 @@ const cut = (s: string, n: number) => (s.length > n ? s.slice(0, n).replace(/\s+
 
 export const getAnalyses = async () => (await getCollection('analyses', (e) => !e.data.brouillon)).sort((a, b) => byDate(a.data, b.data));
 export const getReflections = async () => (await getCollection('reflexions', (e) => !e.data.brouillon)).sort((a, b) => byDate(a.data, b.data));
+export const getVideos = async () => (await getCollection('videos', (e) => !e.data.brouillon)).sort((a, b) => byDate(a.data, b.data));
 export const getCharts = async () => (await getCollection('graphiques', (e) => !e.data.brouillon)).sort((a, b) => byDate(a.data, b.data));
 
 export function analysisItem(e: Analysis): Item {
@@ -49,6 +54,19 @@ export function chartItem(e: Chart): Item {
     href: path.item(d.langue, 'chart', e.id), image: d.image, coming: false, featured: false };
 }
 
+// Identifiant d'une vidéo YouTube à partir de son lien (watch?v=, youtu.be/, shorts/, embed/)
+export function youtubeId(url: string) {
+  const m = url.match(/(?:v=|youtu\.be\/|shorts\/|embed\/|live\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : url.trim().slice(0, 11);
+}
+export function videoItem(e: Video): Item {
+  const d = e.data;
+  const yid = youtubeId(d.youtube);
+  return { kind: 'video', id: e.id, title: d.titre, excerpt: cut(plain(e.body), 160) || undefined, date: d.date, lang: d.langue, topics: d.rubriques,
+    href: path.item(d.langue, 'video', e.id), image: `https://i.ytimg.com/vi/${yid}/hqdefault.jpg`, coming: false, featured: false,
+    youtubeId: yid, mine: d.origine === 'moi', channel: d.chaine };
+}
+
 // Analyses visibles dans une langue : celles de cette langue, plus celles de l'autre langue sans traduction.
 export async function analysesFor(lang: Lang) {
   const all = await getAnalyses();
@@ -57,6 +75,6 @@ export async function analysesFor(lang: Lang) {
 }
 
 export async function allItems(lang: Lang): Promise<Item[]> {
-  const [a, r, c] = await Promise.all([analysesFor(lang), getReflections(), getCharts()]);
-  return [...a.map(analysisItem), ...r.map(reflectionItem), ...c.map(chartItem)].sort(byDate);
+  const [a, r, c, v] = await Promise.all([analysesFor(lang), getReflections(), getCharts(), getVideos()]);
+  return [...a.map(analysisItem), ...r.map(reflectionItem), ...c.map(chartItem), ...v.map(videoItem)].sort(byDate);
 }

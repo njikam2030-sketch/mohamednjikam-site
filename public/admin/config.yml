@@ -31,13 +31,14 @@ collections:
         multiple: true
         min: 1
         options: &rubriques
+          - { label: "États-Unis", value: us }
+          - { label: "IPO et fusions (M&A)", value: deals }
+          - { label: "Hedge funds et investissement", value: funds }
+          - { label: "IA et finance", value: ai }
+          - { label: "Dette et taux", value: debt }
           - { label: "Londres et Royaume-Uni", value: uk }
           - { label: "Afrique", value: africa }
           - { label: "Asie", value: asia }
-          - { label: "IA et leadership", value: ai }
-          - { label: "Marchés et taux", value: markets }
-          - { label: "Paiements", value: payments }
-          - { label: "Dette", value: debt }
       - { name: pointsCles, label: "Points clés (encadré en haut de l'article)", widget: list, required: false, field: { name: point, label: "Point", widget: string } }
       - { name: image, label: "Image de couverture (facultatif)", widget: image, required: false }
       - { name: legendeImage, label: "Légende de l'image", widget: string, required: false }
@@ -66,6 +67,27 @@ collections:
       - { name: rubriques, label: "Rubriques (facultatif)", widget: select, multiple: true, required: false, options: *rubriques }
       - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
       - { name: body, label: "Votre texte", widget: markdown }
+
+  - name: videos
+    label: "Vidéos"
+    label_singular: "Vidéo"
+    description: "Vos vidéos ou une sélection YouTube : collez le lien de la vidéo, ajoutez votre avis."
+    folder: src/content/videos
+    create: true
+    identifier_field: titre
+    slug: "{{slug}}"
+    summary: "{{titre}}"
+    sortable_fields: [date, titre]
+    fields:
+      - { name: titre, label: "Titre", widget: string }
+      - { name: youtube, label: "Lien YouTube (ex. https://www.youtube.com/watch?v=...)", widget: string }
+      - { name: origine, label: "C'est", widget: select, options: [{ label: "Ma vidéo", value: moi }, { label: "Une sélection (vidéo d'un autre)", value: selection }], default: selection }
+      - { name: chaine, label: "Chaîne ou source (ex. Bloomberg, CNBC)", widget: string, required: false }
+      - { name: date, label: "Date", widget: datetime, time_format: false, date_format: "DD/MM/YYYY" }
+      - { name: langue, label: "Langue", widget: select, options: *langues, default: en }
+      - { name: rubriques, label: "Rubriques", widget: select, multiple: true, required: false, options: *rubriques }
+      - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
+      - { name: body, label: "Votre avis sur la vidéo", widget: markdown, required: false }
 
   - name: graphiques
     label: "Graphiques"
