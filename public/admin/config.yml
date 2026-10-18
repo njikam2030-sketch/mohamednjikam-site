@@ -39,6 +39,209 @@ collections:
           - { label: "Londres et Royaume-Uni", value: uk }
           - { label: "Afrique", value: africa }
           - { label: "Asie", value: asia }
+      - name: pays
+        label: "Pays concernés (facultatif)"
+        widget: select
+        multiple: true
+        required: false
+        options: &pays
+          - { label: "Afghanistan", value: AF }
+          - { label: "Albania", value: AL }
+          - { label: "Algeria", value: DZ }
+          - { label: "Andorra", value: AD }
+          - { label: "Angola", value: AO }
+          - { label: "Antigua & Barbuda", value: AG }
+          - { label: "Argentina", value: AR }
+          - { label: "Armenia", value: AM }
+          - { label: "Australia", value: AU }
+          - { label: "Austria", value: AT }
+          - { label: "Azerbaijan", value: AZ }
+          - { label: "Bahamas", value: BS }
+          - { label: "Bahrain", value: BH }
+          - { label: "Bangladesh", value: BD }
+          - { label: "Barbados", value: BB }
+          - { label: "Belarus", value: BY }
+          - { label: "Belgium", value: BE }
+          - { label: "Belize", value: BZ }
+          - { label: "Benin", value: BJ }
+          - { label: "Bhutan", value: BT }
+          - { label: "Bolivia", value: BO }
+          - { label: "Bosnia & Herzegovina", value: BA }
+          - { label: "Botswana", value: BW }
+          - { label: "Brazil", value: BR }
+          - { label: "Brunei", value: BN }
+          - { label: "Bulgaria", value: BG }
+          - { label: "Burkina Faso", value: BF }
+          - { label: "Burundi", value: BI }
+          - { label: "Cambodia", value: KH }
+          - { label: "Cameroon", value: CM }
+          - { label: "Canada", value: CA }
+          - { label: "Cape Verde", value: CV }
+          - { label: "Central African Republic", value: CF }
+          - { label: "Chad", value: TD }
+          - { label: "Chile", value: CL }
+          - { label: "China", value: CN }
+          - { label: "Colombia", value: CO }
+          - { label: "Comoros", value: KM }
+          - { label: "Costa Rica", value: CR }
+          - { label: "Côte d’Ivoire", value: CI }
+          - { label: "Croatia", value: HR }
+          - { label: "Cuba", value: CU }
+          - { label: "Cyprus", value: CY }
+          - { label: "Czechia", value: CZ }
+          - { label: "Denmark", value: DK }
+          - { label: "Djibouti", value: DJ }
+          - { label: "Dominica", value: DM }
+          - { label: "Dominican Republic", value: DO }
+          - { label: "DR Congo", value: CD }
+          - { label: "Ecuador", value: EC }
+          - { label: "Egypt", value: EG }
+          - { label: "El Salvador", value: SV }
+          - { label: "Equatorial Guinea", value: GQ }
+          - { label: "Eritrea", value: ER }
+          - { label: "Estonia", value: EE }
+          - { label: "Eswatini", value: SZ }
+          - { label: "Ethiopia", value: ET }
+          - { label: "Fiji", value: FJ }
+          - { label: "Finland", value: FI }
+          - { label: "France", value: FR }
+          - { label: "Gabon", value: GA }
+          - { label: "Gambia", value: GM }
+          - { label: "Georgia", value: GE }
+          - { label: "Germany", value: DE }
+          - { label: "Ghana", value: GH }
+          - { label: "Greece", value: GR }
+          - { label: "Grenada", value: GD }
+          - { label: "Guatemala", value: GT }
+          - { label: "Guinea", value: GN }
+          - { label: "Guinea-Bissau", value: GW }
+          - { label: "Guyana", value: GY }
+          - { label: "Haiti", value: HT }
+          - { label: "Honduras", value: HN }
+          - { label: "Hungary", value: HU }
+          - { label: "Iceland", value: IS }
+          - { label: "India", value: IN }
+          - { label: "Indonesia", value: ID }
+          - { label: "Iran", value: IR }
+          - { label: "Iraq", value: IQ }
+          - { label: "Ireland", value: IE }
+          - { label: "Israel", value: IL }
+          - { label: "Italy", value: IT }
+          - { label: "Jamaica", value: JM }
+          - { label: "Japan", value: JP }
+          - { label: "Jordan", value: JO }
+          - { label: "Kazakhstan", value: KZ }
+          - { label: "Kenya", value: KE }
+          - { label: "Kiribati", value: KI }
+          - { label: "Kosovo", value: XK }
+          - { label: "Kuwait", value: KW }
+          - { label: "Kyrgyzstan", value: KG }
+          - { label: "Laos", value: LA }
+          - { label: "Latvia", value: LV }
+          - { label: "Lebanon", value: LB }
+          - { label: "Lesotho", value: LS }
+          - { label: "Liberia", value: LR }
+          - { label: "Libya", value: LY }
+          - { label: "Liechtenstein", value: LI }
+          - { label: "Lithuania", value: LT }
+          - { label: "Luxembourg", value: LU }
+          - { label: "Madagascar", value: MG }
+          - { label: "Malawi", value: MW }
+          - { label: "Malaysia", value: MY }
+          - { label: "Maldives", value: MV }
+          - { label: "Mali", value: ML }
+          - { label: "Malta", value: MT }
+          - { label: "Marshall Islands", value: MH }
+          - { label: "Mauritania", value: MR }
+          - { label: "Mauritius", value: MU }
+          - { label: "Mexico", value: MX }
+          - { label: "Micronesia", value: FM }
+          - { label: "Moldova", value: MD }
+          - { label: "Monaco", value: MC }
+          - { label: "Mongolia", value: MN }
+          - { label: "Montenegro", value: ME }
+          - { label: "Morocco", value: MA }
+          - { label: "Mozambique", value: MZ }
+          - { label: "Myanmar", value: MM }
+          - { label: "Namibia", value: NA }
+          - { label: "Nauru", value: NR }
+          - { label: "Nepal", value: NP }
+          - { label: "Netherlands", value: NL }
+          - { label: "New Zealand", value: NZ }
+          - { label: "Nicaragua", value: NI }
+          - { label: "Niger", value: NE }
+          - { label: "Nigeria", value: NG }
+          - { label: "North Korea", value: KP }
+          - { label: "North Macedonia", value: MK }
+          - { label: "Norway", value: NO }
+          - { label: "Oman", value: OM }
+          - { label: "Pakistan", value: PK }
+          - { label: "Palau", value: PW }
+          - { label: "Palestine", value: PS }
+          - { label: "Panama", value: PA }
+          - { label: "Papua New Guinea", value: PG }
+          - { label: "Paraguay", value: PY }
+          - { label: "Peru", value: PE }
+          - { label: "Philippines", value: PH }
+          - { label: "Poland", value: PL }
+          - { label: "Portugal", value: PT }
+          - { label: "Qatar", value: QA }
+          - { label: "Republic of the Congo", value: CG }
+          - { label: "Romania", value: RO }
+          - { label: "Russia", value: RU }
+          - { label: "Rwanda", value: RW }
+          - { label: "Samoa", value: WS }
+          - { label: "San Marino", value: SM }
+          - { label: "São Tomé & Príncipe", value: ST }
+          - { label: "Saudi Arabia", value: SA }
+          - { label: "Senegal", value: SN }
+          - { label: "Serbia", value: RS }
+          - { label: "Seychelles", value: SC }
+          - { label: "Sierra Leone", value: SL }
+          - { label: "Singapore", value: SG }
+          - { label: "Slovakia", value: SK }
+          - { label: "Slovenia", value: SI }
+          - { label: "Solomon Islands", value: SB }
+          - { label: "Somalia", value: SO }
+          - { label: "South Africa", value: ZA }
+          - { label: "South Korea", value: KR }
+          - { label: "South Sudan", value: SS }
+          - { label: "Spain", value: ES }
+          - { label: "Sri Lanka", value: LK }
+          - { label: "St. Kitts & Nevis", value: KN }
+          - { label: "St. Lucia", value: LC }
+          - { label: "St. Vincent & Grenadines", value: VC }
+          - { label: "Sudan", value: SD }
+          - { label: "Suriname", value: SR }
+          - { label: "Sweden", value: SE }
+          - { label: "Switzerland", value: CH }
+          - { label: "Syria", value: SY }
+          - { label: "Taiwan", value: TW }
+          - { label: "Tajikistan", value: TJ }
+          - { label: "Tanzania", value: TZ }
+          - { label: "Thailand", value: TH }
+          - { label: "Timor-Leste", value: TL }
+          - { label: "Togo", value: TG }
+          - { label: "Tonga", value: TO }
+          - { label: "Trinidad & Tobago", value: TT }
+          - { label: "Tunisia", value: TN }
+          - { label: "Türkiye", value: TR }
+          - { label: "Turkmenistan", value: TM }
+          - { label: "Tuvalu", value: TV }
+          - { label: "Uganda", value: UG }
+          - { label: "Ukraine", value: UA }
+          - { label: "United Arab Emirates", value: AE }
+          - { label: "United Kingdom", value: GB }
+          - { label: "United States", value: US }
+          - { label: "Uruguay", value: UY }
+          - { label: "Uzbekistan", value: UZ }
+          - { label: "Vanuatu", value: VU }
+          - { label: "Vatican City", value: VA }
+          - { label: "Venezuela", value: VE }
+          - { label: "Vietnam", value: VN }
+          - { label: "Yemen", value: YE }
+          - { label: "Zambia", value: ZM }
+          - { label: "Zimbabwe", value: ZW }
       - { name: pointsCles, label: "Points clés (encadré en haut de l'article)", widget: list, required: false, field: { name: point, label: "Point", widget: string } }
       - { name: image, label: "Image de couverture (facultatif)", widget: image, required: false }
       - { name: legendeImage, label: "Légende de l'image", widget: string, required: false }
@@ -66,6 +269,7 @@ collections:
       - { name: auteur, label: "Auteur de la citation", widget: string, required: false }
       - { name: image, label: "Photo (facultatif)", widget: image, required: false }
       - { name: rubriques, label: "Rubriques (facultatif)", widget: select, multiple: true, required: false, options: *rubriques }
+      - { name: pays, label: "Pays concernés (facultatif)", widget: select, multiple: true, required: false, options: *pays }
       - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
       - { name: body, label: "Votre texte", widget: markdown }
 
@@ -87,8 +291,35 @@ collections:
       - { name: date, label: "Date", widget: datetime, time_format: false, date_format: "DD/MM/YYYY" }
       - { name: langue, label: "Langue", widget: select, options: *langues, default: en }
       - { name: rubriques, label: "Rubriques", widget: select, multiple: true, required: false, options: *rubriques }
+      - { name: pays, label: "Pays concernés (facultatif)", widget: select, multiple: true, required: false, options: *pays }
       - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
-      - { name: body, label: "Votre avis sur la vidéo", widget: markdown, required: false }
+      - { name: pointsCles, label: "Points clés de la vidéo (facultatif)", widget: list, required: false, field: { name: point, label: "Point", widget: string } }
+      - { name: body, label: "Votre analyse et votre commentaire", widget: markdown, required: false }
+
+  - name: rapports
+    label: "Rapports (PDF)"
+    label_singular: "Rapport"
+    description: "Documents PDF : notes, études, présentations."
+    folder: src/content/rapports
+    create: true
+    identifier_field: titre
+    slug: "{{slug}}"
+    summary: "{{titre}}"
+    media_folder: /public/documents
+    public_folder: /documents
+    sortable_fields: [date, titre]
+    fields:
+      - { name: titre, label: "Titre", widget: string }
+      - { name: chapeau, label: "Résumé en une ou deux phrases", widget: text, required: false }
+      - { name: pdf, label: "Fichier PDF", widget: file }
+      - { name: couverture, label: "Image de couverture (facultatif)", widget: image, required: false }
+      - { name: pages, label: "Nombre de pages (facultatif)", widget: number, required: false }
+      - { name: date, label: "Date", widget: datetime, time_format: false, date_format: "DD/MM/YYYY" }
+      - { name: langue, label: "Langue", widget: select, options: *langues, default: en }
+      - { name: rubriques, label: "Rubriques", widget: select, multiple: true, required: false, options: *rubriques }
+      - { name: pays, label: "Pays concernés (facultatif)", widget: select, multiple: true, required: false, options: *pays }
+      - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
+      - { name: body, label: "Présentation du document (facultatif)", widget: markdown, required: false }
 
   - name: graphiques
     label: "Graphiques"
@@ -107,6 +338,7 @@ collections:
       - { name: image, label: "Graphique (PNG ou JPG)", widget: image }
       - { name: source, label: "Source", widget: string, required: false }
       - { name: rubriques, label: "Rubriques", widget: select, multiple: true, required: false, options: *rubriques }
+      - { name: pays, label: "Pays concernés (facultatif)", widget: select, multiple: true, required: false, options: *pays }
       - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
       - { name: body, label: "Commentaire", widget: markdown, required: false }
 

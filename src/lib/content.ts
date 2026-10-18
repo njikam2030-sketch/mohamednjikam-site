@@ -7,6 +7,7 @@ export type Analysis = CollectionEntry<'analyses'>;
 export type Reflection = CollectionEntry<'reflexions'>;
 export type Chart = CollectionEntry<'graphiques'>;
 export type Video = CollectionEntry<'videos'>;
+export type Report = CollectionEntry<'rapports'>;
 
 export interface Item {
   kind: Kind;
@@ -16,6 +17,7 @@ export interface Item {
   date: Date;
   lang: Lang;
   topics: Topic[];
+  countries: string[];
   href: string;
   image?: string;
   coming: boolean;
@@ -25,6 +27,7 @@ export interface Item {
   youtubeId?: string;
   mine?: boolean;
   channel?: string;
+  pdf?: string;
 }
 
 const byDate = (a: { date: Date }, b: { date: Date }) => b.date.getTime() - a.date.getTime();
@@ -34,23 +37,24 @@ const cut = (s: string, n: number) => (s.length > n ? s.slice(0, n).replace(/\s+
 export const getAnalyses = async () => (await getCollection('analyses', (e) => !e.data.brouillon)).sort((a, b) => byDate(a.data, b.data));
 export const getReflections = async () => (await getCollection('reflexions', (e) => !e.data.brouillon)).sort((a, b) => byDate(a.data, b.data));
 export const getVideos = async () => (await getCollection('videos', (e) => !e.data.brouillon)).sort((a, b) => byDate(a.data, b.data));
+export const getReports = async () => (await getCollection('rapports', (e) => !e.data.brouillon)).sort((a, b) => byDate(a.data, b.data));
 export const getCharts = async () => (await getCollection('graphiques', (e) => !e.data.brouillon)).sort((a, b) => byDate(a.data, b.data));
 
 export function analysisItem(e: Analysis): Item {
   const d = e.data;
-  return { kind: 'analysis', id: e.id, title: d.titre, excerpt: d.chapeau, date: d.date, lang: d.langue, topics: d.rubriques,
+  return { kind: 'analysis', id: e.id, title: d.titre, excerpt: d.chapeau, date: d.date, lang: d.langue, topics: d.rubriques, countries: d.pays,
     href: path.item(d.langue, 'analysis', e.id), image: d.image, coming: d.aParaitre, featured: d.aLaUne };
 }
 export function reflectionItem(e: Reflection): Item {
   const d = e.data;
   const text = plain(e.body);
   return { kind: 'commentary', id: e.id, title: d.titre ?? (d.citation ? `“${cut(d.citation, 110)}”` : cut(text, 110)),
-    excerpt: d.titre || d.citation ? cut(text, 160) : undefined, date: d.date, lang: d.langue, topics: d.rubriques,
+    excerpt: d.titre || d.citation ? cut(text, 160) : undefined, date: d.date, lang: d.langue, topics: d.rubriques, countries: d.pays,
     href: path.item(d.langue, 'commentary', e.id), image: d.image, coming: false, featured: false, quote: d.citation, author: d.auteur };
 }
 export function chartItem(e: Chart): Item {
   const d = e.data;
-  return { kind: 'chart', id: e.id, title: d.titre, excerpt: cut(plain(e.body), 160) || undefined, date: d.date, lang: d.langue, topics: d.rubriques,
+  return { kind: 'chart', id: e.id, title: d.titre, excerpt: cut(plain(e.body), 160) || undefined, date: d.date, lang: d.langue, topics: d.rubriques, countries: d.pays,
     href: path.item(d.langue, 'chart', e.id), image: d.image, coming: false, featured: false };
 }
 
@@ -62,9 +66,15 @@ export function youtubeId(url: string) {
 export function videoItem(e: Video): Item {
   const d = e.data;
   const yid = youtubeId(d.youtube);
-  return { kind: 'video', id: e.id, title: d.titre, excerpt: cut(plain(e.body), 160) || undefined, date: d.date, lang: d.langue, topics: d.rubriques,
+  return { kind: 'video', id: e.id, title: d.titre, excerpt: cut(plain(e.body), 160) || undefined, date: d.date, lang: d.langue, topics: d.rubriques, countries: d.pays,
     href: path.item(d.langue, 'video', e.id), image: `https://i.ytimg.com/vi/${yid}/hqdefault.jpg`, coming: false, featured: false,
     youtubeId: yid, mine: d.origine === 'moi', channel: d.chaine };
+}
+
+export function reportItem(e: Report): Item {
+  const d = e.data;
+  return { kind: 'report', id: e.id, title: d.titre, excerpt: d.chapeau ?? (cut(plain(e.body), 160) || undefined), date: d.date, lang: d.langue, topics: d.rubriques, countries: d.pays,
+    href: path.item(d.langue, 'report', e.id), image: d.couverture, coming: false, featured: false, pdf: d.pdf };
 }
 
 // Analyses visibles dans une langue : celles de cette langue, plus celles de l'autre langue sans traduction.
@@ -75,8 +85,8 @@ export async function analysesFor(lang: Lang) {
 }
 
 export async function allItems(lang: Lang): Promise<Item[]> {
-  const [a, r, c, v] = await Promise.all([analysesFor(lang), getReflections(), getCharts(), getVideos()]);
-  const all = [...a.map(analysisItem), ...r.map(reflectionItem), ...c.map(chartItem), ...v.map(videoItem)].sort(byDate);
+  const [a, r, c, v, p] = await Promise.all([analysesFor(lang), getReflections(), getCharts(), getVideos(), getReports()]);
+  const all = [...a.map(analysisItem), ...r.map(reflectionItem), ...c.map(chartItem), ...v.map(videoItem), ...p.map(reportItem)].sort(byDate);
   // Site anglais : uniquement les textes en anglais. Site français : tout (le français et l'anglais).
   return lang === 'en' ? all.filter((i) => i.lang === 'en') : all;
 }

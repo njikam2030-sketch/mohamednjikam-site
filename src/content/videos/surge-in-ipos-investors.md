@@ -5,4 +5,5 @@ origine: selection
 date: 2026-10-16
 langue: en
 rubriques: [deals, us]
+pays: [US]
 ---

@@ -1,0 +1,9 @@
+---
+titre: "Outlook 2026: Hedge Funds"
+youtube: https://www.youtube.com/watch?v=mV9Pz2JfP1A
+origine: selection
+date: 2026-10-11
+langue: en
+rubriques: [funds]
+pays: []
+---

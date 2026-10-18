@@ -13,6 +13,7 @@ image: /images/charts/gilt-staircase.png
 legendeImage: "UK 30-year gilt yield at successive peaks."
 linkedin: https://lnkd.in/p/et9cZCfY
 aLaUne: true
+pays: [GB, US, CI, CD, KE, CM, NG, GH]
 ---
 On the morning of 1 October 2026, the yield on Britain's 30-year government bond touched 6.03%. The last time London paid that much to borrow for a generation was January 1998, a year after the Bank of England was handed the keys to interest rates and a year before the euro was born.
 

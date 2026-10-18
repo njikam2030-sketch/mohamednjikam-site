@@ -10,6 +10,7 @@ import { SITE, TOPICS } from '../config';
 import { UI, TOPIC_INFO, REGIONS, REGION_NAME, other, path, type Lang, type Region } from '../i18n/ui';
 import profil from '../data/profil.json';
 import Newsletter from '../components/Newsletter.astro';
+import { COUNTRY_REGIONS, COUNTRY_REGION_NAME, countriesIn, countryName, type CountryRegion } from '../data/countries';
 
 interface Props {
   lang: Lang;
@@ -19,7 +20,7 @@ interface Props {
   type?: 'website' | 'article';
   date?: Date;
   alternate?: string;
-  section?: 'home' | 'analysis' | 'commentary' | 'chart' | 'video' | 'topics' | 'about';
+  section?: 'home' | 'analysis' | 'commentary' | 'chart' | 'video' | 'report' | 'topics' | 'about';
   edition?: Region;
   topic?: string;
 }
@@ -38,6 +39,7 @@ const nav = [
   { key: 'commentary', href: path.list(lang, 'commentary'), label: t.commentary },
   { key: 'video', href: path.list(lang, 'video'), label: t.videos },
   { key: 'chart', href: path.list(lang, 'chart'), label: t.charts },
+  { key: 'report', href: path.list(lang, 'report'), label: t.reports },
   { key: 'topics', href: path.topics(lang), label: t.topics },
   { key: 'about', href: path.about(lang), label: t.about },
 ] as const;
@@ -45,6 +47,7 @@ const year = new Date().getFullYear();
 // Date du jour (date de la dernière mise à jour du site), comme en tête des journaux
 const today = new Date().toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/London' });
 const themes = ['deals', 'funds', 'ai', 'debt'] as const;
+const countryRegions = Object.keys(COUNTRY_REGIONS) as CountryRegion[];
 ---
 <!doctype html>
 <html lang={lang}>
@@ -57,7 +60,9 @@ const themes = ['deals', 'funds', 'ai', 'debt'] as const;
     <link rel="alternate" hreflang={lang} href={canonical} />
     <link rel="alternate" hreflang={o} href={new URL(otherUrl, SITE.url).href} />
     <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
     <meta name="theme-color" content="#0A2540" />
     <meta name="author" content={SITE.name} />
@@ -76,7 +81,7 @@ const themes = ['deals', 'funds', 'ai', 'debt'] as const;
     <script type="application/ld+json" set:html={JSON.stringify(
       type === 'article'
         ? { '@context': 'https://schema.org', '@type': 'Article', headline: title, description: desc, image: ogImage, datePublished: date?.toISOString(), inLanguage: lang, author: { '@type': 'Person', name: SITE.name, url: SITE.url } }
-        : { '@context': 'https://schema.org', '@type': 'Person', name: SITE.name, url: SITE.url, image: new URL('/images/portrait.jpg', SITE.url).href, jobTitle: p.titre, sameAs: [SITE.linkedin, SITE.x] }
+        : { '@context': 'https://schema.org', '@type': 'Person', name: SITE.name, url: SITE.url, image: new URL('/images/headshot.jpg', SITE.url).href, jobTitle: p.titre, sameAs: [SITE.linkedin, SITE.x] }
     )} />
     {process.env.VERCEL && <script is:inline defer src="/_vercel/insights/script.js"></script>}
   </head>
@@ -91,6 +96,18 @@ const themes = ['deals', 'funds', 'ai', 'debt'] as const;
           <a href={path.home(lang)} aria-current={section === 'home' && !edition ? 'true' : undefined}>{t.global}</a>
           {REGIONS.map((r) => <a href={path.edition(lang, r)} aria-current={edition === r ? 'true' : undefined}>{REGION_NAME[r][lang]}</a>)}
         </nav>
+        <label class="country">
+          <span class="sr">{t.chooseCountry}</span>
+          <select id="country-select" aria-label={t.chooseCountry}>
+            <option value="">{t.country}</option>
+            <option value={path.countries(lang)}>{t.allCountries}</option>
+            {countryRegions.map((r) => (
+              <optgroup label={COUNTRY_REGION_NAME[r][lang]}>
+                {countriesIn(r, lang).map((c) => <option value={path.country(lang, c)}>{countryName(c, lang)}</option>)}
+              </optgroup>
+            ))}
+          </select>
+        </label>
         <div class="topbar-links">
           <a href={SITE.linkedin} target="_blank" rel="me noopener">LinkedIn</a>
           <a href={SITE.x} target="_blank" rel="me noopener">X</a>
@@ -118,7 +135,7 @@ const themes = ['deals', 'funds', 'ai', 'debt'] as const;
     <nav class="sections" aria-label={t.menu}>
       <div class="wrap sections-in">
         <a href={path.home(lang)} aria-current={section === 'home' && !edition ? 'page' : undefined}>{t.home}</a>
-        {nav.slice(0, 4).map((n) => <a href={n.href} aria-current={section === n.key ? 'page' : undefined}>{n.label}</a>)}
+        {nav.slice(0, 5).map((n) => <a href={n.href} aria-current={section === n.key ? 'page' : undefined}>{n.label}</a>)}
         <span class="div" aria-hidden="true"></span>
         {themes.map((tp) => <a href={path.topic(lang, tp)} aria-current={topic === tp ? 'page' : undefined}>{TOPIC_INFO[tp][lang]}</a>)}
         <span class="div" aria-hidden="true"></span>
@@ -126,6 +143,8 @@ const themes = ['deals', 'funds', 'ai', 'debt'] as const;
         <a href={path.about(lang)} aria-current={section === 'about' ? 'page' : undefined}>{t.about}</a>
       </div>
     </nav>
+
+    <div class="print-brand wrap"><strong>Mohamed Njikam</strong><span>{SITE.domain}</span></div>
 
     <main id="contenu">
       <slot />
@@ -169,6 +188,9 @@ const themes = ['deals', 'funds', 'ai', 'debt'] as const;
     </footer>
 
     <script>
+      // Choix d'un pays dans la liste : ouverture de sa page
+      const cs = document.getElementById('country-select') as HTMLSelectElement | null;
+      cs?.addEventListener('change', () => { if (cs.value) location.href = cs.value; });
       // Boutons « Copier le lien »
       document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) => {
         b.addEventListener('click', async () => {
@@ -195,6 +217,11 @@ const themes = ['deals', 'funds', 'ai', 'debt'] as const;
   .editions a { color: #C7D2E0; text-decoration: none; font-weight: 600; padding: 4px 9px; border-radius: 3px; white-space: nowrap; }
   .editions a:hover { color: var(--white); background: rgba(255, 255, 255, 0.08); }
   .editions a[aria-current] { color: var(--navy); background: #8FB8E8; }
+  .country { position: relative; flex: none; }
+  .country select { appearance: none; -webkit-appearance: none; max-width: 170px; font: 600 13px var(--font); color: var(--white); background: rgba(255, 255, 255, 0.08) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23C7D2E0' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 10px center; border: 1px solid #33475E; border-radius: 3px; padding: 5px 28px 5px 10px; cursor: pointer; }
+  .country select:hover { border-color: #8FB8E8; }
+  .country option, .country optgroup { color: var(--ink); background: var(--white); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   .topbar-links { display: flex; align-items: center; gap: 16px; }
   .topbar-links a { color: #C7D2E0; text-decoration: none; font-weight: 500; }
   .topbar-links a:hover { color: var(--white); }
@@ -233,6 +260,11 @@ const themes = ['deals', 'funds', 'ai', 'debt'] as const;
 
   .footer { background: var(--navy); color: #C7D2E0; margin-top: 0; }
   .footer-grid { display: grid; gap: 36px; padding-block: 56px 40px; grid-template-columns: 1fr; }
+  .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
+  .mark { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 9px; font-weight: 800; font-size: 16px; flex: none; }
+  .brand-text { display: grid; gap: 3px; line-height: 1.15; }
+  .brand-text strong { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
+  .brand-text small { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
   .footer .brand { margin-bottom: 16px; }
   .footer .mark { background: var(--white); color: var(--navy); }
   .footer .brand-text strong { color: var(--white); }

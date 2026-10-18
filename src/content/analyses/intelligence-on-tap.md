@@ -10,6 +10,7 @@ pointsCles:
   - "Global debt is now above $365 trillion, with AI infrastructure among the forces behind the latest record."
   - "The next decades will be decided by who produces intelligence, who finances it, and who sets its price."
 linkedin: https://lnkd.in/p/eaWK3QjD
+pays: [US, CN, CM, NG, GB]
 ---
 Last Tuesday, a single room in Washington held more of the world's future than most parliaments.
 

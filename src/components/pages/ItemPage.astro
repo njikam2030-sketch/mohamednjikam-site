@@ -1,12 +1,13 @@
 ---
-// Page d'une publication (analyse, réflexion ou graphique).
+// Page d'une publication (analyse, réflexion, graphique, vidéo ou rapport PDF).
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Card from '../Card.astro';
 import Share from '../Share.astro';
 import { SITE } from '../../config';
 import { UI, KIND_NAME, TOPIC_INFO, formatDate, other, path, readingTime, type Lang } from '../../i18n/ui';
-import { allItems, analysisItem, chartItem, reflectionItem, videoItem, type Analysis, type Chart, type Reflection, type Video } from '../../lib/content';
+import { allItems, analysisItem, chartItem, reflectionItem, reportItem, videoItem, type Analysis, type Chart, type Reflection, type Report, type Video } from '../../lib/content';
+import { countryName } from '../../data/countries';
 import profil from '../../data/profil.json';
 import { ogPath } from '../../lib/og';
 
@@ -14,10 +15,11 @@ type Props =
   | { kind: 'analysis'; entry: Analysis }
   | { kind: 'commentary'; entry: Reflection }
   | { kind: 'chart'; entry: Chart }
-  | { kind: 'video'; entry: Video };
+  | { kind: 'video'; entry: Video }
+  | { kind: 'report'; entry: Report };
 const props = Astro.props;
 const { kind } = props;
-const item = props.kind === 'analysis' ? analysisItem(props.entry) : props.kind === 'commentary' ? reflectionItem(props.entry) : props.kind === 'chart' ? chartItem(props.entry) : videoItem(props.entry);
+const item = props.kind === 'analysis' ? analysisItem(props.entry) : props.kind === 'commentary' ? reflectionItem(props.entry) : props.kind === 'chart' ? chartItem(props.entry) : props.kind === 'video' ? videoItem(props.entry) : reportItem(props.entry);
 const lang: Lang = item.lang;
 const t = UI[lang];
 const p = profil[lang];
@@ -27,12 +29,15 @@ const analysis = props.kind === 'analysis' ? props.entry.data : undefined;
 const reflection = props.kind === 'commentary' ? props.entry.data : undefined;
 const chart = props.kind === 'chart' ? props.entry.data : undefined;
 const video = props.kind === 'video' ? props.entry.data : undefined;
+const report = props.kind === 'report' ? props.entry.data : undefined;
+const keyPoints = analysis?.pointsCles ?? video?.pointsCles ?? [];
+const hasBody = !!props.entry.body?.trim();
 const alternate = analysis?.traduction ? path.item(other(lang), 'analysis', analysis.traduction) : path.list(other(lang), kind);
 const related = (await allItems(lang))
   .filter((i) => i.href !== item.href)
   .sort((a, b) => Number(b.topics.some((x) => item.topics.includes(x))) - Number(a.topics.some((x) => item.topics.includes(x))))
   .slice(0, 3);
-const listTitle = { analysis: t.analysis, commentary: t.commentary, chart: t.charts, video: t.videos }[kind];
+const listTitle = { analysis: t.analysis, commentary: t.commentary, chart: t.charts, video: t.videos, report: t.reports }[kind];
 const description = item.excerpt ?? (reflection?.citation ? `${reflection.citation} ${reflection.auteur ?? ''}` : p.bio);
 ---
 <Base lang={lang} title={item.title} description={description} image={item.image ?? ogPath(item)} type="article" date={item.date} alternate={alternate} section={kind}>
@@ -57,7 +62,10 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
           ) : (
             <h1 data-pagefind-meta="title">{kind === 'commentary' && !reflection?.titre ? '' : item.title}</h1>
           )}
-          {analysis?.chapeau && <p class="lede">{analysis.chapeau}</p>}
+          {(analysis?.chapeau ?? report?.chapeau) && <p class="lede">{analysis?.chapeau ?? report?.chapeau}</p>}
+          {item.countries.length > 0 && (
+            <p class="countries">{item.countries.map((c) => <a href={path.country(lang, c)}>{countryName(c, lang)}</a>)}</p>
+          )}
           <div class="byline">
             <img src="/images/avatar.jpg" alt="" width="44" height="44" />
             <div>
@@ -94,19 +102,31 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
             <a href={`https://www.youtube.com/watch?v=${item.youtubeId}`} target="_blank" rel="noopener">{t.watchOn}</a>
           </p>
         )}
-        {video && !item.mine && props.entry.body?.trim() && <h2 class="take">{t.myTake}</h2>}
+        {report && (
+          <div class="pdfbox">
+            <div class="pdf-actions">
+              <a class="btn btn-primary" href={report.pdf} download>{t.downloadPdf}</a>
+              <a class="btn btn-outline" href={report.pdf} target="_blank" rel="noopener">{t.openPdf}</a>
+              {report.pages && <span class="date">{report.pages} {t.pagesLabel}</span>}
+            </div>
+            <object class="pdfview" data={`${report.pdf}#view=FitH`} type="application/pdf" aria-label={item.title}>
+              <p class="date">{t.openPdf} : <a href={report.pdf}>{item.title}</a></p>
+            </object>
+          </div>
+        )}
         {chart && (
           <figure class="chartfig">
             <img src={chart.image} alt={item.title} />
             {chart.source && <figcaption><strong>{t.source} :</strong> {chart.source}</figcaption>}
           </figure>
         )}
-        {analysis && analysis.pointsCles.length > 0 && (
+        {keyPoints.length > 0 && (
           <aside class="keys">
             <h2>{t.keyPoints}</h2>
-            <ul>{analysis.pointsCles.map((k) => <li>{k}</li>)}</ul>
+            <ul>{keyPoints.map((k) => <li>{k}</li>)}</ul>
           </aside>
         )}
+        {video && hasBody && <h2 class="take">{t.myTake}</h2>}
         {item.coming && <p class="coming">{t.comingText} <a href="#newsletter">{t.subscribe}</a></p>}
         <div class:list={['prose', { short: kind === 'commentary' }]} data-pagefind-body><Content /></div>
         <div class="share">
@@ -177,9 +197,15 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
   .yt-btn svg { width: 34px; height: 34px; margin-left: 4px; }
   .yt-play:hover .yt-btn, .yt-play:focus-visible .yt-btn { background: var(--blue); }
   .yt :global(iframe) { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .countries { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+  .countries a { font-size: 13px; font-weight: 600; text-decoration: none; color: var(--navy); background: var(--soft); border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; }
+  .countries a:hover { border-color: var(--blue); color: var(--blue); }
+  .pdfbox { display: grid; gap: 16px; margin-bottom: 32px; }
+  .pdf-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .pdfview { width: 100%; height: min(80vh, 900px); border: 1px solid var(--line); border-radius: 4px; background: var(--soft); }
   .yt-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin: 12px 0 28px; font-size: 14px; color: var(--muted); }
   .yt-meta a { color: var(--blue); font-weight: 600; }
-  .take { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--navy); margin-bottom: 10px; }
+  .take { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--navy); margin: 8px 0 14px; padding-top: 18px; border-top: 1px solid var(--line); }
   .keys { background: var(--blue-light); border-left: 4px solid var(--blue); border-radius: 0 4px 4px 0; padding: 20px 24px; margin-bottom: 32px; }
   .keys h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--navy); }
   .keys ul { margin: 12px 0 0; padding-left: 1.2em; display: grid; gap: 8px; font-size: 17px; }

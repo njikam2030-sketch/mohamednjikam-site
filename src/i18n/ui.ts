@@ -22,9 +22,11 @@ export const UI = {
     commentaryIntro: 'Short reflections, quotes and tributes.',
     chartsIntro: 'One chart, one idea.',
     videosIntro: 'My videos, and a selection of the best conversations on finance, markets and AI.',
-    myVideo: 'My video', selected: 'Selected', watch: 'Watch the video', watchOn: 'Watch on YouTube', myTake: 'My take', elsewhere: 'Elsewhere', latestVideos: 'Videos',
+    myVideo: 'My video', selected: 'Selected', watch: 'Watch the video', watchOn: 'Watch on YouTube', myTake: 'My analysis and commentary', elsewhere: 'Elsewhere', latestVideos: 'Videos',
     topicsIntro: 'Every publication, by topic.',
     breadcrumbHome: 'Home', lang: 'Language',
+    reports: 'Reports', reportsIntro: 'Notes, studies and presentations in PDF.', downloadPdf: 'Download the PDF', openPdf: 'Open in a new tab', pagesLabel: 'pages',
+    country: 'Country', countries: 'Countries', allCountries: 'All countries', chooseCountry: 'Choose a country', countriesIntro: 'Every publication, country by country.', noCountry: 'No publication on this country yet. Here are the latest in the region.', publicationsOn: 'Publications on',
     pdf: 'Download PDF', edition: 'Edition', global: 'Global', alsoOn: 'Also published on LinkedIn', keyReads: 'Key reads', followMe: 'Follow', inThisEdition: 'In this edition', topStories: 'Top stories', latestNews: 'Latest', moreIn: 'More in', allPublications: 'All publications', search: 'Search', searchIntro: 'Search every analysis, reflection and chart.',
   },
   fr: {
@@ -44,9 +46,11 @@ export const UI = {
     commentaryIntro: 'Réflexions courtes, citations et hommages.',
     chartsIntro: 'Un graphique, une idée.',
     videosIntro: 'Mes vidéos, et une sélection des meilleures discussions sur la finance, les marchés et l\u2019IA.',
-    myVideo: 'Ma vidéo', selected: 'Sélection', watch: 'Voir la vidéo', watchOn: 'Voir sur YouTube', myTake: 'Mon avis', elsewhere: 'Ailleurs', latestVideos: 'Vidéos',
+    myVideo: 'Ma vidéo', selected: 'Sélection', watch: 'Voir la vidéo', watchOn: 'Voir sur YouTube', myTake: 'Mon analyse et mon commentaire', elsewhere: 'Ailleurs', latestVideos: 'Vidéos',
     topicsIntro: 'Toutes les publications, par rubrique.',
     breadcrumbHome: 'Accueil', lang: 'Langue',
+    reports: 'Rapports', reportsIntro: 'Notes, études et présentations en PDF.', downloadPdf: 'Télécharger le PDF', openPdf: 'Ouvrir dans un nouvel onglet', pagesLabel: 'pages',
+    country: 'Pays', countries: 'Pays', allCountries: 'Tous les pays', chooseCountry: 'Choisir un pays', countriesIntro: 'Toutes les publications, pays par pays.', noCountry: 'Pas encore de publication sur ce pays. Voici les dernières de la région.', publicationsOn: 'Publications sur',
     pdf: 'Télécharger en PDF', edition: 'Édition', global: 'Monde', alsoOn: 'Publié aussi sur LinkedIn', keyReads: 'À lire', followMe: 'Suivre', inThisEdition: 'Dans cette édition', topStories: 'À la une', latestNews: 'Dernière minute', moreIn: 'Plus dans', allPublications: 'Toutes les publications', search: 'Rechercher', searchIntro: 'Chercher dans toutes les analyses, réflexions et graphiques.',
   },
 } as const;
@@ -77,6 +81,7 @@ export const KIND_NAME: Record<Kind, { en: string; fr: string }> = {
   commentary: { en: 'Reflection', fr: 'Réflexion' },
   chart: { en: 'Chart', fr: 'Graphique' },
   video: { en: 'Video', fr: 'Vidéo' },
+  report: { en: 'Report', fr: 'Rapport' },
 };
 
 // Adresses des pages
@@ -85,6 +90,7 @@ const seg = {
   commentary: { en: 'reflections', fr: 'reflexions' },
   chart: { en: 'charts', fr: 'graphiques' },
   video: { en: 'videos', fr: 'videos' },
+  report: { en: 'reports', fr: 'rapports' },
 } as const;
 const base = (l: Lang) => (l === 'fr' ? '/fr' : '');
 export const path = {
@@ -94,6 +100,8 @@ export const path = {
   topics: (l: Lang) => `${base(l)}/${l === 'fr' ? 'rubriques' : 'topics'}/`,
   topic: (l: Lang, t: Topic) => `${base(l)}/${l === 'fr' ? 'rubriques' : 'topics'}/${t}/`,
   about: (l: Lang) => `${base(l)}/${l === 'fr' ? 'a-propos' : 'about'}/`,
+  country: (l: Lang, c: string) => `${base(l)}/${l === 'fr' ? 'pays' : 'country'}/${c.toLowerCase()}/`,
+  countries: (l: Lang) => `${base(l)}/${l === 'fr' ? 'pays' : 'countries'}/`,
   edition: (l: Lang, r: Region) => `${base(l)}/edition/${r}/`,
   search: (l: Lang) => `${base(l)}/${l === 'fr' ? 'recherche' : 'search'}/`,
 };

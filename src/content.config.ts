@@ -6,6 +6,8 @@ import { TOPICS } from './config';
 
 const pattern = '**/[^_]*.md';
 const topic = z.enum(TOPICS);
+// Pays concernés (codes ISO à deux lettres, ex. CM, GB, US)
+const pays = z.array(z.string().length(2).transform((c) => c.toUpperCase())).default([]);
 
 // Analyses : articles longs (thèse, preuves, objections, que faire, sources)
 const analyses = defineCollection({
@@ -16,6 +18,7 @@ const analyses = defineCollection({
     date: z.coerce.date(),
     langue: z.enum(['en', 'fr']),
     rubriques: z.array(topic).min(1),
+    pays,
     pointsCles: z.array(z.string()).default([]),
     image: z.string().optional(),
     legendeImage: z.string().optional(),
@@ -38,6 +41,7 @@ const reflexions = defineCollection({
     auteur: z.string().optional(),
     image: z.string().optional(),
     rubriques: z.array(topic).default([]),
+    pays,
     brouillon: z.boolean().default(false),
   }),
 });
@@ -52,6 +56,7 @@ const graphiques = defineCollection({
     image: z.string(),
     source: z.string().optional(),
     rubriques: z.array(topic).default([]),
+    pays,
     brouillon: z.boolean().default(false),
   }),
 });
@@ -66,9 +71,28 @@ const videos = defineCollection({
     youtube: z.string(),
     origine: z.enum(['moi', 'selection']).default('selection'),
     chaine: z.string().optional(),
+    pointsCles: z.array(z.string()).default([]),
     rubriques: z.array(topic).default([]),
+    pays,
     brouillon: z.boolean().default(false),
   }),
 });
 
-export const collections = { analyses, reflexions, graphiques, videos };
+// Rapports : documents PDF (notes, études, présentations)
+const rapports = defineCollection({
+  loader: glob({ pattern, base: './src/content/rapports' }),
+  schema: z.object({
+    titre: z.string(),
+    chapeau: z.string().optional(),
+    date: z.coerce.date(),
+    langue: z.enum(['en', 'fr']),
+    pdf: z.string(),
+    couverture: z.string().optional(),
+    pages: z.number().optional(),
+    rubriques: z.array(topic).default([]),
+    pays,
+    brouillon: z.boolean().default(false),
+  }),
+});
+
+export const collections = { analyses, reflexions, graphiques, videos, rapports };
