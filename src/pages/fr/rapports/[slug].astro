@@ -1,0 +1,11 @@
+---
+import ItemPage from '../../../components/pages/ItemPage.astro';
+import { getReports } from '../../../lib/content';
+
+export async function getStaticPaths() {
+  const all = await getReports();
+  return all.filter((e) => e.data.langue === 'fr').map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+<ItemPage kind="report" entry={entry} />

@@ -4,6 +4,7 @@ langue: en
 citation: "Remember that time is money."
 auteur: "Benjamin Franklin, Advice to a Young Tradesman, 1748"
 rubriques: [debt, africa]
+pays: [GB]
 ---
 For fifteen years, it wasn't. Today, £1 million stuck for three days costs about £308 in lost interest. In 2021 it cost £8. Same delay, 37 times more expensive.
 

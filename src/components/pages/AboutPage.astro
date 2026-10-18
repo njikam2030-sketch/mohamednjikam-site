@@ -15,12 +15,13 @@ const groups = [
   { title: t.analysis, list: items.filter((i) => i.kind === 'analysis'), href: path.list(lang, 'analysis') },
   { title: t.commentary, list: items.filter((i) => i.kind === 'commentary'), href: path.list(lang, 'commentary') },
   { title: t.videos, list: items.filter((i) => i.kind === 'video'), href: path.list(lang, 'video') },
+  { title: t.reports, list: items.filter((i) => i.kind === 'report'), href: path.list(lang, 'report') },
 ].filter((g) => g.list.length > 0);
 ---
 <Base lang={lang} title={t.about} description={p.bio} section="about" alternate={path.about(other(lang))}>
   <section class="section">
     <div class="wrap about">
-      <img class="photo" src="/images/portrait.jpg" alt="Mohamed Njikam" width="640" height="800" />
+      <img class="photo" src="/images/headshot.jpg" alt="Mohamed Njikam" width="640" height="800" />
       <div class="text">
         <h1>Mohamed Njikam</h1>
         {p.apropos.map((x) => <p>{x}</p>)}

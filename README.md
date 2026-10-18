@@ -31,8 +31,12 @@ Le navigateur la garde : on ne la donne qu'une fois par appareil.
 | --- | --- |
 | **Analyses** | Articles de fond. Titre, chapeau, rubriques, points clés, image, texte, puis un titre « Sources » en fin de texte. « Mettre à la une » le place en grand sur l'accueil. |
 | **Réflexions** | Textes courts, citations (avec auteur), hommages, photo facultative. |
+| **Vidéos** | Lien YouTube (votre vidéo ou une sélection), points clés et votre analyse et commentaire. |
+| **Rapports (PDF)** | Un fichier PDF avec titre, résumé et image de couverture : téléchargeable et lisible sur le site. |
 | **Graphiques** | Un graphique (PNG/JPG) avec son titre, sa source et un commentaire : « le graphique de la semaine ». |
 | **Mon profil** | Présentation de l'accueil et de la page À propos, en anglais et en français. |
+
+Chaque publication peut être rattachée à un ou plusieurs **pays** : elle apparaît alors sur la page du pays (menu « Country » en haut du site).
 
 « Brouillon » garde une publication hors du site. Pour supprimer : ouvrir la publication > Supprimer.
 

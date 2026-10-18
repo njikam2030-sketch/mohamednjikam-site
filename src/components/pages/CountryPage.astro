@@ -1,0 +1,58 @@
+---
+// Pays : sans `code`, la liste de tous les pays par région ; avec `code`, les publications sur ce pays.
+import Base from '../../layouts/Base.astro';
+import PageHead from '../PageHead.astro';
+import Card from '../Card.astro';
+import { UI, other, path, type Lang } from '../../i18n/ui';
+import { allItems } from '../../lib/content';
+import { COUNTRY_REGIONS, COUNTRY_REGION_NAME, countriesIn, countryName, regionOf, type CountryRegion } from '../../data/countries';
+
+interface Props { lang: Lang; code?: string }
+const { lang, code } = Astro.props;
+const t = UI[lang];
+const all = await allItems(lang);
+const count = (c: string) => all.filter((i) => i.countries.includes(c)).length;
+const items = code ? all.filter((i) => i.countries.includes(code)) : [];
+const region = code ? regionOf(code) : undefined;
+const nearby = code && items.length === 0 && region
+  ? all.filter((i) => i.countries.some((c) => regionOf(c) === region)).slice(0, 6)
+  : [];
+const title = code ? countryName(code, lang) : t.countries;
+const intro = code ? `${t.publicationsOn} ${countryName(code, lang)}.` : t.countriesIntro;
+const regions = Object.keys(COUNTRY_REGIONS) as CountryRegion[];
+---
+<Base lang={lang} title={title} description={intro} alternate={code ? path.country(other(lang), code) : path.countries(other(lang))}>
+  <PageHead lang={lang} title={title} intro={intro} crumbs={code ? [{ label: t.countries, href: path.countries(lang) }] : []} />
+  <section class="section">
+    <div class="wrap">
+      {!code && regions.map((r) => (
+        <section class="region">
+          <h2>{COUNTRY_REGION_NAME[r][lang]}</h2>
+          <ul>
+            {countriesIn(r, lang).map((c) => (
+              <li><a href={path.country(lang, c)} class:list={{ has: count(c) > 0 }}>{countryName(c, lang)}{count(c) > 0 && <span>{count(c)}</span>}</a></li>
+            ))}
+          </ul>
+        </section>
+      ))}
+      {code && items.length > 0 && <div class="rows">{items.map((i) => <Card item={i} lang={lang} variant="row" />)}</div>}
+      {code && items.length === 0 && (
+        <>
+          <p class="empty">{t.noCountry}</p>
+          {nearby.length > 0 && <div class="rows">{nearby.map((i) => <Card item={i} lang={lang} variant="row" />)}</div>}
+        </>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .region + .region { margin-top: 44px; }
+  .region h2 { font-size: 20px; font-weight: 800; color: var(--navy); padding-bottom: 10px; border-bottom: 3px solid var(--navy); margin-bottom: 14px; }
+  .region ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 2px 20px; }
+  .region a { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--muted); font-size: 15px; }
+  .region a.has { color: var(--ink); font-weight: 600; }
+  .region a:hover { color: var(--blue); }
+  .region a span { font-size: 12px; font-weight: 700; color: var(--white); background: var(--blue); border-radius: 999px; padding: 1px 8px; }
+  .rows { max-width: 920px; }
+</style>

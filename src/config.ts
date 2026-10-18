@@ -21,5 +21,5 @@ export const TOPICS = ['us', 'deals', 'funds', 'ai', 'debt', 'uk', 'africa', 'as
 export type Topic = (typeof TOPICS)[number];
 
 // Types de publications
-export const KINDS = ['analysis', 'commentary', 'chart', 'video'] as const;
+export const KINDS = ['analysis', 'commentary', 'chart', 'video', 'report'] as const;
 export type Kind = (typeof KINDS)[number];

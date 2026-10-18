@@ -1,0 +1,10 @@
+---
+import CountryPage from '../../components/pages/CountryPage.astro';
+import { COUNTRIES } from '../../data/countries';
+
+export function getStaticPaths() {
+  return COUNTRIES.map((c) => ({ params: { code: c.toLowerCase() } }));
+}
+const code = (Astro.params.code as string).toUpperCase();
+---
+<CountryPage lang="en" code={code} />
