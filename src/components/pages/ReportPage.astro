@@ -1,0 +1,151 @@
+---
+// Rapport, à la manière des publications du FMI ou des Nations unies :
+// bandeau avec couverture, fiche du document, messages clés, sommaire, texte et « citer ce rapport ».
+// Sans fichier PDF fourni, le rapport se lit en ligne et « Télécharger en PDF » produit une version imprimée avec page de garde.
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Share from '../Share.astro';
+import Card from '../Card.astro';
+import { SITE } from '../../config';
+import { UI, TOPIC_INFO, formatDate, other, path, type Lang } from '../../i18n/ui';
+import { allItems, reportItem, type Report } from '../../lib/content';
+import { countryName } from '../../data/countries';
+
+interface Props { entry: Report }
+const { entry } = Astro.props;
+const d = entry.data;
+const item = reportItem(entry);
+const lang: Lang = d.langue;
+const t = UI[lang];
+const { Content, headings } = await render(entry);
+const toc = headings.filter((h) => h.depth === 2 && h.slug !== 'sources');
+const url = new URL(item.href, SITE.url).href;
+const year = d.date.getUTCFullYear();
+const citation = `${SITE.name.split(' ').reverse().join(', ')} (${year}). "${d.titre}." ${SITE.name}, ${d.serie}${d.numero ? ' ' + d.numero : ''}, ${formatDate(d.date, lang)}. ${url}`;
+const related = (await allItems(lang)).filter((i) => i.href !== item.href && i.topics.some((x) => item.topics.includes(x))).slice(0, 3);
+const hasBody = !!entry.body?.trim();
+---
+<Base lang={lang} title={d.titre} description={d.chapeau ?? d.titre} image={item.image} type="article" date={d.date} alternate={path.list(other(lang), 'report')} section="report">
+  <!-- Page de garde, visible seulement à l'impression -->
+  <div class="print-cover"><img src={item.image} alt="" /></div>
+
+  <section class="band">
+    <div class="wrap band-in">
+      <div class="band-txt">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href={path.home(lang)}>{t.breadcrumbHome}</a><span aria-hidden="true">/</span><a href={path.list(lang, 'report')}>{t.reports}</a></nav>
+        <span class="serie">{d.serie}{d.numero && ` · ${d.numero}`}</span>
+        <h1 data-pagefind-meta="title">{d.titre}</h1>
+        {d.chapeau && <p class="lede">{d.chapeau}</p>}
+        <div class="actions">
+          {d.pdf
+            ? <a class="btn btn-light" href={d.pdf} download>{t.downloadPdf}</a>
+            : <button type="button" class="btn btn-light" onclick="window.print()">{t.savePdf}</button>}
+          {d.pdf && <a class="btn btn-ghost" href={d.pdf} target="_blank" rel="noopener">{t.openPdf}</a>}
+        </div>
+      </div>
+      <img class="cover" src={item.image} alt="" width="372" height="526" />
+    </div>
+  </section>
+
+  <section class="wrap layout">
+    <aside class="side">
+      <dl class="facts">
+        <div><dt>{t.author}</dt><dd><a href={path.about(lang)}>{SITE.name}</a></dd></div>
+        <div><dt>{t.published}</dt><dd>{formatDate(d.date, lang)}</dd></div>
+        <div><dt>{t.language}</dt><dd>{t.langName}</dd></div>
+        <div><dt>{t.format}</dt><dd>PDF{d.pages && ` · ${d.pages} ${t.pagesLabel}`}</dd></div>
+      </dl>
+      {item.topics.length > 0 && <p class="tags">{item.topics.map((tp) => <a href={path.topic(lang, tp)}>{TOPIC_INFO[tp][lang]}</a>)}</p>}
+      {item.countries.length > 0 && <p class="tags light">{item.countries.map((c) => <a href={path.country(lang, c)}>{countryName(c, lang)}</a>)}</p>}
+      {toc.length > 0 && (
+        <nav class="toc" aria-label={t.inThisReport}>
+          <h2>{t.inThisReport}</h2>
+          <ol>{toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+        </nav>
+      )}
+    </aside>
+
+    <div class="main">
+      {d.messagesCles.length > 0 && (
+        <section class="keys">
+          <h2>{t.keyMessages}</h2>
+          <ol>{d.messagesCles.map((m) => <li>{m}</li>)}</ol>
+        </section>
+      )}
+      {d.pdf && (
+        <object class="pdfview" data={`${d.pdf}#view=FitH`} type="application/pdf" aria-label={d.titre}>
+          <p><a href={d.pdf}>{t.openPdf}</a></p>
+        </object>
+      )}
+      {hasBody && <div class="prose" data-pagefind-body><Content /></div>}
+      <section class="cite">
+        <h2>{t.citeThis}</h2>
+        <p>{citation}</p>
+        <button type="button" class="copycite" data-copy={citation} data-done={t.copied}>{t.copy}</button>
+      </section>
+      <div class="share"><Share lang={lang} url={url} text={d.titre} /></div>
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="section grey">
+      <div class="wrap">
+        <div class="section-head"><h2>{t.related}</h2></div>
+        <div class="grid3">{related.map((i) => <Card item={i} lang={lang} />)}</div>
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .band { background: var(--navy); color: var(--white); }
+  .band-in { display: grid; gap: 36px; padding-block: 36px 48px; align-items: center; }
+  .crumbs a { color: #8FB8E8; }
+  .crumbs { color: #93A4B8; }
+  .serie { display: inline-block; font-size: 13px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--navy); background: #8FB8E8; padding: 4px 10px; border-radius: 3px; margin-top: 18px; }
+  h1 { font-size: clamp(30px, 4.4vw, 48px); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin-top: 16px; }
+  .lede { font-size: 19px; line-height: 1.55; color: #D3DEEA; margin-top: 16px; max-width: 40em; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+  .btn-ghost { color: var(--white); border-color: #5E7DA0; }
+  .btn-ghost:hover { border-color: var(--white); }
+  .cover { width: 100%; max-width: 280px; aspect-ratio: 1240 / 1754; object-fit: cover; border-radius: 3px; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35); justify-self: center; }
+  @media (min-width: 900px) { .band-in { grid-template-columns: 1fr 280px; gap: 64px; } }
+
+  .layout { display: grid; gap: 40px; padding-block: 44px 64px; }
+  .side { display: grid; gap: 22px; align-content: start; }
+  .facts { margin: 0; border-top: 3px solid var(--navy); }
+  .facts div { display: grid; grid-template-columns: 100px 1fr; gap: 10px; padding-block: 10px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .facts dt { color: var(--faint); }
+  .facts dd { margin: 0; font-weight: 600; }
+  .facts a { color: var(--blue); text-decoration: none; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tags a { font-size: 13px; font-weight: 600; text-decoration: none; color: var(--white); background: var(--navy); border-radius: 3px; padding: 3px 9px; }
+  .tags.light a { color: var(--navy); background: var(--soft); border: 1px solid var(--line); border-radius: 999px; }
+  .toc h2, .keys h2, .cite h2 { font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--navy); margin-bottom: 10px; }
+  .toc ol { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; font-size: 15px; }
+  .toc a { color: var(--ink); text-decoration: none; }
+  .toc a:hover { color: var(--blue); text-decoration: underline; }
+  @media (min-width: 960px) { .layout { grid-template-columns: 260px minmax(0, 720px); gap: 64px; } .side { position: sticky; top: 72px; } }
+
+  .main { min-width: 0; display: grid; gap: 32px; align-content: start; }
+  .keys { background: var(--blue-light); border-left: 4px solid var(--blue); border-radius: 0 4px 4px 0; padding: 22px 26px; }
+  .keys ol { margin: 0; padding-left: 1.3em; display: grid; gap: 10px; font-size: 17px; line-height: 1.55; }
+  .keys li::marker { color: var(--blue); font-weight: 800; }
+  .pdfview { width: 100%; height: min(85vh, 960px); border: 1px solid var(--line); border-radius: 4px; background: var(--soft); }
+  .cite { border-top: 1px solid var(--line); padding-top: 24px; }
+  .cite p { font-size: 15px; line-height: 1.6; color: var(--muted); background: var(--soft); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; word-break: break-word; }
+  .copycite { margin-top: 10px; font: 600 14px var(--font); color: var(--blue); background: none; border: 0; padding: 0; cursor: pointer; }
+  .share { border-top: 1px solid var(--line); padding-top: 22px; }
+  .grid3 { display: grid; gap: 36px 28px; }
+  @media (min-width: 680px) { .grid3 { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .grid3 { grid-template-columns: repeat(3, 1fr); } }
+
+  .print-cover { display: none; }
+  @media print {
+    .print-cover { display: block; break-after: page; }
+    .print-cover img { width: 100%; height: auto; }
+    .band, .side, .share, .copycite, .pdfview { display: none !important; }
+    .layout { display: block; padding: 0; }
+    .keys { break-inside: avoid; }
+  }
+</style>

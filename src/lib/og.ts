@@ -30,7 +30,7 @@ export async function ogImage(item: Item): Promise<Buffer> {
 
   const tree = h('div', { width: '1200px', height: '630px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#0A2540', padding: '64px 72px', fontFamily: 'Inter', color: '#FFFFFF' }, [
     h('div', { display: 'flex', alignItems: 'center', gap: '18px' }, [
-      h('div', { display: 'flex', alignItems: 'center', justifyContent: 'center', width: '56px', height: '56px', borderRadius: '6px', background: '#FFFFFF', color: '#0A2540', fontSize: '22px', fontWeight: 800 }, 'MN'),
+      h('div', { display: 'flex', alignItems: 'center', justifyContent: 'center', width: '56px', height: '56px', borderRadius: '6px', background: '#FFFFFF', color: '#0A2540', fontSize: '22px', fontWeight: 800 }, 'MR'),
       h('div', { display: 'flex', flexDirection: 'column' }, [
         h('div', { fontSize: '26px', fontWeight: 800 }, SITE.name),
         h('div', { fontSize: '16px', fontWeight: 700, letterSpacing: '2px', color: '#93A4B8' }, lang === 'fr' ? 'ÉCONOMIE ET FINANCE' : 'ECONOMICS & FINANCE'),
@@ -55,3 +55,41 @@ export async function ogImage(item: Item): Promise<Buffer> {
 
 // Nom du fichier de l'image de partage d'une publication
 export const ogPath = (item: Item) => `/og/${item.kind}-${item.lang}-${item.id}.png`;
+
+// Couverture d'un rapport (format A4, comme les publications du FMI ou des Nations unies)
+export async function reportCover(item: Item, serie: string, numero?: string): Promise<Buffer> {
+  const lang = item.lang;
+  const topic = item.topics[0];
+  const title = item.title.length > 120 ? item.title.slice(0, 120).replace(/\s+\S*$/, '') + '…' : item.title;
+  const size = title.length > 80 ? 64 : title.length > 50 ? 74 : 84;
+  const date = item.date.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+  const W = 1240, H = 1754;
+  const tree = h('div', { width: `${W}px`, height: `${H}px`, display: 'flex', flexDirection: 'column', background: '#FFFFFF', fontFamily: 'Inter' }, [
+    h('div', { display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: `${W}px`, height: '1150px', boxSizing: 'border-box', padding: '110px 100px 90px', background: '#0A2540', color: '#FFFFFF' }, [
+      h('div', { display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '1040px' }, [
+        h('div', { display: 'flex', alignItems: 'center', gap: '22px' }, [
+          h('div', { display: 'flex', alignItems: 'center', justifyContent: 'center', width: '84px', height: '84px', borderRadius: '14px', background: '#FFFFFF', color: '#0A2540', fontSize: '34px', fontWeight: 800 }, 'MR'),
+          h('div', { display: 'flex', fontSize: '30px', fontWeight: 800 }, SITE.name),
+        ]),
+        h('div', { display: 'flex', fontSize: '26px', fontWeight: 700, letterSpacing: '3px', color: '#8FB8E8' }, `${serie.toUpperCase()}${numero ? ' · ' + numero : ''}`),
+      ]),
+      h('div', { display: 'flex', flexDirection: 'column', gap: '34px', width: '1040px' }, [
+        h('div', { display: 'flex', width: '120px', height: '10px', background: '#5B9BE6', borderRadius: '5px' }),
+        h('div', { display: 'block', width: '1040px', fontSize: `${size}px`, fontWeight: 800, lineHeight: 1.1, letterSpacing: '-2px' }, title),
+        h('div', { display: 'flex', fontSize: '28px', fontWeight: 700, letterSpacing: '3px', color: '#8FB8E8' }, topic ? TOPIC_INFO[topic][lang].toUpperCase() : ''),
+      ]),
+    ]),
+    h('div', { display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: `${W}px`, height: `${H - 1150}px`, boxSizing: 'border-box', padding: '80px 100px 90px', color: '#0F172A' }, [
+      h('div', { display: 'flex', flexDirection: 'column', gap: '12px' }, [
+        h('div', { display: 'flex', fontSize: '34px', fontWeight: 800 }, SITE.name),
+        h('div', { display: 'flex', fontSize: '28px', fontWeight: 500, color: '#475569' }, date),
+      ]),
+      h('div', { display: 'flex', justifyContent: 'space-between', width: '1040px', borderTop: '3px solid #0A2540', paddingTop: '26px', fontSize: '24px', color: '#475569' }, [
+        h('div', { display: 'flex' }, lang === 'fr' ? 'Économie et finance' : 'Economics & Finance'),
+        h('div', { display: 'flex', fontWeight: 700, color: '#0A2540' }, SITE.domain),
+      ]),
+    ]),
+  ]);
+  const svg = await satori(tree as never, { width: W, height: H, fonts });
+  return new Resvg(svg, { fitTo: { mode: 'width', value: W } }).render().asPng();
+}

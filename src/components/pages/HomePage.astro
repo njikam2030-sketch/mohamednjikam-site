@@ -121,10 +121,10 @@ const alt = edition ? path.edition(other(lang), edition) : path.home(other(lang)
   <!-- L'auteur -->
   <section class="section grey author">
     <div class="wrap about">
-      <img src="/images/headshot.jpg" alt="Mohamed Njikam" width="640" height="800" loading="lazy" />
+      <img src="/images/headshot.jpg" alt={SITE.name} width="640" height="800" loading="lazy" />
       <div>
         <span class="label">{t.aboutAuthor}</span>
-        <h2>Mohamed Njikam</h2>
+        <h2>{SITE.name}</h2>
         <p class="bio">{p.apropos[0]}</p>
         <p class="bio">{p.apropos[1]}</p>
         <a class="btn btn-outline" href={path.about(lang)}>{t.moreAbout}</a>

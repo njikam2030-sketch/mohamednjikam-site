@@ -7,3 +7,4 @@ langue: en
 rubriques: [funds, ai]
 pays: [US]
 ---
+Blackstone's President on private credit and the financing of AI infrastructure: a useful view of where institutional capital is being deployed.

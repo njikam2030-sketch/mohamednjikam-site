@@ -125,7 +125,7 @@ const countryRegions = Object.keys(COUNTRY_REGIONS) as CountryRegion[];
           <span>{t.search}</span>
         </a>
         <a class="wordmark" href={path.home(lang)}>
-          <strong>Mohamed Njikam</strong>
+          <strong>{SITE.name}</strong>
           <small>{t.subtitle}</small>
         </a>
         <a class="btn btn-primary sub" href="#newsletter">{t.subscribe}</a>
@@ -144,7 +144,7 @@ const countryRegions = Object.keys(COUNTRY_REGIONS) as CountryRegion[];
       </div>
     </nav>
 
-    <div class="print-brand wrap"><strong>Mohamed Njikam</strong><span>{SITE.domain}</span></div>
+    <div class="print-brand wrap"><strong>{SITE.name}</strong><span>{SITE.domain}</span></div>
 
     <main id="contenu">
       <slot />
@@ -156,7 +156,7 @@ const countryRegions = Object.keys(COUNTRY_REGIONS) as CountryRegion[];
       <div class="wrap footer-grid">
         <div class="footer-brand">
           <a class="brand light" href={path.home(lang)}>
-            <span class="mark" aria-hidden="true">MN</span>
+            <span class="mark" aria-hidden="true">MR</span>
             <span class="brand-text"><strong>{SITE.name}</strong><small>{t.subtitle}</small></span>
           </a>
           <p>{p.bio}</p>

@@ -8,3 +8,4 @@ langue: en
 rubriques: [debt, us]
 pays: [US]
 ---
+Bloomberg Surveillance on the Fed's 16 September decision: a quarter-point hike to 3.75–4%, its first since 2023, with more expected.

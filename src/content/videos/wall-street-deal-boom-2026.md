@@ -7,3 +7,4 @@ langue: en
 rubriques: [deals, us]
 pays: [US]
 ---
+Why Wall Street expected a major year for M&A in 2026, after a record run of deals worth more than $10 billion.

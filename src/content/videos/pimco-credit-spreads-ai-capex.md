@@ -7,3 +7,4 @@ langue: en
 rubriques: [debt, ai]
 pays: [US]
 ---
+PIMCO's argument that wider credit spreads are a sign of market discipline in funding the AI build-out, not a warning sign.

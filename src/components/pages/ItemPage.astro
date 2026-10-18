@@ -126,9 +126,20 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
             <ul>{keyPoints.map((k) => <li>{k}</li>)}</ul>
           </aside>
         )}
-        {video && hasBody && <h2 class="take">{t.myTake}</h2>}
         {item.coming && <p class="coming">{t.comingText} <a href="#newsletter">{t.subscribe}</a></p>}
-        <div class:list={['prose', { short: kind === 'commentary' }]} data-pagefind-body><Content /></div>
+        {video ? (
+          hasBody && (
+            <div class="vcomment">
+              <img src="/images/avatar.jpg" alt="" width="40" height="40" />
+              <div>
+                <span class="vc-label">{t.myTake} · {SITE.name}</span>
+                <div class="prose short" data-pagefind-body><Content /></div>
+              </div>
+            </div>
+          )
+        ) : (
+          <div class:list={['prose', { short: kind === 'commentary' }]} data-pagefind-body><Content /></div>
+        )}
         <div class="share">
           <Share lang={lang} url={url} text={item.title} />
           {kind === 'analysis' && !item.coming && <button type="button" class="pdf" onclick="window.print()">{t.pdf}</button>}
@@ -205,6 +216,10 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
   .pdfview { width: 100%; height: min(80vh, 900px); border: 1px solid var(--line); border-radius: 4px; background: var(--soft); }
   .yt-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin: 12px 0 28px; font-size: 14px; color: var(--muted); }
   .yt-meta a { color: var(--blue); font-weight: 600; }
+  .vcomment { display: grid; grid-template-columns: 40px 1fr; gap: 14px; background: var(--soft); border-left: 4px solid var(--blue); border-radius: 0 4px 4px 0; padding: 18px 20px; margin-top: 4px; }
+  .vcomment img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+  .vc-label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy); margin-bottom: 6px; }
+  .vcomment .prose { font-size: 17px; line-height: 1.6; }
   .take { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--navy); margin: 8px 0 14px; padding-top: 18px; border-top: 1px solid var(--line); }
   .keys { background: var(--blue-light); border-left: 4px solid var(--blue); border-radius: 0 4px 4px 0; padding: 20px 24px; margin-bottom: 32px; }
   .keys h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--navy); }
