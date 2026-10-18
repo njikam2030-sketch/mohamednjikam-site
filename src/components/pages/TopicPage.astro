@@ -16,7 +16,7 @@ const info = topic ? TOPIC_INFO[topic] : undefined;
 const title = info ? info[lang] : t.topics;
 const intro = info ? (lang === 'fr' ? info.dfr : info.den) : t.topicsIntro;
 ---
-<Base lang={lang} title={title} description={intro} section="topics" alternate={topic ? path.topic(other(lang), topic) : path.topics(other(lang))}>
+<Base lang={lang} title={title} description={intro} section="topics" topic={topic} alternate={topic ? path.topic(other(lang), topic) : path.topics(other(lang))}>
   <PageHead lang={lang} title={title} intro={intro} crumbs={topic ? [{ label: t.topics, href: path.topics(lang) }] : []}>
     {topic && (
       <nav class="chips" aria-label={t.topics}>

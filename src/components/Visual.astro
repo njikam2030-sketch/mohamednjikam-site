@@ -8,7 +8,7 @@ const { item, lang, ratio = '16 / 9', eager = false } = Astro.props;
 const topic = item.topics[0];
 ---
 {item.image ? (
-  <div class="vis img" style={`aspect-ratio:${ratio}`}>
+  <div class:list={['vis', 'img', { contain: item.image.includes('/charts/') }]} style={`aspect-ratio:${ratio}`}>
     <img src={item.image} alt="" loading={eager ? 'eager' : 'lazy'} />
     {item.kind === 'video' && <span class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>}
   </div>
@@ -25,6 +25,8 @@ const topic = item.topics[0];
   .vis { width: 100%; max-width: 100%; overflow: hidden; border-radius: 4px; background: var(--soft); }
   .img { position: relative; }
   .img img { width: 100%; height: 100%; object-fit: cover; }
+  .contain { background: #fff; border: 1px solid var(--line); }
+  .contain img { object-fit: contain; }
   .play { position: absolute; left: 14px; bottom: 14px; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(10, 37, 64, 0.88); color: #fff; }
   .play svg { width: 22px; height: 22px; margin-left: 3px; }
   .plain { display: grid; align-content: space-between; padding: 18px 20px; background: var(--navy); color: var(--white); }

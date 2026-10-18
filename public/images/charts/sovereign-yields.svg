@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 610" width="1200" height="610" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif">
+<rect width="1200" height="610" fill="#FFFFFF"/>
+<rect x="0" y="0" width="1200" height="6" fill="#0A2540"/>
+<text x="56" y="70" font-size="34" font-weight="800" fill="#0F172A">The hierarchy is blurring at the top</text>
+<text x="56" y="108" font-size="22" fill="#475569">Cost of borrowing, %</text>
+<line x1="400.0" y1="136" x2="400.0" y2="506" stroke="#E2E8F0" stroke-width="1"/>
+<text x="400.0" y="534" font-size="16" fill="#475569" text-anchor="middle">0</text>
+<line x1="506.7" y1="136" x2="506.7" y2="506" stroke="#E2E8F0" stroke-width="1"/>
+<text x="506.7" y="534" font-size="16" fill="#475569" text-anchor="middle">2</text>
+<line x1="613.3" y1="136" x2="613.3" y2="506" stroke="#E2E8F0" stroke-width="1"/>
+<text x="613.3" y="534" font-size="16" fill="#475569" text-anchor="middle">4</text>
+<line x1="720.0" y1="136" x2="720.0" y2="506" stroke="#E2E8F0" stroke-width="1"/>
+<text x="720.0" y="534" font-size="16" fill="#475569" text-anchor="middle">6</text>
+<line x1="826.7" y1="136" x2="826.7" y2="506" stroke="#E2E8F0" stroke-width="1"/>
+<text x="826.7" y="534" font-size="16" fill="#475569" text-anchor="middle">8</text>
+<line x1="933.3" y1="136" x2="933.3" y2="506" stroke="#E2E8F0" stroke-width="1"/>
+<text x="933.3" y="534" font-size="16" fill="#475569" text-anchor="middle">10</text>
+<line x1="1040.0" y1="136" x2="1040.0" y2="506" stroke="#E2E8F0" stroke-width="1"/>
+<text x="1040.0" y="534" font-size="16" fill="#475569" text-anchor="middle">12</text>
+<text x="380" y="172" font-size="20" fill="#0F172A" text-anchor="end" font-weight="500">Côte d’Ivoire, 15-year (Feb 2026)*</text>
+<rect x="400" y="150" width="287.5" height="34" rx="4" fill="#9DB3CC"/>
+<text x="699.5" y="174" font-size="21" font-weight="800" fill="#0F172A">5.39%</text>
+<text x="380" y="246" font-size="20" fill="#0F172A" text-anchor="end" font-weight="700">United Kingdom, 10-year</text>
+<rect x="400" y="224" width="293.9" height="34" rx="4" fill="#0B5CAD"/>
+<text x="705.9" y="248" font-size="21" font-weight="800" fill="#0F172A">5.51%</text>
+<text x="380" y="320" font-size="20" fill="#0F172A" text-anchor="end" font-weight="700">United Kingdom, 30-year</text>
+<rect x="400" y="298" width="321.6" height="34" rx="4" fill="#0B5CAD"/>
+<text x="733.6" y="322" font-size="21" font-weight="800" fill="#0F172A">6.03%</text>
+<text x="380" y="394" font-size="20" fill="#0F172A" text-anchor="end" font-weight="500">DR Congo, debut 10-year</text>
+<rect x="400" y="372" width="506.7" height="34" rx="4" fill="#9DB3CC"/>
+<text x="918.7" y="396" font-size="21" font-weight="800" fill="#0F172A">9.50%</text>
+<text x="380" y="468" font-size="20" fill="#0F172A" text-anchor="end" font-weight="500">Kenya, refinancing</text>
+<rect x="400" y="446" width="554.7" height="34" rx="4" fill="#9DB3CC"/>
+<text x="966.7" y="470" font-size="21" font-weight="800" fill="#0F172A">10.40%</text>
+<line x1="400" y1="136" x2="400" y2="506" stroke="#0F172A" stroke-width="2"/>
+<text x="56" y="582" font-size="17" fill="#475569">Chart: Mohamed Njikam, from the figures cited in the article. *Effective cost after hedging into euros. Currencies, maturities and dates differ.</text>
+<text x="1144" y="70" font-size="17" font-weight="700" fill="#0A2540" text-anchor="end">mohamednjikam.com</text>
+</svg>

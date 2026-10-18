@@ -76,5 +76,7 @@ export async function analysesFor(lang: Lang) {
 
 export async function allItems(lang: Lang): Promise<Item[]> {
   const [a, r, c, v] = await Promise.all([analysesFor(lang), getReflections(), getCharts(), getVideos()]);
-  return [...a.map(analysisItem), ...r.map(reflectionItem), ...c.map(chartItem), ...v.map(videoItem)].sort(byDate);
+  const all = [...a.map(analysisItem), ...r.map(reflectionItem), ...c.map(chartItem), ...v.map(videoItem)].sort(byDate);
+  // Site anglais : uniquement les textes en anglais. Site français : tout (le français et l'anglais).
+  return lang === 'en' ? all.filter((i) => i.lang === 'en') : all;
 }

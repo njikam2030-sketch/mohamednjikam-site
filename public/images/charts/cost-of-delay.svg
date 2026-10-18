@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 462" width="1200" height="462" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif">
+<rect width="1200" height="462" fill="#FFFFFF"/>
+<rect x="0" y="0" width="1200" height="6" fill="#0A2540"/>
+<text x="56" y="70" font-size="34" font-weight="800" fill="#0F172A">Same delay, 37 times more expensive</text>
+<text x="56" y="108" font-size="22" fill="#475569">Interest lost when £1 million waits three days, £</text>
+<line x1="400.0" y1="136" x2="400.0" y2="358" stroke="#E2E8F0" stroke-width="1"/>
+<text x="400.0" y="386" font-size="16" fill="#475569" text-anchor="middle">0</text>
+<line x1="523.1" y1="136" x2="523.1" y2="358" stroke="#E2E8F0" stroke-width="1"/>
+<text x="523.1" y="386" font-size="16" fill="#475569" text-anchor="middle">100</text>
+<line x1="646.2" y1="136" x2="646.2" y2="358" stroke="#E2E8F0" stroke-width="1"/>
+<text x="646.2" y="386" font-size="16" fill="#475569" text-anchor="middle">200</text>
+<line x1="769.2" y1="136" x2="769.2" y2="358" stroke="#E2E8F0" stroke-width="1"/>
+<text x="769.2" y="386" font-size="16" fill="#475569" text-anchor="middle">300</text>
+<line x1="892.3" y1="136" x2="892.3" y2="358" stroke="#E2E8F0" stroke-width="1"/>
+<text x="892.3" y="386" font-size="16" fill="#475569" text-anchor="middle">400</text>
+<line x1="1015.4" y1="136" x2="1015.4" y2="358" stroke="#E2E8F0" stroke-width="1"/>
+<text x="1015.4" y="386" font-size="16" fill="#475569" text-anchor="middle">500</text>
+<text x="380" y="172" font-size="20" fill="#0F172A" text-anchor="end" font-weight="500">2021, Bank Rate 0.10%</text>
+<rect x="400" y="150" width="9.8" height="34" rx="4" fill="#9DB3CC"/>
+<text x="421.8" y="174" font-size="21" font-weight="800" fill="#0F172A">£8</text>
+<text x="380" y="246" font-size="20" fill="#0F172A" text-anchor="end" font-weight="700">Today, Bank Rate 3.75%</text>
+<rect x="400" y="224" width="379.1" height="34" rx="4" fill="#0B5CAD"/>
+<text x="791.1" y="248" font-size="21" font-weight="800" fill="#0F172A">£308</text>
+<text x="380" y="320" font-size="20" fill="#0F172A" text-anchor="end" font-weight="700">At the 10-year gilt rate</text>
+<rect x="400" y="298" width="557.5" height="34" rx="4" fill="#0B5CAD"/>
+<text x="969.5" y="322" font-size="21" font-weight="800" fill="#0F172A">£453</text>
+<line x1="400" y1="136" x2="400" y2="358" stroke="#0F172A" stroke-width="2"/>
+<text x="56" y="434" font-size="17" fill="#475569">Chart: Mohamed Njikam, from the figures cited in the article.</text>
+<text x="1144" y="70" font-size="17" font-weight="700" fill="#0A2540" text-anchor="end">mohamednjikam.com</text>
+</svg>

@@ -7,7 +7,7 @@ import '@fontsource/inter/700.css';
 import '@fontsource/inter/800.css';
 import '../styles/global.css';
 import { SITE, TOPICS } from '../config';
-import { UI, TOPIC_INFO, other, path, type Lang } from '../i18n/ui';
+import { UI, TOPIC_INFO, REGIONS, REGION_NAME, other, path, type Lang, type Region } from '../i18n/ui';
 import profil from '../data/profil.json';
 import Newsletter from '../components/Newsletter.astro';
 
@@ -20,9 +20,11 @@ interface Props {
   date?: Date;
   alternate?: string;
   section?: 'home' | 'analysis' | 'commentary' | 'chart' | 'video' | 'topics' | 'about';
+  edition?: Region;
+  topic?: string;
 }
 
-const { lang, title, description, image, type = 'website', date, alternate, section } = Astro.props;
+const { lang, title, description, image, type = 'website', date, alternate, section, edition, topic } = Astro.props;
 const t = UI[lang];
 const p = profil[lang];
 const o = other(lang);
@@ -40,6 +42,9 @@ const nav = [
   { key: 'about', href: path.about(lang), label: t.about },
 ] as const;
 const year = new Date().getFullYear();
+// Date du jour (date de la dernière mise à jour du site), comme en tête des journaux
+const today = new Date().toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/London' });
+const themes = ['deals', 'funds', 'ai', 'debt'] as const;
 ---
 <!doctype html>
 <html lang={lang}>
@@ -80,7 +85,12 @@ const year = new Date().getFullYear();
 
     <div class="topbar">
       <div class="wrap topbar-in">
-        <span class="tagline">{p.accroche}</span>
+        <span class="today">{today}</span>
+        <nav class="editions" aria-label={t.edition}>
+          <span class="ed-label">{t.edition}</span>
+          <a href={path.home(lang)} aria-current={section === 'home' && !edition ? 'true' : undefined}>{t.global}</a>
+          {REGIONS.map((r) => <a href={path.edition(lang, r)} aria-current={edition === r ? 'true' : undefined}>{REGION_NAME[r][lang]}</a>)}
+        </nav>
         <div class="topbar-links">
           <a href={SITE.linkedin} target="_blank" rel="me noopener">LinkedIn</a>
           <a href={SITE.x} target="_blank" rel="me noopener">X</a>
@@ -93,30 +103,29 @@ const year = new Date().getFullYear();
 
     <header class="masthead">
       <div class="wrap masthead-in">
-        <a class="brand" href={path.home(lang)}>
-          <span class="mark" aria-hidden="true">MN</span>
-          <span class="brand-text"><strong>{SITE.name}</strong><small>{t.subtitle}</small></span>
-        </a>
-        <nav class="mainnav" aria-label={t.menu}>
-          {nav.map((n) => <a href={n.href} aria-current={section === n.key ? 'page' : undefined}>{n.label}</a>)}
-        </nav>
         <a class="search" href={path.search(lang)} aria-label={t.search} title={t.search}>
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>{t.search}</span>
+        </a>
+        <a class="wordmark" href={path.home(lang)}>
+          <strong>Mohamed Njikam</strong>
+          <small>{t.subtitle}</small>
         </a>
         <a class="btn btn-primary sub" href="#newsletter">{t.subscribe}</a>
-        <details class="mobile">
-          <summary aria-label={t.menu}><span></span><span></span><span></span></summary>
-          <div class="mobile-panel">
-            {nav.map((n) => <a href={n.href} aria-current={section === n.key ? 'page' : undefined}>{n.label}</a>)}
-            <div class="mobile-topics">
-              {TOPICS.map((tp) => <a href={path.topic(lang, tp)}>{TOPIC_INFO[tp][lang]}</a>)}
-            </div>
-            <a href={path.search(lang)}>{t.search}</a>
-            <a class="btn btn-primary" href="#newsletter">{t.subscribe}</a>
-          </div>
-        </details>
       </div>
     </header>
+
+    <nav class="sections" aria-label={t.menu}>
+      <div class="wrap sections-in">
+        <a href={path.home(lang)} aria-current={section === 'home' && !edition ? 'page' : undefined}>{t.home}</a>
+        {nav.slice(0, 4).map((n) => <a href={n.href} aria-current={section === n.key ? 'page' : undefined}>{n.label}</a>)}
+        <span class="div" aria-hidden="true"></span>
+        {themes.map((tp) => <a href={path.topic(lang, tp)} aria-current={topic === tp ? 'page' : undefined}>{TOPIC_INFO[tp][lang]}</a>)}
+        <span class="div" aria-hidden="true"></span>
+        <a href={path.topics(lang)} aria-current={section === 'topics' && !topic ? 'page' : undefined}>{t.topics}</a>
+        <a href={path.about(lang)} aria-current={section === 'about' ? 'page' : undefined}>{t.about}</a>
+      </div>
+    </nav>
 
     <main id="contenu">
       <slot />
@@ -169,8 +178,6 @@ const year = new Date().getFullYear();
           setTimeout(() => { b.textContent = label; }, 1800);
         });
       });
-      // Le menu mobile se ferme quand on choisit un lien
-      document.querySelectorAll('.mobile-panel a').forEach((a) => a.addEventListener('click', () => a.closest('details')?.removeAttribute('open')));
     </script>
   </body>
 </html>
@@ -180,48 +187,48 @@ const year = new Date().getFullYear();
   .skip:focus { left: 8px; }
 
   .topbar { background: var(--navy-deep); color: #C7D2E0; font-size: 13px; }
-  .topbar-in { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 38px; }
-  .tagline { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .topbar-in { display: flex; align-items: center; gap: 20px; min-height: 40px; }
+  .today { white-space: nowrap; color: #93A4B8; }
+  .editions { display: flex; align-items: center; gap: 4px; margin-right: auto; overflow-x: auto; scrollbar-width: none; }
+  .editions::-webkit-scrollbar { display: none; }
+  .ed-label { color: #93A4B8; margin: 0 6px 0 14px; padding-left: 14px; border-left: 1px solid #33475E; }
+  .editions a { color: #C7D2E0; text-decoration: none; font-weight: 600; padding: 4px 9px; border-radius: 3px; white-space: nowrap; }
+  .editions a:hover { color: var(--white); background: rgba(255, 255, 255, 0.08); }
+  .editions a[aria-current] { color: var(--navy); background: #8FB8E8; }
   .topbar-links { display: flex; align-items: center; gap: 16px; }
   .topbar-links a { color: #C7D2E0; text-decoration: none; font-weight: 500; }
   .topbar-links a:hover { color: var(--white); }
   .topbar-links a[aria-current] { color: var(--white); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
   .sep { width: 1px; height: 14px; background: #33475E; }
 
-  .masthead { position: sticky; top: 0; z-index: 20; background: var(--white); border-bottom: 1px solid var(--line); box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02); }
-  .masthead-in { display: flex; align-items: center; gap: 28px; min-height: 76px; }
-  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; margin-right: auto; }
-  .mark { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 4px; background: var(--navy); color: var(--white); font-weight: 800; font-size: 16px; letter-spacing: 0.02em; flex: none; }
-  .brand-text { display: grid; line-height: 1.15; }
-  .brand-text strong { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; color: var(--navy); }
-  .brand-text small { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); margin-top: 2px; }
-  .mainnav { display: flex; gap: 26px; }
-  .mainnav a { position: relative; font-size: 15px; font-weight: 600; text-decoration: none; color: var(--ink); padding-block: 26px; }
-  .mainnav a:hover { color: var(--blue); }
-  .mainnav a[aria-current]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: var(--blue); }
-  .sub { padding: 10px 18px; font-size: 14px; }
-  .search { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 4px; color: var(--ink); }
+  .masthead { background: var(--white); }
+  .masthead-in { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; padding-block: 26px 22px; }
+  .wordmark { display: grid; justify-items: center; text-decoration: none; text-align: center; }
+  .wordmark strong { font-size: clamp(30px, 5.2vw, 56px); font-weight: 800; letter-spacing: -0.035em; line-height: 1; color: var(--navy); }
+  .wordmark small { margin-top: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--faint); }
+  .search { justify-self: start; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--ink); text-decoration: none; padding: 8px 10px; border-radius: 4px; }
   .search:hover { background: var(--soft); color: var(--blue); }
   .search svg { width: 20px; height: 20px; }
+  .sub { justify-self: end; padding: 10px 18px; font-size: 14px; }
 
-  .mobile { display: none; position: relative; }
-  .mobile summary { list-style: none; cursor: pointer; width: 44px; height: 44px; display: grid; place-content: center; gap: 5px; border: 1px solid var(--line); border-radius: 4px; }
-  .mobile summary::-webkit-details-marker { display: none; }
-  .mobile summary span { display: block; width: 20px; height: 2px; background: var(--ink); }
-  .mobile-panel { position: absolute; right: 0; top: 54px; width: min(86vw, 340px); background: var(--white); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 16px 40px rgba(15, 23, 42, 0.14); padding: 10px; display: grid; }
-  .mobile-panel > a:not(.btn) { padding: 12px 10px; font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--line); }
-  .mobile-panel > a[aria-current] { color: var(--blue); }
-  .mobile-topics { display: flex; flex-wrap: wrap; gap: 6px; padding: 14px 6px; }
-  .mobile-topics a { font-size: 13px; text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; }
-  .mobile-panel .btn { justify-content: center; margin: 4px 6px 6px; }
+  .sections { position: sticky; top: 0; z-index: 20; background: var(--white); border-top: 1px solid var(--line); border-bottom: 3px solid var(--navy); }
+  .sections-in { display: flex; align-items: center; justify-content: center; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+  .sections-in::-webkit-scrollbar { display: none; }
+  .sections a { position: relative; flex: none; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--ink); padding: 13px 11px; white-space: nowrap; }
+  .sections a:hover { color: var(--blue); }
+  .sections a[aria-current] { color: var(--blue); }
+  .sections a[aria-current]::after { content: ""; position: absolute; left: 11px; right: 11px; bottom: -3px; height: 3px; background: var(--blue); }
+  .div { flex: none; width: 1px; height: 18px; background: var(--line); margin: 0 6px; }
 
-  @media (max-width: 980px) { .mainnav { gap: 18px; } .mainnav a { font-size: 14px; } }
-  @media (max-width: 860px) {
-    .mainnav, .sub, .search { display: none; }
-    .mobile { display: block; }
-    .masthead-in { min-height: 64px; }
-    .tagline { display: none; }
-    .topbar-in { justify-content: flex-end; }
+  @media (max-width: 1100px) { .sections-in { justify-content: flex-start; } }
+  @media (max-width: 760px) {
+    .today { display: none; }
+    .ed-label { margin-left: 0; padding-left: 0; border-left: 0; }
+    .masthead-in { grid-template-columns: auto 1fr auto; padding-block: 16px 14px; }
+    .search span { display: none; }
+    .wordmark small { letter-spacing: 0.14em; font-size: 10px; }
+    .sub { padding: 8px 12px; font-size: 13px; }
+    .topbar-links a[href*="linkedin"], .topbar-links a[href*="x.com"], .sep { display: none; }
   }
 
   .footer { background: var(--navy); color: #C7D2E0; margin-top: 0; }

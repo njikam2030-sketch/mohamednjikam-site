@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 388" width="1200" height="388" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif">
+<rect width="1200" height="388" fill="#FFFFFF"/>
+<rect x="0" y="0" width="1200" height="6" fill="#0A2540"/>
+<text x="56" y="70" font-size="34" font-weight="800" fill="#0F172A">Africa’s bill rises with the world’s base rate</text>
+<text x="56" y="108" font-size="22" fill="#475569">Sub-Saharan Eurobond repayments, $ billion</text>
+<line x1="400.0" y1="136" x2="400.0" y2="284" stroke="#E2E8F0" stroke-width="1"/>
+<text x="400.0" y="312" font-size="16" fill="#475569" text-anchor="middle">0</text>
+<line x1="528.0" y1="136" x2="528.0" y2="284" stroke="#E2E8F0" stroke-width="1"/>
+<text x="528.0" y="312" font-size="16" fill="#475569" text-anchor="middle">2</text>
+<line x1="656.0" y1="136" x2="656.0" y2="284" stroke="#E2E8F0" stroke-width="1"/>
+<text x="656.0" y="312" font-size="16" fill="#475569" text-anchor="middle">4</text>
+<line x1="784.0" y1="136" x2="784.0" y2="284" stroke="#E2E8F0" stroke-width="1"/>
+<text x="784.0" y="312" font-size="16" fill="#475569" text-anchor="middle">6</text>
+<line x1="912.0" y1="136" x2="912.0" y2="284" stroke="#E2E8F0" stroke-width="1"/>
+<text x="912.0" y="312" font-size="16" fill="#475569" text-anchor="middle">8</text>
+<line x1="1040.0" y1="136" x2="1040.0" y2="284" stroke="#E2E8F0" stroke-width="1"/>
+<text x="1040.0" y="312" font-size="16" fill="#475569" text-anchor="middle">10</text>
+<text x="380" y="172" font-size="20" fill="#0F172A" text-anchor="end" font-weight="500">2026</text>
+<rect x="400" y="150" width="224.0" height="34" rx="4" fill="#9DB3CC"/>
+<text x="636.0" y="174" font-size="21" font-weight="800" fill="#0F172A">$3.5bn</text>
+<text x="380" y="246" font-size="20" fill="#0F172A" text-anchor="end" font-weight="700">2028</text>
+<rect x="400" y="224" width="550.4" height="34" rx="4" fill="#0B5CAD"/>
+<text x="962.4" y="248" font-size="21" font-weight="800" fill="#0F172A">$8.6bn</text>
+<line x1="400" y1="136" x2="400" y2="284" stroke="#0F172A" stroke-width="2"/>
+<text x="56" y="360" font-size="17" fill="#475569">Chart: Mohamed Njikam. Source cited: World Bank. Issuance Jan–Sep 2026: about $9.3bn.</text>
+<text x="1144" y="70" font-size="17" font-weight="700" fill="#0A2540" text-anchor="end">mohamednjikam.com</text>
+</svg>
