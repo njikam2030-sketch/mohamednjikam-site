@@ -1,0 +1,40 @@
+---
+// Recherche dans tout le site (Pagefind : index fabriqué à la construction, aucun service extérieur).
+import Base from '../../layouts/Base.astro';
+import PageHead from '../PageHead.astro';
+import { UI, other, path, type Lang } from '../../i18n/ui';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = UI[lang];
+---
+<Base lang={lang} title={t.search} description={t.searchIntro} alternate={path.search(other(lang))}>
+  <PageHead lang={lang} title={t.search} intro={t.searchIntro} />
+  <section class="section">
+    <div class="wrap"><div id="search" class="read"></div></div>
+  </section>
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (!window.PagefindUI) return;
+      new window.PagefindUI({ element: '#search', showSubResults: true, showImages: false, autofocus: true });
+    });
+  </script>
+</Base>
+
+<style is:global>
+  #search {
+    --pagefind-ui-scale: 0.95;
+    --pagefind-ui-primary: #0B5CAD;
+    --pagefind-ui-text: #0F172A;
+    --pagefind-ui-background: #FFFFFF;
+    --pagefind-ui-border: #CBD5E1;
+    --pagefind-ui-tag: #E8F0FA;
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 4px;
+    --pagefind-ui-font: "Inter", system-ui, sans-serif;
+  }
+  #search .pagefind-ui__result-link { color: #0A2540; font-weight: 700; }
+  #search .pagefind-ui__result-excerpt { color: #475569; }
+</style>
