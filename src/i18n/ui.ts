@@ -23,6 +23,7 @@ export const UI = {
     chartsIntro: 'One chart, one idea.',
     topicsIntro: 'Every publication, by topic.',
     breadcrumbHome: 'Home', lang: 'Language',
+    pdf: 'Download PDF', search: 'Search', searchIntro: 'Search every analysis, reflection and chart.',
   },
   fr: {
     home: 'Accueil', analysis: 'Analyses', commentary: 'Réflexions', charts: 'Graphiques', topics: 'Rubriques', about: 'À propos',
@@ -42,6 +43,7 @@ export const UI = {
     chartsIntro: 'Un graphique, une idée.',
     topicsIntro: 'Toutes les publications, par rubrique.',
     breadcrumbHome: 'Accueil', lang: 'Langue',
+    pdf: 'Télécharger en PDF', search: 'Rechercher', searchIntro: 'Chercher dans toutes les analyses, réflexions et graphiques.',
   },
 } as const;
 
@@ -75,6 +77,7 @@ export const path = {
   topics: (l: Lang) => `${base(l)}/${l === 'fr' ? 'rubriques' : 'topics'}/`,
   topic: (l: Lang, t: Topic) => `${base(l)}/${l === 'fr' ? 'rubriques' : 'topics'}/${t}/`,
   about: (l: Lang) => `${base(l)}/${l === 'fr' ? 'a-propos' : 'about'}/`,
+  search: (l: Lang) => `${base(l)}/${l === 'fr' ? 'recherche' : 'search'}/`,
 };
 
 export function formatDate(d: Date, l: Lang) {

@@ -72,6 +72,7 @@ const year = new Date().getFullYear();
         ? { '@context': 'https://schema.org', '@type': 'Article', headline: title, description: desc, image: ogImage, datePublished: date?.toISOString(), inLanguage: lang, author: { '@type': 'Person', name: SITE.name, url: SITE.url } }
         : { '@context': 'https://schema.org', '@type': 'Person', name: SITE.name, url: SITE.url, image: new URL('/images/portrait.jpg', SITE.url).href, jobTitle: p.titre, sameAs: [SITE.linkedin, SITE.x] }
     )} />
+    {process.env.VERCEL && <script is:inline defer src="/_vercel/insights/script.js"></script>}
   </head>
   <body>
     <a class="skip" href="#contenu">{lang === 'fr' ? 'Aller au contenu' : 'Skip to content'}</a>
@@ -98,6 +99,9 @@ const year = new Date().getFullYear();
         <nav class="mainnav" aria-label={t.menu}>
           {nav.map((n) => <a href={n.href} aria-current={section === n.key ? 'page' : undefined}>{n.label}</a>)}
         </nav>
+        <a class="search" href={path.search(lang)} aria-label={t.search} title={t.search}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </a>
         <a class="btn btn-primary sub" href="#newsletter">{t.subscribe}</a>
         <details class="mobile">
           <summary aria-label={t.menu}><span></span><span></span><span></span></summary>
@@ -106,6 +110,7 @@ const year = new Date().getFullYear();
             <div class="mobile-topics">
               {TOPICS.map((tp) => <a href={path.topic(lang, tp)}>{TOPIC_INFO[tp][lang]}</a>)}
             </div>
+            <a href={path.search(lang)}>{t.search}</a>
             <a class="btn btn-primary" href="#newsletter">{t.subscribe}</a>
           </div>
         </details>
@@ -194,6 +199,9 @@ const year = new Date().getFullYear();
   .mainnav a:hover { color: var(--blue); }
   .mainnav a[aria-current]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: var(--blue); }
   .sub { padding: 10px 18px; font-size: 14px; }
+  .search { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 4px; color: var(--ink); }
+  .search:hover { background: var(--soft); color: var(--blue); }
+  .search svg { width: 20px; height: 20px; }
 
   .mobile { display: none; position: relative; }
   .mobile summary { list-style: none; cursor: pointer; width: 44px; height: 44px; display: grid; place-content: center; gap: 5px; border: 1px solid var(--line); border-radius: 4px; }
@@ -208,7 +216,7 @@ const year = new Date().getFullYear();
 
   @media (max-width: 980px) { .mainnav { gap: 18px; } .mainnav a { font-size: 14px; } }
   @media (max-width: 860px) {
-    .mainnav, .sub { display: none; }
+    .mainnav, .sub, .search { display: none; }
     .mobile { display: block; }
     .masthead-in { min-height: 64px; }
     .tagline { display: none; }

@@ -8,6 +8,7 @@ import { SITE } from '../../config';
 import { UI, KIND_NAME, TOPIC_INFO, formatDate, other, path, readingTime, type Lang } from '../../i18n/ui';
 import { allItems, analysisItem, chartItem, reflectionItem, type Analysis, type Chart, type Reflection } from '../../lib/content';
 import profil from '../../data/profil.json';
+import { ogPath } from '../../lib/og';
 
 type Props =
   | { kind: 'analysis'; entry: Analysis }
@@ -32,7 +33,7 @@ const related = (await allItems(lang))
 const listTitle = kind === 'analysis' ? t.analysis : kind === 'commentary' ? t.commentary : t.charts;
 const description = item.excerpt ?? (reflection?.citation ? `${reflection.citation} ${reflection.auteur ?? ''}` : p.bio);
 ---
-<Base lang={lang} title={item.title} description={description} image={item.image} type="article" date={item.date} alternate={alternate} section={kind}>
+<Base lang={lang} title={item.title} description={description} image={item.image ?? ogPath(item)} type="article" date={item.date} alternate={alternate} section={kind}>
   <article>
     <header class="head">
       <div class="wrap">
@@ -52,7 +53,7 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
               {reflection.auteur && <cite>{reflection.auteur}</cite>}
             </blockquote>
           ) : (
-            <h1>{kind === 'commentary' && !reflection?.titre ? '' : item.title}</h1>
+            <h1 data-pagefind-meta="title">{kind === 'commentary' && !reflection?.titre ? '' : item.title}</h1>
           )}
           {analysis?.chapeau && <p class="lede">{analysis.chapeau}</p>}
           <div class="byline">
@@ -89,8 +90,11 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
           </aside>
         )}
         {item.coming && <p class="coming">{t.comingText} <a href="#newsletter">{t.subscribe}</a></p>}
-        <div class:list={['prose', { short: kind === 'commentary' }]}><Content /></div>
-        <div class="share"><Share lang={lang} url={url} text={item.title} /></div>
+        <div class:list={['prose', { short: kind === 'commentary' }]} data-pagefind-body><Content /></div>
+        <div class="share">
+          <Share lang={lang} url={url} text={item.title} />
+          {kind === 'analysis' && !item.coming && <button type="button" class="pdf" onclick="window.print()">{t.pdf}</button>}
+        </div>
         <div class="author">
           <img src="/images/avatar.jpg" alt="" width="64" height="64" />
           <div><strong><a href={path.about(lang)}>{SITE.name}</a></strong><p>{p.titre}. {p.bio}</p></div>
@@ -140,7 +144,9 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
   .coming { background: var(--soft); border: 1px solid var(--line); border-radius: 4px; padding: 18px 20px; color: var(--muted); margin-bottom: 24px; }
   .coming a { color: var(--blue); font-weight: 600; }
   .prose.short { font-size: 20px; }
-  .share { margin-top: 44px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .share { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 44px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .pdf { font: 600 14px var(--font); color: var(--white); background: var(--navy); border: 0; border-radius: 4px; padding: 8px 16px; cursor: pointer; }
+  .pdf:hover { background: var(--blue); }
   .author { display: grid; grid-template-columns: 64px 1fr; gap: 16px; align-items: center; margin-top: 28px; padding: 22px; background: var(--soft); border-radius: 4px; }
   .author img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
   .author a { text-decoration: none; color: var(--navy); }
