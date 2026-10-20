@@ -1,21 +1,23 @@
-# mohamednjikam.com
+# moharamadan.com
 
-Site personnel de Mohamed Ramadan : analyses, réflexions et graphiques, en anglais et en français.
-Le site est fabriqué en pages HTML (avec Astro) et se publie depuis un espace admin, sans toucher au code.
+Site personnel de Mohamed Ramadan : analyses, réflexions, vidéos, rapports et graphiques, en anglais et en français.
+Le site est fait de pages HTML (fabriquées avec Astro) et se publie depuis un espace admin, sans toucher au code.
 
-## 1. Mettre le site en ligne (une seule fois, environ 15 minutes)
+## 1. Brancher le domaine moharamadan.com (une seule fois)
 
-1. Aller sur **vercel.com** > « Sign up » > « Continue with GitHub » (compte `njikam2030-sketch`).
-2. « Add New… » > « Project » > choisir le dépôt **mohamednjikam-site** > « Deploy ». Vercel reconnaît Astro tout seul.
-3. Dans le projet Vercel : **Settings > Domains** > ajouter `mohamednjikam.com` (et `www.mohamednjikam.com`).
-4. Chez **Hostinger** (hPanel > Domaines > mohamednjikam.com > DNS) :
-   - enregistrement **A**, nom `@`, valeur `76.76.21.21` (supprimer les autres A sur `@`) ;
-   - enregistrement **CNAME**, nom `www`, valeur `cname.vercel-dns.com`.
-   Vercel affiche « Valid Configuration » après quelques minutes (parfois quelques heures).
+Le site est hébergé sur Vercel. Le domaine reste chez Hostinger : on lui dit seulement d'envoyer les visiteurs vers Vercel.
 
-Ensuite, chaque publication met le site à jour automatiquement, en une minute environ.
+1. **Vercel** : projet `mohamednjikam-site` > **Settings > Domains** > ajouter `moharamadan.com`, puis `www.moharamadan.com`
+   (choisir « Redirect to moharamadan.com »). Vercel affiche les valeurs à copier.
+2. **Hostinger** : hPanel > **Domaines** > moharamadan.com > **DNS / Serveurs de noms** > Gérer les enregistrements DNS :
+   - supprimer les enregistrements **A** existants sur `@` et le **CNAME** existant sur `www` ;
+   - ajouter **A**, nom `@`, valeur `76.76.21.21` (ou l'adresse affichée par Vercel) ;
+   - ajouter **CNAME**, nom `www`, valeur `cname.vercel-dns.com` (ou la valeur affichée par Vercel).
+3. Attendre « Valid Configuration » dans Vercel (quelques minutes, parfois quelques heures). Le cadenas HTTPS est automatique.
 
-## 2. Publier : l'espace admin `mohamednjikam.com/admin`
+Ensuite, chaque publication met le site à jour toute seule, en une minute environ.
+
+## 2. Publier : `moharamadan.com/admin`
 
 **Une seule fois : créer la clé d'accès**
 GitHub > photo de profil > Settings > Developer settings > Personal access tokens > **Fine-grained tokens** > Generate new token :
@@ -23,41 +25,31 @@ GitHub > photo de profil > Settings > Developer settings > Personal access token
 - Permissions > Repository permissions > **Contents : Read and write** ;
 - Generate, puis copier la clé (elle commence par `github_pat_`).
 
-**Ensuite, à chaque fois**
-Ouvrir `https://mohamednjikam.com/admin` > « Sign in with Token » (se connecter avec une clé) > coller la clé.
-Le navigateur la garde : on ne la donne qu'une fois par appareil.
+**Ensuite** : ouvrir `https://moharamadan.com/admin` > « Sign in with Token » > coller la clé (une fois par appareil).
 
 | Menu | Ce que c'est |
 | --- | --- |
-| **Analyses** | Articles de fond. Titre, chapeau, rubriques, points clés, image, texte, puis un titre « Sources » en fin de texte. « Mettre à la une » le place en grand sur l'accueil. |
+| **Analyses** | Articles de fond. Titre, chapeau, rubriques, points clés, image, texte, puis « Sources ». « Mettre à la une » le place en grand sur l'accueil. |
 | **Réflexions** | Textes courts, citations (avec auteur), hommages, photo facultative. |
-| **Vidéos** | Lien YouTube (votre vidéo ou une sélection), points clés et un petit commentaire affiché sous la vidéo. |
+| **Vidéos** | Lien YouTube (votre vidéo ou une sélection) et un petit commentaire affiché sous la vidéo. |
 | **Rapports** | À la manière du FMI : collection, numéro, messages clés, PDF (facultatif). Sans PDF, le rapport se lit sur le site et s'imprime avec sa couverture. Couverture créée automatiquement. |
-| **Graphiques** | Un graphique (PNG/JPG) avec son titre, sa source et un commentaire : « le graphique de la semaine ». |
+| **Graphiques** | Un graphique (PNG/JPG) avec titre, source et commentaire. |
 | **Mon profil** | Présentation de l'accueil et de la page À propos, en anglais et en français. |
 
-Chaque publication peut être rattachée à un ou plusieurs **pays** : elle apparaît alors sur la page du pays (menu « Country » en haut du site).
+Chaque publication peut être rattachée à un ou plusieurs **pays** (menu « Country » en haut du site).
+« Brouillon » garde une publication hors du site.
 
-« Brouillon » garde une publication hors du site. Pour supprimer : ouvrir la publication > Supprimer.
+## 3. Solution de secours : héberger chez Hostinger
 
-## 3. Pages du site
-
-| Page | Anglais | Français |
-| --- | --- | --- |
-| Accueil | `/` | `/fr/` |
-| Analyses | `/analysis/` | `/fr/analyses/` |
-| Réflexions | `/reflections/` | `/fr/reflexions/` |
-| Graphiques | `/charts/` | `/fr/graphiques/` |
-| Rubriques | `/topics/` | `/fr/rubriques/` |
-| À propos | `/about/` | `/fr/a-propos/` |
-
-Rubriques : Londres et Royaume-Uni, Afrique, Asie, IA et leadership, Marchés et taux, Paiements, Dette.
-Aussi : flux RSS `/rss.xml`, plan du site `/sitemap-index.xml`, image de partage LinkedIn / X / WhatsApp.
+Possible, mais l'admin ne met alors plus le site à jour tout seul : il faut refaire `npm run build`
+et renvoyer le dossier `dist/` à chaque publication.
+hPanel > Sites web > Gestionnaire de fichiers > `public_html` : y envoyer **le contenu** du dossier `dist/`
+(le fichier `.htaccess` fourni gère HTTPS, le www et la page 404).
 
 ## 4. Réglages
 
-- `src/config.ts` : liens LinkedIn et X, newsletter (`buttondown` : nom d'utilisateur d'un compte gratuit sur buttondown.com ; vide = « bientôt »).
-- `src/styles/global.css` : couleurs (bleu nuit `#0A2540`, bleu `#0B5CAD`), en haut du fichier.
+- `src/config.ts` : adresse du site, liens LinkedIn et X, newsletter (`buttondown`).
+- `src/styles/global.css` : couleurs (bleu nuit `#0A2540`, bleu `#0B5CAD`).
 - `public/images/` : photos du site.
 
 ## Pour un développeur

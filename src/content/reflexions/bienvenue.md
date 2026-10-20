@@ -2,4 +2,4 @@
 date: 2026-10-18
 langue: fr
 ---
-Bienvenue. J'ouvre ici mon carnet : des analyses économiques et financières sur l'Afrique, le Royaume-Uni, les paiements internationaux, les taux, les devises et la dette. En mon nom propre.
+Bienvenue. J'écris ici sur la direction que prend le capital, et pourquoi : dette et taux, introductions en bourse et fusions, hedge funds et investisseurs, intelligence artificielle et économie des entreprises qui la construisent, de Londres à Wall Street, de l'Afrique à l'Asie. En mon nom propre.
