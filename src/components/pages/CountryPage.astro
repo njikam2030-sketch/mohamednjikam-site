@@ -48,11 +48,11 @@ const regions = Object.keys(COUNTRY_REGIONS) as CountryRegion[];
 
 <style>
   .region + .region { margin-top: 44px; }
-  .region h2 { font-size: 20px; font-weight: 800; color: var(--navy); padding-bottom: 10px; border-bottom: 3px solid var(--navy); margin-bottom: 14px; }
+  .region h2 { font-size: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--rule); margin-bottom: 14px; }
   .region ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 2px 20px; }
   .region a { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--muted); font-size: 15px; }
   .region a.has { color: var(--ink); font-weight: 600; }
   .region a:hover { color: var(--blue); }
-  .region a span { font-size: 12px; font-weight: 700; color: var(--white); background: var(--blue); border-radius: 999px; padding: 1px 8px; }
+  .region a span { font-size: 12px; font-weight: 600; color: var(--faint); }
   .rows { max-width: 920px; }
 </style>

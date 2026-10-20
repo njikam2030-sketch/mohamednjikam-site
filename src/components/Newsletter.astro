@@ -28,14 +28,14 @@ const action = SITE.buttondown ? `https://buttondown.com/api/emails/embed-subscr
 </section>
 
 <style>
-  .nl { background: var(--blue-light); border-top: 1px solid #D5E3F4; }
+  .nl { background: var(--soft); border-top: 1px solid var(--line); }
   .nl-in { display: grid; gap: 20px; align-items: center; padding-block: 44px; }
-  h2 { font-size: 24px; font-weight: 800; color: var(--navy); }
+  h2 { font-size: 26px; }
   p { color: var(--muted); margin-top: 6px; }
   form { display: flex; flex-wrap: wrap; gap: 10px; }
-  input[type=email] { flex: 1 1 240px; min-width: 0; font: 16px var(--font); padding: 12px 14px; border: 1px solid #B8C7DA; border-radius: 4px; background: var(--white); color: var(--ink); }
+  input[type=email] { flex: 1 1 240px; min-width: 0; font: 16px var(--font); padding: 11px 14px; border: 1px solid #BDBDBD; border-radius: 2px; background: var(--white); color: var(--ink); }
   input[type=email]:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(11, 92, 173, 0.15); }
-  .soon { font-weight: 600; color: var(--navy); }
+  .soon { font-weight: 600; color: var(--ink); }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   @media (min-width: 860px) { .nl-in { grid-template-columns: 1fr 1fr; gap: 48px; } }
 </style>
