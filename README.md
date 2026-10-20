@@ -7,7 +7,7 @@ Le site est fait de pages HTML (fabriquées avec Astro) et se publie depuis un e
 
 Le site est hébergé sur Vercel. Le domaine reste chez Hostinger : on lui dit seulement d'envoyer les visiteurs vers Vercel.
 
-1. **Vercel** : projet `mohamednjikam-site` > **Settings > Domains** > ajouter `moharamadan.com`, puis `www.moharamadan.com`
+1. **Vercel** : votre projet > **Settings > Domains** > ajouter `moharamadan.com`, puis `www.moharamadan.com`
    (choisir « Redirect to moharamadan.com »). Vercel affiche les valeurs à copier.
 2. **Hostinger** : hPanel > **Domaines** > moharamadan.com > **DNS / Serveurs de noms** > Gérer les enregistrements DNS :
    - supprimer les enregistrements **A** existants sur `@` et le **CNAME** existant sur `www` ;
