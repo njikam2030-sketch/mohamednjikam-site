@@ -40,7 +40,7 @@ const related = (await allItems(lang))
 const listTitle = { analysis: t.analysis, commentary: t.commentary, chart: t.charts, video: t.videos, report: t.reports }[kind];
 const description = item.excerpt ?? (reflection?.citation ? `${reflection.citation} ${reflection.auteur ?? ''}` : p.bio);
 ---
-<Base lang={lang} title={item.title} description={description} image={item.image ?? ogPath(item)} type="article" date={item.date} alternate={alternate} section={kind}>
+<Base lang={lang} title={item.title} description={description} image={props.kind === 'analysis' ? ogPath(item) : item.image ?? ogPath(item)} type="article" date={item.date} alternate={alternate} section={kind}>
   <article>
     <header class="head">
       <div class="wrap">
@@ -51,7 +51,7 @@ const description = item.excerpt ?? (reflection?.citation ? `${reflection.citati
         <div class="read" data-pagefind-body>
           <div class="labels">
             <span class="label label-kind">{KIND_NAME[kind][lang]}</span>
-            {item.topics.map((tp) => <a class="label" href={path.topic(lang, tp)}>{TOPIC_INFO[tp][lang]}</a>)}
+            {item.topics.map((tp) => <a class="pill" href={path.topic(lang, tp)}>{TOPIC_INFO[tp][lang]}</a>)}
             {item.coming && <span class="badge">{t.coming}</span>}
           </div>
           {kind === 'commentary' && reflection?.citation ? (

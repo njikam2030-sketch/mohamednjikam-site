@@ -9,6 +9,8 @@ pointsCles:
   - "Tokens are to intelligence what kilowatt-hours are to electricity: the unit of a new utility."
   - "Global debt is now above $365 trillion, with AI infrastructure among the forces behind the latest record."
   - "The next decades will be decided by who produces intelligence, who finances it, and who sets its price."
+image: /images/photos/data-center.jpg
+legendeImage: "Inside a data centre: the factories of the AI economy."
 linkedin: https://lnkd.in/p/eaWK3QjD
 pays: [US, CN, CM, NG, GB]
 ---

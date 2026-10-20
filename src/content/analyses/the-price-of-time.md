@@ -9,8 +9,8 @@ pointsCles:
   - "Every 0.25 point on gilt yields adds roughly £2.5 billion a year to UK debt interest."
   - "£1 million stuck for three days now costs about £308 in lost interest, against £8 in 2021."
   - "Sending $200 to sub-Saharan Africa costs 8.46% on average, against 6.36% worldwide."
-image: /images/charts/gilt-staircase.png
-legendeImage: "UK 30-year gilt yield at successive peaks."
+image: /images/photos/london-city.jpg
+legendeImage: "The City of London, seen from the Thames."
 linkedin: https://lnkd.in/p/et9cZCfY
 aLaUne: true
 pays: [GB, US, CI, CD, KE, CM, NG, GH]
