@@ -2,5 +2,5 @@
 import { SITE } from '../config';
 
 export function GET() {
-  return new Response(`User-agent: *\nAllow: /\nDisallow: /admin/\n\nSitemap: ${SITE.url}/sitemap-index.xml\n`, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+  return new Response(`User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /kit/\n\nSitemap: ${SITE.url}/sitemap-index.xml\n`, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
 }
