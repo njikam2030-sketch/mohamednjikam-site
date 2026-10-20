@@ -1,9 +1,7 @@
 // Réglages du site : modifiés ici, ils s'appliquent partout.
 
-// Adresse du site : variable SITE_URL si elle existe, sinon l'adresse principale donnée par Vercel
-// (le domaine personnalisé dès qu'il est branché), sinon mohamednjikam.com.
-const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
-export const SITE_URL = (process.env.SITE_URL || (vercelUrl ? `https://${vercelUrl}` : 'https://mohamednjikam.com')).replace(/\/$/, '');
+// Adresse du site : le domaine moharamadan.com (variable SITE_URL pour en changer).
+export const SITE_URL = (process.env.SITE_URL || 'https://moharamadan.com').replace(/\/$/, '');
 
 export const SITE = {
   name: 'Mohamed Ramadan',

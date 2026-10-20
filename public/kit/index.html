@@ -16,6 +16,8 @@
   .carte img { width: 100%; border-radius: 6px; display: block; }
   .large { grid-column: 1 / -1; }
   .nom { font-size: 14px; margin: 10px 0; }
+  .etapes ol { margin: 0; padding-left: 1.2em; line-height: 1.7; }
+  code { background: #E2E8F0; padding: 1px 6px; border-radius: 4px; font-size: 14px; }
   a.bouton { display: block; text-align: center; background: #0A2540; color: #fff; text-decoration: none; padding: 12px; border-radius: 999px; font-weight: 600; }
 </style>
 </head>
@@ -37,9 +39,29 @@
     <div class="carte large"><img src="banniere-x-1500x500.png" alt="Bannière X"><div class="nom">X : Edit profile &gt; header</div><a class="bouton" href="banniere-x-1500x500.png" download>Télécharger</a></div>
   </div>
 
+  <h2>Le site complet en HTML (pour Hostinger)</h2>
+  <div class="grille">
+    <div class="carte large">
+      <div class="nom"><strong>site-moharamadan-html.zip</strong> (6 Mo) : toutes les pages du site, prêtes à envoyer dans <code>public_html</code> chez Hostinger.</div>
+      <div class="nom">Solution recommandée : laisser le site sur Vercel et brancher le domaine (voir ci-dessous). Ce fichier sert de copie de secours.</div>
+      <a class="bouton" href="site-moharamadan-html.zip" download>Télécharger le site (zip)</a>
+    </div>
+  </div>
+
+  <h2>Brancher moharamadan.com (recommandé, 10 minutes)</h2>
+  <div class="carte large etapes">
+    <ol>
+      <li><strong>Vercel</strong> : projet mohamednjikam-site &gt; Settings &gt; Domains &gt; ajouter <code>moharamadan.com</code> puis <code>www.moharamadan.com</code>.</li>
+      <li><strong>Hostinger</strong> : hPanel &gt; Domaines &gt; moharamadan.com &gt; DNS. Supprimer les anciens enregistrements A sur <code>@</code> et CNAME sur <code>www</code>.</li>
+      <li>Ajouter <strong>A</strong> &nbsp;<code>@</code>&nbsp; <code>76.76.21.21</code></li>
+      <li>Ajouter <strong>CNAME</strong> &nbsp;<code>www</code>&nbsp; <code>cname.vercel-dns.com</code></li>
+      <li>Attendre « Valid Configuration » dans Vercel. Le site s'ouvre alors sur moharamadan.com, avec le cadenas HTTPS.</li>
+    </ol>
+  </div>
+
   <h2>Logo et rapport</h2>
   <div class="grille">
-    <div class="carte"><img src="logo-MR-512.png" alt="Logo MR"><div class="nom">Logo MR</div><a class="bouton" href="logo-MR-512.png" download>Télécharger</a></div>
+    <div class="carte"><img src="logo-MR-512.png" alt="Logo MR" style="max-width:140px"><div class="nom">Logo MR</div><a class="bouton" href="logo-MR-512.png" download>Télécharger</a></div>
     <div class="carte"><div class="nom">The Price of Time, Research Report No. 1 (PDF)</div><a class="bouton" href="/documents/the-price-of-time.pdf" download>Télécharger le PDF</a></div>
   </div>
 </main>
