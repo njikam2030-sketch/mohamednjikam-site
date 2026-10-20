@@ -46,12 +46,12 @@ const intro = info ? (lang === 'fr' ? info.dfr : info.den) : t.topicsIntro;
 <style>
   .section { padding-top: 24px; }
   .rows { max-width: 920px; }
-  .topics { display: grid; gap: 16px; padding-top: 24px; }
+  .topics { display: grid; gap: 28px; padding-top: 24px; }
   @media (min-width: 620px) { .topics { grid-template-columns: repeat(2, 1fr); } }
   @media (min-width: 1000px) { .topics { grid-template-columns: repeat(3, 1fr); } }
-  .topic { display: grid; gap: 6px; text-decoration: none; padding: 22px; border: 1px solid var(--line); border-top: 3px solid var(--navy); border-radius: 4px; }
-  .topic strong { font-size: 20px; color: var(--navy); }
+  .topic { display: grid; gap: 6px; text-decoration: none; padding: 12px 0 18px; border-top: 2px solid var(--rule); border-bottom: 1px solid var(--line); }
+  .topic strong { font-family: var(--serif); font-size: 23px; color: var(--ink); }
   .topic span { color: var(--muted); font-size: 15px; }
   .topic small { color: var(--faint); font-size: 13px; padding-top: 6px; }
-  .topic:hover { border-top-color: var(--blue); box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08); }
+  .topic:hover strong { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
 </style>

@@ -49,18 +49,18 @@ const groups = [
 
 <style>
   .about { display: grid; gap: 40px; align-items: start; }
-  .photo { width: 100%; max-width: 340px; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 0; border-radius: 4px; }
+  .photo { width: 100%; max-width: 340px; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 0; }
   .text { max-width: 640px; }
-  h1 { font-size: clamp(34px, 5vw, 46px); font-weight: 800; letter-spacing: -0.03em; color: var(--navy); margin-bottom: 22px; }
-  .text > p { font-size: 19px; line-height: 1.7; }
+  h1 { font-size: clamp(36px, 5vw, 52px); margin-bottom: 22px; }
+  .text > p { font-family: var(--serif); font-size: 20px; line-height: 1.65; color: #1B1B1B; }
   .text > p + p { margin-top: 1em; }
   .group { margin-top: 36px; }
-  .group h2 { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+  .group h2 { font-size: 21px; border-top: 2px solid var(--rule); padding-top: 9px; margin-bottom: 10px; }
   .group h2 a { text-decoration: none; } .group h2 a:hover { color: var(--blue); }
   .group ul { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; }
   .group li { font-size: 17px; }
-  .group li::marker { color: var(--blue); }
-  .group li a { color: var(--ink); text-decoration-color: #CBD5E1; text-underline-offset: 3px; }
+  .group li::marker { color: var(--faint); }
+  .group li a { color: var(--ink); text-decoration-color: var(--line); text-underline-offset: 3px; }
   .group li a:hover { color: var(--blue); text-decoration-color: currentColor; }
   .when { color: var(--faint); font-size: 15px; }
   @media (min-width: 860px) { .about { grid-template-columns: 340px 1fr; gap: 64px; } }
