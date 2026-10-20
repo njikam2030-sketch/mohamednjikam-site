@@ -1,57 +1,66 @@
 ---
-// Fiche d'une publication. Trois présentations :
-// « card » (image si elle existe + texte, pour les grilles), « row » (ligne avec date, pour les listes), « compact » (titre et date).
-import { UI, KIND_NAME, TOPIC_INFO, formatDate, type Lang } from '../i18n/ui';
+// Fiche d'une publication, à la manière des sites d'information économique :
+// « card » (photo en haut), « side » (vignette à gauche, pour les listes à côté de la une),
+// « row » (ligne large avec vignette, pour les pages de liste), « compact » (titre seul).
+import { UI, KIND_NAME, TOPIC_INFO, formatDate, path, type Lang } from '../i18n/ui';
 import type { Item } from '../lib/content';
 import Visual from './Visual.astro';
 
-interface Props { item: Item; lang: Lang; variant?: 'card' | 'row' | 'compact'; excerpt?: boolean; meta?: boolean }
+interface Props { item: Item; lang: Lang; variant?: 'card' | 'side' | 'row' | 'compact'; excerpt?: boolean; meta?: boolean }
 const { item, lang, variant = 'card', excerpt = true, meta = true } = Astro.props;
 const t = UI[lang];
 const topic = item.topics[0];
-const short = (x: string, n = 150) => (x.length > n ? x.slice(0, n).replace(/\s+\S*$/, '') + '…' : x);
+const short = (x: string, n = 140) => (x.length > n ? x.slice(0, n).replace(/\s+\S*$/, '') + '…' : x);
 const title = item.kind === 'commentary' && item.quote ? `“${short(item.quote)}”` : item.title;
+const showEx = excerpt && item.excerpt && variant !== 'compact' && variant !== 'side' && item.kind !== 'video';
 ---
-<article class:list={['c', variant, { quote: item.kind === 'commentary' && item.quote }]}>
-  {variant === 'card' && item.image && <a class="v" href={item.href} tabindex="-1" aria-hidden="true"><Visual item={item} /></a>}
-  {variant === 'row' && <time class="date col" datetime={item.date.toISOString()}>{formatDate(item.date, lang)}</time>}
+<article class:list={['c', variant]}>
+  {variant !== 'compact' && <a class="v" href={item.href} tabindex="-1" aria-hidden="true"><Visual item={item} ratio={variant === 'side' ? '4 / 3' : '16 / 10'} /></a>}
   <div class="txt">
-    {meta && <div class="meta-line">
-      {topic ? <span class="label">{TOPIC_INFO[topic][lang]}</span> : <span class="label label-kind">{KIND_NAME[item.kind][lang]}</span>}
-      {item.kind === 'video' && !item.mine && item.channel && <span class="date">{item.channel}</span>}
-      {item.kind === 'video' && item.mine && <span class="badge">{t.myVideo}</span>}
-      {item.lang !== lang && <span class="badge">{item.lang.toUpperCase()}</span>}
-      {item.coming && <span class="badge">{t.coming}</span>}
-    </div>}
+    {meta && (
+      <div class="meta-line">
+        {topic ? <a class="pill" href={path.topic(lang, topic)}>{TOPIC_INFO[topic][lang]}</a> : <span class="pill">{KIND_NAME[item.kind][lang]}</span>}
+        {item.kind !== 'analysis' && <span class="kind">{KIND_NAME[item.kind][lang]}</span>}
+        {item.lang !== lang && <span class="badge">{item.lang.toUpperCase()}</span>}
+        {item.coming && <span class="badge">{t.coming}</span>}
+      </div>
+    )}
     <h3><a href={item.href}>{title}</a></h3>
-    {item.author && <p class="who">{item.author}</p>}
-    {variant !== 'compact' && excerpt && item.excerpt && item.kind !== 'video' && <p class="ex">{item.excerpt}</p>}
-    {variant !== 'row' && <time class="date" datetime={item.date.toISOString()}>{formatDate(item.date, lang)}</time>}
+    {item.author && variant !== 'compact' && <p class="who">{item.author}</p>}
+    {showEx && <p class="ex">{item.excerpt}</p>}
+    <span class="date">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <time datetime={item.date.toISOString()}>{formatDate(item.date, lang)}</time>
+    </span>
   </div>
 </article>
 
 <style>
   .c { position: relative; min-width: 0; }
   .v { display: block; text-decoration: none; color: inherit; }
-  .txt { display: grid; gap: 7px; min-width: 0; align-content: start; }
-  .meta-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+  .txt { display: grid; gap: 8px; min-width: 0; align-content: start; justify-items: start; }
+  .meta-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; position: relative; z-index: 1; }
+  .kind { font-size: 12px; font-weight: 600; color: var(--faint); text-transform: uppercase; letter-spacing: 0.04em; }
+  h3 { font-weight: 800; }
   h3 a { text-decoration: none; color: var(--ink); }
   h3 a::after { content: ""; position: absolute; inset: 0; }
-  .c:hover h3 a { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
-  .quote h3 { font-style: italic; font-weight: 600; }
+  .c:hover h3 a { color: var(--primary); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
   .who { font-size: 13px; color: var(--muted); }
   .ex { color: var(--muted); font-size: 15px; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .date svg { width: 14px; height: 14px; }
 
-  .card { display: grid; gap: 12px; align-content: start; }
-  .card h3 { font-size: 21px; line-height: 1.22; }
+  .card { display: grid; gap: 14px; align-content: start; }
+  .card h3 { font-size: 19px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 
-  .row { display: grid; gap: 6px; padding-block: 22px; border-bottom: 1px solid var(--line); }
-  .row h3 { font-size: 24px; line-height: 1.2; }
-  .row .ex { font-size: 16px; -webkit-line-clamp: 2; }
-  .row .col { padding-top: 4px; }
-  @media (min-width: 720px) { .row { grid-template-columns: 150px 1fr; gap: 28px; } }
+  .side { display: grid; grid-template-columns: 132px 1fr; gap: 14px; align-items: start; }
+  .side h3 { font-size: 16px; line-height: 1.32; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .side .txt { gap: 6px; }
 
-  .compact { padding-block: 13px; border-bottom: 1px solid var(--line); }
-  .compact h3 { font-size: 18px; line-height: 1.25; }
-  .compact .txt { gap: 5px; }
+  .row { display: grid; gap: 16px; padding-block: 22px; border-bottom: 1px solid var(--line); }
+  .row h3 { font-size: 22px; line-height: 1.28; }
+  @media (min-width: 720px) { .row { grid-template-columns: 280px 1fr; gap: 26px; align-items: start; } }
+
+  .compact { padding-block: 12px; border-bottom: 1px solid var(--line); }
+  .compact h3 { font-size: 16px; line-height: 1.35; }
+  .compact .txt { gap: 6px; }
 </style>

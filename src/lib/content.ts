@@ -28,7 +28,17 @@ export interface Item {
   mine?: boolean;
   channel?: string;
   pdf?: string;
+  /** Vignette affichée dans les listes : l'image de la publication, sinon une photo de sa rubrique */
+  thumb: string;
 }
+
+// Photo par défaut de chaque rubrique (photos Pexels, libres de droits) pour les publications sans image
+export const TOPIC_PHOTO: Record<string, string> = {
+  us: '/images/photos/wall-street.jpg', deals: '/images/photos/nyse-night.jpg', funds: '/images/photos/markets-board.jpg',
+  ai: '/images/photos/data-center.jpg', debt: '/images/photos/london-city.jpg', uk: '/images/photos/london-city.jpg',
+  africa: '/images/photos/nairobi.jpg', asia: '/images/photos/singapore.jpg',
+};
+const withThumb = (i: Omit<Item, 'thumb'>): Item => ({ ...i, thumb: i.image ?? TOPIC_PHOTO[i.topics[0] ?? ''] ?? '/images/photos/london-city.jpg' });
 
 const byDate = (a: { date: Date }, b: { date: Date }) => b.date.getTime() - a.date.getTime();
 const plain = (s = '') => s.replace(/<[^>]+>/g, ' ').replace(/[#>*_`\[\]]/g, '').replace(/\(http[^)]*\)/g, '').replace(/\s+/g, ' ').trim();
@@ -42,20 +52,20 @@ export const getCharts = async () => (await getCollection('graphiques', (e) => !
 
 export function analysisItem(e: Analysis): Item {
   const d = e.data;
-  return { kind: 'analysis', id: e.id, title: d.titre, excerpt: d.chapeau, date: d.date, lang: d.langue, topics: d.rubriques, countries: d.pays,
-    href: path.item(d.langue, 'analysis', e.id), image: d.image, coming: d.aParaitre, featured: d.aLaUne };
+  return withThumb({ kind: 'analysis', id: e.id, title: d.titre, excerpt: d.chapeau, date: d.date, lang: d.langue, topics: d.rubriques, countries: d.pays,
+    href: path.item(d.langue, 'analysis', e.id), image: d.image, coming: d.aParaitre, featured: d.aLaUne });
 }
 export function reflectionItem(e: Reflection): Item {
   const d = e.data;
   const text = plain(e.body);
-  return { kind: 'commentary', id: e.id, title: d.titre ?? (d.citation ? `“${cut(d.citation, 110)}”` : cut(text, 110)),
+  return withThumb({ kind: 'commentary', id: e.id, title: d.titre ?? (d.citation ? `“${cut(d.citation, 110)}”` : cut(text, 110)),
     excerpt: d.titre || d.citation ? cut(text, 160) : undefined, date: d.date, lang: d.langue, topics: d.rubriques, countries: d.pays,
-    href: path.item(d.langue, 'commentary', e.id), image: d.image, coming: false, featured: false, quote: d.citation, author: d.auteur };
+    href: path.item(d.langue, 'commentary', e.id), image: d.image, coming: false, featured: false, quote: d.citation, author: d.auteur });
 }
 export function chartItem(e: Chart): Item {
   const d = e.data;
-  return { kind: 'chart', id: e.id, title: d.titre, excerpt: cut(plain(e.body), 160) || undefined, date: d.date, lang: d.langue, topics: d.rubriques, countries: d.pays,
-    href: path.item(d.langue, 'chart', e.id), image: d.image, coming: false, featured: false };
+  return withThumb({ kind: 'chart', id: e.id, title: d.titre, excerpt: cut(plain(e.body), 160) || undefined, date: d.date, lang: d.langue, topics: d.rubriques, countries: d.pays,
+    href: path.item(d.langue, 'chart', e.id), image: d.image, coming: false, featured: false });
 }
 
 // Identifiant d'une vidéo YouTube à partir de son lien (watch?v=, youtu.be/, shorts/, embed/)
@@ -66,15 +76,15 @@ export function youtubeId(url: string) {
 export function videoItem(e: Video): Item {
   const d = e.data;
   const yid = youtubeId(d.youtube);
-  return { kind: 'video', id: e.id, title: d.titre, excerpt: cut(plain(e.body), 160) || undefined, date: d.date, lang: d.langue, topics: d.rubriques, countries: d.pays,
+  return withThumb({ kind: 'video', id: e.id, title: d.titre, excerpt: cut(plain(e.body), 160) || undefined, date: d.date, lang: d.langue, topics: d.rubriques, countries: d.pays,
     href: path.item(d.langue, 'video', e.id), image: `https://i.ytimg.com/vi/${yid}/hqdefault.jpg`, coming: false, featured: false,
-    youtubeId: yid, mine: d.origine === 'moi', channel: d.chaine };
+    youtubeId: yid, mine: d.origine === 'moi', channel: d.chaine });
 }
 
 export function reportItem(e: Report): Item {
   const d = e.data;
-  return { kind: 'report', id: e.id, title: d.titre, excerpt: d.chapeau ?? (cut(plain(e.body), 160) || undefined), date: d.date, lang: d.langue, topics: d.rubriques, countries: d.pays,
-    href: path.item(d.langue, 'report', e.id), image: d.couverture ?? `/covers/${e.id}.png`, coming: false, featured: false, pdf: d.pdf };
+  return withThumb({ kind: 'report', id: e.id, title: d.titre, excerpt: d.chapeau ?? (cut(plain(e.body), 160) || undefined), date: d.date, lang: d.langue, topics: d.rubriques, countries: d.pays,
+    href: path.item(d.langue, 'report', e.id), image: d.couverture ?? `/covers/${e.id}.png`, coming: false, featured: false, pdf: d.pdf });
 }
 
 // Analyses visibles dans une langue : celles de cette langue, plus celles de l'autre langue sans traduction.
