@@ -4,10 +4,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
-    "preview": "astro preview",
-    "check": "astro check"
+    "build": "node scripts/build-site.mjs",
+    "preview": "npx serve -s dist",
+    "build:astro": "astro build && pagefind --site dist",
+    "dev:astro": "astro dev"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
@@ -16,6 +16,9 @@
     "@fontsource/source-serif-4": "^5.3.1",
     "@resvg/resvg-js": "^2.6.2",
     "astro": "^7.3.5",
+    "fflate": "^0.8.2",
+    "gray-matter": "^4.0.3",
+    "marked": "^14.1.4",
     "satori": "^0.62.0"
   },
   "devDependencies": {

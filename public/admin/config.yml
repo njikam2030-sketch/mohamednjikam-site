@@ -1,5 +1,5 @@
-# Espace de publication : adresse-du-site/admin
-# Connexion avec un jeton GitHub (voir LISEZMOI.md). Chaque enregistrement met le site à jour automatiquement.
+# Espace de publication : moharamadan.com/admin (ou mohamednjikam-site.vercel.app/admin)
+# Connexion avec une clé GitHub (voir README.md). Chaque « Publier » met le site à jour en une minute environ.
 backend:
   name: github
   repo: njikam2030-sketch/mohamednjikam-site
@@ -10,361 +10,221 @@ media_folder: public/images/uploads
 public_folder: /images/uploads
 
 collections:
-  - name: analyses
-    label: "Analyses"
-    label_singular: "Analyse"
-    description: "Articles de fond : thèse, preuves, objections, que faire, sources."
-    folder: src/content/analyses
+  - name: articles
+    label: "Articles"
+    label_singular: "Article"
+    description: "Analyses, tribunes (Opinion) et essais longs (The Long Read). Les sources vont à la fin, sous un titre « Sources »."
+    folder: content/articles
     create: true
-    identifier_field: titre
     slug: "{{slug}}"
-    summary: "{{titre}} · {{langue}}"
-    sortable_fields: [date, titre]
+    identifier_field: title
+    summary: "{{title}} · {{type}} · {{date}}"
+    sortable_fields: [date, title]
     fields:
-      - { name: titre, label: "Titre", widget: string }
-      - { name: chapeau, label: "Chapeau (résumé sous le titre, Google, LinkedIn)", widget: text, required: false }
-      - { name: date, label: "Date", widget: datetime, time_format: false, date_format: "DD/MM/YYYY" }
-      - { name: langue, label: "Langue", widget: select, options: &langues [{ label: "English", value: en }, { label: "Français", value: fr }], default: en }
-      - name: rubriques
+      - { name: title, label: "Titre", widget: string }
+      - { name: standfirst, label: "Chapeau (deux phrases sous le titre)", widget: text }
+      - { name: date, label: "Date", widget: datetime, time_format: false, format: "YYYY-MM-DD" }
+      - name: type
+        label: "Genre"
+        widget: select
+        default: analysis
+        options:
+          - { label: "Analyse", value: analysis }
+          - { label: "Tribune (Opinion)", value: opinion }
+          - { label: "Essai long (The Long Read)", value: essay }
+      - name: sections
         label: "Rubriques"
         widget: select
         multiple: true
         min: 1
-        options: &rubriques
-          - { label: "États-Unis", value: us }
-          - { label: "IPO et fusions (M&A)", value: deals }
-          - { label: "Hedge funds et investissement", value: funds }
-          - { label: "IA et finance", value: ai }
-          - { label: "Dette et taux", value: debt }
-          - { label: "Londres et Royaume-Uni", value: uk }
-          - { label: "Afrique", value: africa }
-          - { label: "Asie", value: asia }
-      - name: pays
-        label: "Pays concernés (facultatif)"
+        options:
+          - { label: "Economics", value: economics }
+          - { label: "Finance", value: finance }
+          - { label: "AI", value: ai }
+          - { label: "Leadership", value: leadership }
+          - { label: "Africa", value: africa }
+          - { label: "World", value: world }
+      - name: countries
+        label: "Pays concernés (barre « Countries »)"
         widget: select
         multiple: true
         required: false
-        options: &pays
-          - { label: "Afghanistan", value: AF }
-          - { label: "Albania", value: AL }
-          - { label: "Algeria", value: DZ }
-          - { label: "Andorra", value: AD }
-          - { label: "Angola", value: AO }
-          - { label: "Antigua & Barbuda", value: AG }
-          - { label: "Argentina", value: AR }
-          - { label: "Armenia", value: AM }
-          - { label: "Australia", value: AU }
-          - { label: "Austria", value: AT }
-          - { label: "Azerbaijan", value: AZ }
-          - { label: "Bahamas", value: BS }
-          - { label: "Bahrain", value: BH }
-          - { label: "Bangladesh", value: BD }
-          - { label: "Barbados", value: BB }
-          - { label: "Belarus", value: BY }
-          - { label: "Belgium", value: BE }
-          - { label: "Belize", value: BZ }
-          - { label: "Benin", value: BJ }
-          - { label: "Bhutan", value: BT }
-          - { label: "Bolivia", value: BO }
-          - { label: "Bosnia & Herzegovina", value: BA }
-          - { label: "Botswana", value: BW }
-          - { label: "Brazil", value: BR }
-          - { label: "Brunei", value: BN }
-          - { label: "Bulgaria", value: BG }
+        options:
           - { label: "Burkina Faso", value: BF }
-          - { label: "Burundi", value: BI }
-          - { label: "Cambodia", value: KH }
           - { label: "Cameroon", value: CM }
-          - { label: "Canada", value: CA }
-          - { label: "Cape Verde", value: CV }
           - { label: "Central African Republic", value: CF }
           - { label: "Chad", value: TD }
-          - { label: "Chile", value: CL }
           - { label: "China", value: CN }
-          - { label: "Colombia", value: CO }
-          - { label: "Comoros", value: KM }
-          - { label: "Costa Rica", value: CR }
-          - { label: "Côte d’Ivoire", value: CI }
-          - { label: "Croatia", value: HR }
-          - { label: "Cuba", value: CU }
-          - { label: "Cyprus", value: CY }
-          - { label: "Czechia", value: CZ }
-          - { label: "Denmark", value: DK }
-          - { label: "Djibouti", value: DJ }
-          - { label: "Dominica", value: DM }
-          - { label: "Dominican Republic", value: DO }
+          - { label: "Congo", value: CG }
+          - { label: "Côte d'Ivoire", value: CI }
           - { label: "DR Congo", value: CD }
-          - { label: "Ecuador", value: EC }
           - { label: "Egypt", value: EG }
-          - { label: "El Salvador", value: SV }
           - { label: "Equatorial Guinea", value: GQ }
-          - { label: "Eritrea", value: ER }
-          - { label: "Estonia", value: EE }
-          - { label: "Eswatini", value: SZ }
           - { label: "Ethiopia", value: ET }
-          - { label: "Fiji", value: FJ }
-          - { label: "Finland", value: FI }
           - { label: "France", value: FR }
           - { label: "Gabon", value: GA }
-          - { label: "Gambia", value: GM }
-          - { label: "Georgia", value: GE }
           - { label: "Germany", value: DE }
           - { label: "Ghana", value: GH }
-          - { label: "Greece", value: GR }
-          - { label: "Grenada", value: GD }
-          - { label: "Guatemala", value: GT }
-          - { label: "Guinea", value: GN }
-          - { label: "Guinea-Bissau", value: GW }
-          - { label: "Guyana", value: GY }
-          - { label: "Haiti", value: HT }
-          - { label: "Honduras", value: HN }
-          - { label: "Hungary", value: HU }
-          - { label: "Iceland", value: IS }
           - { label: "India", value: IN }
-          - { label: "Indonesia", value: ID }
-          - { label: "Iran", value: IR }
-          - { label: "Iraq", value: IQ }
-          - { label: "Ireland", value: IE }
-          - { label: "Israel", value: IL }
-          - { label: "Italy", value: IT }
-          - { label: "Jamaica", value: JM }
           - { label: "Japan", value: JP }
-          - { label: "Jordan", value: JO }
-          - { label: "Kazakhstan", value: KZ }
           - { label: "Kenya", value: KE }
-          - { label: "Kiribati", value: KI }
-          - { label: "Kosovo", value: XK }
-          - { label: "Kuwait", value: KW }
-          - { label: "Kyrgyzstan", value: KG }
-          - { label: "Laos", value: LA }
-          - { label: "Latvia", value: LV }
-          - { label: "Lebanon", value: LB }
-          - { label: "Lesotho", value: LS }
-          - { label: "Liberia", value: LR }
-          - { label: "Libya", value: LY }
-          - { label: "Liechtenstein", value: LI }
-          - { label: "Lithuania", value: LT }
-          - { label: "Luxembourg", value: LU }
-          - { label: "Madagascar", value: MG }
-          - { label: "Malawi", value: MW }
-          - { label: "Malaysia", value: MY }
-          - { label: "Maldives", value: MV }
-          - { label: "Mali", value: ML }
-          - { label: "Malta", value: MT }
-          - { label: "Marshall Islands", value: MH }
-          - { label: "Mauritania", value: MR }
-          - { label: "Mauritius", value: MU }
-          - { label: "Mexico", value: MX }
-          - { label: "Micronesia", value: FM }
-          - { label: "Moldova", value: MD }
-          - { label: "Monaco", value: MC }
-          - { label: "Mongolia", value: MN }
-          - { label: "Montenegro", value: ME }
           - { label: "Morocco", value: MA }
           - { label: "Mozambique", value: MZ }
-          - { label: "Myanmar", value: MM }
-          - { label: "Namibia", value: NA }
-          - { label: "Nauru", value: NR }
-          - { label: "Nepal", value: NP }
-          - { label: "Netherlands", value: NL }
-          - { label: "New Zealand", value: NZ }
-          - { label: "Nicaragua", value: NI }
-          - { label: "Niger", value: NE }
           - { label: "Nigeria", value: NG }
-          - { label: "North Korea", value: KP }
-          - { label: "North Macedonia", value: MK }
-          - { label: "Norway", value: NO }
-          - { label: "Oman", value: OM }
-          - { label: "Pakistan", value: PK }
-          - { label: "Palau", value: PW }
-          - { label: "Palestine", value: PS }
-          - { label: "Panama", value: PA }
-          - { label: "Papua New Guinea", value: PG }
-          - { label: "Paraguay", value: PY }
-          - { label: "Peru", value: PE }
-          - { label: "Philippines", value: PH }
-          - { label: "Poland", value: PL }
-          - { label: "Portugal", value: PT }
-          - { label: "Qatar", value: QA }
-          - { label: "Republic of the Congo", value: CG }
-          - { label: "Romania", value: RO }
-          - { label: "Russia", value: RU }
           - { label: "Rwanda", value: RW }
-          - { label: "Samoa", value: WS }
-          - { label: "San Marino", value: SM }
-          - { label: "São Tomé & Príncipe", value: ST }
           - { label: "Saudi Arabia", value: SA }
           - { label: "Senegal", value: SN }
-          - { label: "Serbia", value: RS }
-          - { label: "Seychelles", value: SC }
-          - { label: "Sierra Leone", value: SL }
           - { label: "Singapore", value: SG }
-          - { label: "Slovakia", value: SK }
-          - { label: "Slovenia", value: SI }
-          - { label: "Solomon Islands", value: SB }
-          - { label: "Somalia", value: SO }
           - { label: "South Africa", value: ZA }
           - { label: "South Korea", value: KR }
-          - { label: "South Sudan", value: SS }
-          - { label: "Spain", value: ES }
-          - { label: "Sri Lanka", value: LK }
-          - { label: "St. Kitts & Nevis", value: KN }
-          - { label: "St. Lucia", value: LC }
-          - { label: "St. Vincent & Grenadines", value: VC }
-          - { label: "Sudan", value: SD }
-          - { label: "Suriname", value: SR }
-          - { label: "Sweden", value: SE }
-          - { label: "Switzerland", value: CH }
-          - { label: "Syria", value: SY }
-          - { label: "Taiwan", value: TW }
-          - { label: "Tajikistan", value: TJ }
           - { label: "Tanzania", value: TZ }
-          - { label: "Thailand", value: TH }
-          - { label: "Timor-Leste", value: TL }
-          - { label: "Togo", value: TG }
-          - { label: "Tonga", value: TO }
-          - { label: "Trinidad & Tobago", value: TT }
-          - { label: "Tunisia", value: TN }
-          - { label: "Türkiye", value: TR }
-          - { label: "Turkmenistan", value: TM }
-          - { label: "Tuvalu", value: TV }
           - { label: "Uganda", value: UG }
-          - { label: "Ukraine", value: UA }
           - { label: "United Arab Emirates", value: AE }
           - { label: "United Kingdom", value: GB }
           - { label: "United States", value: US }
-          - { label: "Uruguay", value: UY }
-          - { label: "Uzbekistan", value: UZ }
-          - { label: "Vanuatu", value: VU }
-          - { label: "Vatican City", value: VA }
-          - { label: "Venezuela", value: VE }
-          - { label: "Vietnam", value: VN }
-          - { label: "Yemen", value: YE }
           - { label: "Zambia", value: ZM }
-          - { label: "Zimbabwe", value: ZW }
-      - { name: pointsCles, label: "Points clés (encadré en haut de l'article)", widget: list, required: false, field: { name: point, label: "Point", widget: string } }
-      - { name: image, label: "Image de couverture (facultatif)", widget: image, required: false }
-      - { name: legendeImage, label: "Légende de l'image", widget: string, required: false }
-      - { name: traduction, label: "Version dans l'autre langue : son adresse courte (facultatif)", widget: string, required: false }
-      - { name: linkedin, label: "Lien de l'article sur LinkedIn (facultatif)", widget: string, required: false }
-      - { name: aLaUne, label: "Mettre à la une de l'accueil", widget: boolean, default: false }
-      - { name: aParaitre, label: "Annoncer « À paraître » (sans texte)", widget: boolean, default: false }
-      - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
-      - { name: body, label: "Texte (les graphiques s'insèrent avec le bouton image ; terminer par un titre « Sources »)", widget: markdown, required: false }
+      - { name: image, label: "Photo (grande, horizontale)", widget: image, required: false }
+      - { name: image_alt, label: "Description de la photo", widget: string, required: false }
+      - { name: image_credit, label: "Crédit photo (ex. Photo: Pexels)", widget: string, required: false }
+      - { name: lead, label: "Grand titre de la une", widget: boolean, default: false, required: false }
+      - { name: second, label: "Deuxième article de la une", widget: boolean, default: false, required: false }
+      - { name: pick, label: "Dans « Editor's picks »", widget: boolean, default: false, required: false }
+      - { name: budget, label: "Dossier UK Budget 2026", widget: boolean, default: false, required: false }
+      - { name: linkedin, label: "Lien LinkedIn (facultatif)", widget: string, required: false }
+      - { name: pdf, label: "PDF à télécharger (facultatif)", widget: file, required: false }
+      - { name: draft, label: "Brouillon (non publié)", widget: boolean, default: false, required: false }
+      - { name: body, label: "Texte", widget: markdown }
 
-  - name: reflexions
-    label: "Réflexions"
-    label_singular: "Réflexion"
-    description: "Textes courts, citations, hommages."
-    folder: src/content/reflexions
+  - name: notes
+    label: "Notes"
+    label_singular: "Note"
+    description: "Une citation et votre commentaire."
+    folder: content/notes
     create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}"
-    summary: "{{date}} · {{titre}}{{citation}}"
-    sortable_fields: [date]
-    fields:
-      - { name: date, label: "Date", widget: datetime, time_format: false, date_format: "DD/MM/YYYY" }
-      - { name: langue, label: "Langue", widget: select, options: *langues, default: fr }
-      - { name: titre, label: "Titre (facultatif)", widget: string, required: false }
-      - { name: citation, label: "Citation (facultatif)", widget: text, required: false }
-      - { name: auteur, label: "Auteur de la citation", widget: string, required: false }
-      - { name: image, label: "Photo (facultatif)", widget: image, required: false }
-      - { name: rubriques, label: "Rubriques (facultatif)", widget: select, multiple: true, required: false, options: *rubriques }
-      - { name: pays, label: "Pays concernés (facultatif)", widget: select, multiple: true, required: false, options: *pays }
-      - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
-      - { name: body, label: "Votre texte", widget: markdown }
-
-  - name: videos
-    label: "Vidéos"
-    label_singular: "Vidéo"
-    description: "Vos vidéos ou une sélection YouTube : collez le lien de la vidéo, ajoutez votre avis."
-    folder: src/content/videos
-    create: true
-    identifier_field: titre
     slug: "{{slug}}"
-    summary: "{{titre}}"
-    sortable_fields: [date, titre]
+    identifier_field: quote
+    summary: "{{author}} · {{quote}}"
+    sortable_fields: [order, author]
     fields:
-      - { name: titre, label: "Titre", widget: string }
-      - { name: youtube, label: "Lien YouTube (ex. https://www.youtube.com/watch?v=...)", widget: string }
-      - { name: origine, label: "C'est", widget: select, options: [{ label: "Ma vidéo", value: moi }, { label: "Une sélection (vidéo d'un autre)", value: selection }], default: selection }
-      - { name: chaine, label: "Chaîne ou source (ex. Bloomberg, CNBC)", widget: string, required: false }
-      - { name: date, label: "Date", widget: datetime, time_format: false, date_format: "DD/MM/YYYY" }
-      - { name: langue, label: "Langue", widget: select, options: *langues, default: en }
-      - { name: rubriques, label: "Rubriques", widget: select, multiple: true, required: false, options: *rubriques }
-      - { name: pays, label: "Pays concernés (facultatif)", widget: select, multiple: true, required: false, options: *pays }
-      - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
-      - { name: pointsCles, label: "Points clés de la vidéo (facultatif)", widget: list, required: false, field: { name: point, label: "Point", widget: string } }
-      - { name: body, label: "Votre petit commentaire (affiché sous la vidéo)", widget: markdown, required: false }
+      - name: desk
+        label: "Rubrique"
+        widget: select
+        options:
+          - { label: "Economics", value: economics }
+          - { label: "Finance", value: finance }
+          - { label: "Leadership", value: leadership }
+          - { label: "AI", value: ai }
+          - { label: "Africa", value: africa }
+      - { name: quote, label: "Citation (sans guillemets)", widget: text }
+      - { name: author, label: "Auteur, œuvre, année", widget: string }
+      - { name: order, label: "Ordre d'affichage (1 = en premier)", widget: number, value_type: int, required: false }
+      - { name: draft, label: "Brouillon", widget: boolean, default: false, required: false }
+      - { name: body, label: "Commentaire", widget: markdown }
 
-  - name: rapports
-    label: "Rapports (PDF)"
-    label_singular: "Rapport"
-    description: "Rapports à la manière du FMI ou des Nations Unies : PDF téléchargeable ou rapport écrit directement ici."
-    folder: src/content/rapports
-    create: true
-    identifier_field: titre
-    slug: "{{slug}}"
-    summary: "{{titre}}"
-    media_folder: /public/documents
-    public_folder: /documents
-    sortable_fields: [date, titre]
-    fields:
-      - { name: titre, label: "Titre", widget: string }
-      - { name: serie, label: "Collection (ex. Research Report, Policy Note, Working Paper)", widget: string, default: "Report" }
-      - { name: numero, label: "Numéro (ex. No. 2, facultatif)", widget: string, required: false }
-      - { name: chapeau, label: "Résumé en une ou deux phrases", widget: text, required: false }
-      - { name: messagesCles, label: "Messages clés (facultatif)", widget: list, required: false, field: { name: m, label: "Message", widget: text } }
-      - { name: pdf, label: "Fichier PDF (facultatif : sans PDF, le rapport se lit sur le site et s'imprime en PDF avec sa couverture)", widget: file, required: false }
-      - { name: couverture, label: "Image de couverture (facultatif : sinon une couverture est créée automatiquement)", widget: image, required: false }
-      - { name: pages, label: "Nombre de pages (facultatif)", widget: number, required: false }
-      - { name: date, label: "Date", widget: datetime, time_format: false, date_format: "DD/MM/YYYY" }
-      - { name: langue, label: "Langue", widget: select, options: *langues, default: en }
-      - { name: rubriques, label: "Rubriques", widget: select, multiple: true, required: false, options: *rubriques }
-      - { name: pays, label: "Pays concernés (facultatif)", widget: select, multiple: true, required: false, options: *pays }
-      - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
-      - { name: body, label: "Texte du rapport ou présentation du PDF (titres ## = sommaire)", widget: markdown, required: false }
-
-  - name: graphiques
+  - name: charts
     label: "Graphiques"
     label_singular: "Graphique"
-    description: "Un graphique commenté (le graphique de la semaine)."
-    folder: src/content/graphiques
+    folder: content/charts
     create: true
-    identifier_field: titre
     slug: "{{slug}}"
-    summary: "{{titre}}"
-    sortable_fields: [date, titre]
+    identifier_field: title
     fields:
-      - { name: titre, label: "Titre", widget: string }
-      - { name: date, label: "Date", widget: datetime, time_format: false, date_format: "DD/MM/YYYY" }
-      - { name: langue, label: "Langue", widget: select, options: *langues, default: en }
-      - { name: image, label: "Graphique (PNG ou JPG)", widget: image }
-      - { name: source, label: "Source", widget: string, required: false }
-      - { name: rubriques, label: "Rubriques", widget: select, multiple: true, required: false, options: *rubriques }
-      - { name: pays, label: "Pays concernés (facultatif)", widget: select, multiple: true, required: false, options: *pays }
-      - { name: brouillon, label: "Brouillon (non publié)", widget: boolean, default: false }
-      - { name: body, label: "Commentaire", widget: markdown, required: false }
+      - { name: title, label: "Titre", widget: string }
+      - { name: date, label: "Date", widget: datetime, time_format: false, format: "YYYY-MM-DD" }
+      - { name: image, label: "Image du graphique (SVG, PNG ou JPG)", widget: image }
+      - { name: source, label: "Source", widget: string }
+      - { name: sections, label: "Rubriques", widget: select, multiple: true, options: [economics, finance, ai, leadership, africa, world] }
+      - name: countries
+        label: "Pays"
+        widget: select
+        multiple: true
+        required: false
+        options:
+          - { label: "Burkina Faso", value: BF }
+          - { label: "Cameroon", value: CM }
+          - { label: "Central African Republic", value: CF }
+          - { label: "Chad", value: TD }
+          - { label: "China", value: CN }
+          - { label: "Congo", value: CG }
+          - { label: "Côte d'Ivoire", value: CI }
+          - { label: "DR Congo", value: CD }
+          - { label: "Egypt", value: EG }
+          - { label: "Equatorial Guinea", value: GQ }
+          - { label: "Ethiopia", value: ET }
+          - { label: "France", value: FR }
+          - { label: "Gabon", value: GA }
+          - { label: "Germany", value: DE }
+          - { label: "Ghana", value: GH }
+          - { label: "India", value: IN }
+          - { label: "Japan", value: JP }
+          - { label: "Kenya", value: KE }
+          - { label: "Morocco", value: MA }
+          - { label: "Mozambique", value: MZ }
+          - { label: "Nigeria", value: NG }
+          - { label: "Rwanda", value: RW }
+          - { label: "Saudi Arabia", value: SA }
+          - { label: "Senegal", value: SN }
+          - { label: "Singapore", value: SG }
+          - { label: "South Africa", value: ZA }
+          - { label: "South Korea", value: KR }
+          - { label: "Tanzania", value: TZ }
+          - { label: "Uganda", value: UG }
+          - { label: "United Arab Emirates", value: AE }
+          - { label: "United Kingdom", value: GB }
+          - { label: "United States", value: US }
+          - { label: "Zambia", value: ZM }
+      - { name: article, label: "Article lié (nom du fichier, ex. the-price-of-time)", widget: string, required: false }
+      - { name: body, label: "Commentaire", widget: markdown }
 
-  - name: profil
-    label: "Mon profil"
-    description: "Présentation affichée sur l'accueil et la page À propos."
+  - name: reports
+    label: "Rapports"
+    label_singular: "Rapport"
+    folder: content/reports
+    create: true
+    slug: "{{slug}}"
+    identifier_field: title
+    fields:
+      - { name: title, label: "Titre", widget: string }
+      - { name: standfirst, label: "Résumé", widget: text }
+      - { name: date, label: "Date", widget: datetime, time_format: false, format: "YYYY-MM-DD" }
+      - { name: series, label: "Collection", widget: string, default: "Research Report" }
+      - { name: number, label: "Numéro", widget: string }
+      - { name: pdf, label: "PDF", widget: file }
+      - { name: article, label: "Article lié (nom du fichier)", widget: string, required: false }
+      - { name: key_messages, label: "Messages clés", widget: list, field: { name: m, label: Message, widget: string } }
+
+  - name: pages
+    label: "Pages"
+    label_singular: "Page"
+    description: "Pages du pied de page : conditions, confidentialité, YouthShare Initiatives, services…"
+    folder: content/pages
+    create: true
+    slug: "{{slug}}"
+    identifier_field: title
+    fields:
+      - { name: title, label: "Titre", widget: string }
+      - { name: order, label: "Ordre", widget: number, value_type: int, required: false }
+      - { name: body, label: "Texte", widget: markdown }
+
+  - name: settings
+    label: "Réglages du site"
     files:
-      - name: profil
-        label: "Présentation (anglais et français)"
-        file: src/data/profil.json
+      - name: site
+        label: "Présentation, contact, chiffres clés"
+        file: content/site.json
+        format: json
         fields:
-          - name: en
-            label: "English"
-            widget: object
-            fields: &profil
-              - { name: titre, label: "Métier (une ligne)", widget: string }
-              - { name: accroche, label: "Accroche", widget: string }
-              - { name: bio, label: "Présentation courte", widget: text }
-              - { name: role, label: "Domaines", widget: string }
-              - { name: apropos, label: "Paragraphes de la page À propos", widget: list, field: { name: p, label: "Paragraphe", widget: text } }
-              - { name: ville, label: "Ville", widget: string }
-              - { name: formation, label: "Formation", widget: string }
-          - name: fr
-            label: "Français"
-            widget: object
-            fields: *profil
+          - { name: name, label: "Nom", widget: string }
+          - { name: description, label: "Description (Google, partages)", widget: text }
+          - { name: phone, label: "Téléphone", widget: string }
+          - { name: email, label: "Email", widget: string }
+          - { name: linkedin, label: "LinkedIn", widget: string }
+          - { name: x, label: "X", widget: string }
+          - { name: bio, label: "Présentation (À propos)", widget: list, field: { name: p, label: Paragraphe, widget: text } }
+          - { name: facts, label: "Encadrés À propos", widget: list, fields: [{ name: title, label: Titre, widget: string }, { name: text, label: Texte, widget: string }] }
+          - { name: why_title, label: "Pourquoi j'écris : phrase en grand", widget: string }
+          - { name: why, label: "Pourquoi j'écris : paragraphes", widget: list, field: { name: p, label: Paragraphe, widget: text } }
+          - { name: key_figures_date, label: "Chiffres clés : date", widget: string }
+          - { name: key_figures, label: "Chiffres clés (bandeau de l'accueil)", widget: list, fields: [{ name: label, label: Libellé, widget: string }, { name: value, label: Valeur, widget: string }] }
+          - { name: countries_bar, label: "Pays de la barre du haut (codes : GB, US, CM…)", widget: list, field: { name: c, label: Code, widget: string } }
+          - { name: search_chips, label: "Mots proposés sous la recherche", widget: list, field: { name: w, label: Mot, widget: string } }

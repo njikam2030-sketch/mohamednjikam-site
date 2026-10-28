@@ -1,0 +1,98 @@
+{
+  "name": "Mohamed Ramadan",
+  "phone": "+44 7405 807116",
+  "email": "njikam2030@gmail.com",
+  "linkedin": "https://www.linkedin.com/in/moha-rama",
+  "x": "https://x.com/Moha_Samoa",
+  "description": "Mohamed Ramadan writes about economics, finance, leadership and artificial intelligence: where capital goes, why it moves, and what it changes for the people and institutions it touches.",
+  "bio": [
+    "Mohamed Ramadan writes about economics, finance, leadership and artificial intelligence: where capital goes, why it moves, and what it changes for the people and institutions it touches.",
+    "He previously served as Chief Financial Officer, and before that as a financial analyst alongside banks and advisory firms. He holds a master's degree in supply chain management from Université Paris-Panthéon-Assas, as well as a master's in finance and accounting and a bachelor's in business administration.",
+    "What drives him is curiosity, the habit of asking why a number moved before deciding what it means, and humility, because markets humble everyone and good analysis starts by admitting what we do not know.",
+    "Beyond finance, he is a co-founder of YouthShare Initiatives, an aid association. Away from the markets, he loves the mountains and hiking."
+  ],
+  "facts": [
+    {
+      "title": "Chief Financial Officer",
+      "text": "Former CFO"
+    },
+    {
+      "title": "Analyst",
+      "text": "Alongside banks and advisory firms"
+    },
+    {
+      "title": "Co-founder",
+      "text": "YouthShare Initiatives"
+    },
+    {
+      "title": "Outdoors",
+      "text": "Mountains and hiking"
+    }
+  ],
+  "why_title": "Finance is too important to be left to jargon.",
+  "why": [
+    "Every rate decision, every bond auction, every data centre built with borrowed money ends up in someone's salary, rent or business plan. I write to understand these choices, and to make them understandable.",
+    "I write with curiosity, because the most useful question in economics is still why, and with humility, because markets correct anyone who is too sure of themselves. And I write from Africa as much as from London or New York, because the next chapters of the global economy will not be written only in the old capitals.",
+    "This is my notebook: analyses, opinion, essays, charts and the words of others that shape my thinking. The views are my own. Disagreement is welcome."
+  ],
+  "countries_bar": [
+    "GB",
+    "US",
+    "CM",
+    "NG",
+    "KE",
+    "CI",
+    "GH",
+    "CD",
+    "ZA",
+    "SN",
+    "CN",
+    "KR",
+    "FR"
+  ],
+  "search_chips": [
+    "UK Budget",
+    "Gilts",
+    "Bank of England",
+    "Inflation",
+    "AI",
+    "IPO",
+    "Debt",
+    "Mobile money",
+    "Tontine",
+    "Leadership",
+    "Keynes",
+    "Mandela"
+  ],
+  "key_figures_date": "As of 28 October 2026",
+  "key_figures": [
+    {
+      "label": "Bank Rate",
+      "value": "3.75%"
+    },
+    {
+      "label": "UK CPI, Sep",
+      "value": "3.5%"
+    },
+    {
+      "label": "10-yr gilt",
+      "value": "5.31%"
+    },
+    {
+      "label": "30-yr gilt, 1 Oct",
+      "value": "6.03%"
+    },
+    {
+      "label": "Fed funds",
+      "value": "3.75–4.00%"
+    },
+    {
+      "label": "OBR headroom 2029-30",
+      "value": "£15bn"
+    },
+    {
+      "label": "US IPO proceeds 2026",
+      "value": "$147.6bn"
+    }
+  ]
+}

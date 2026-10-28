@@ -1,6 +1,9 @@
 {
-  "framework": "astro",
-  "buildCommand": "npm run build",
+  "framework": null,
+  "buildCommand": "node scripts/build-site.mjs",
   "outputDirectory": "dist",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/((?!admin|images|documents|site\\.zip|kit|robots\\.txt|sitemap\\.xml|favicon|icon-|site\\.webmanifest).*)", "destination": "/index.html" }
+  ]
 }
