@@ -67,6 +67,10 @@
   "key_figures_date": "As of 28 October 2026",
   "key_figures": [
     {
+      "label": "Brent crude",
+      "value": "$115"
+    },
+    {
       "label": "Bank Rate",
       "value": "3.75%"
     },
@@ -75,24 +79,28 @@
       "value": "3.5%"
     },
     {
-      "label": "10-yr gilt",
-      "value": "5.31%"
+      "label": "Euro area CPI, Sep",
+      "value": "3.8%"
     },
     {
-      "label": "30-yr gilt, 1 Oct",
-      "value": "6.03%"
+      "label": "10-yr gilt",
+      "value": "5.31%"
     },
     {
       "label": "Fed funds",
       "value": "3.75–4.00%"
     },
     {
-      "label": "OBR headroom 2029-30",
-      "value": "£15bn"
+      "label": "ECB deposit",
+      "value": "2.50%"
     },
     {
-      "label": "US IPO proceeds 2026",
-      "value": "$147.6bn"
+      "label": "Gold",
+      "value": "$4,024"
+    },
+    {
+      "label": "China GDP, Q3",
+      "value": "4.5%"
     }
   ]
 }
