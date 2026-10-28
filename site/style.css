@@ -322,3 +322,22 @@ a.nt{transition:box-shadow .2s}a.nt:hover{box-shadow:0 8px 24px rgba(11,31,58,.0
   .view{padding-top:20px}.lede{font-size:19px}
   .prose{font-size:18px}
 }
+
+/* v13 : barre des pays qui défile, page des pays, vidéo envoyée */
+.cbar{display:flex;align-items:stretch;background:var(--soft);border-top:1px solid var(--line);overflow:hidden}
+.cb-l{flex:none;display:flex;align-items:center;padding:0 12px 0 20px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--coral);background:var(--soft);position:relative;z-index:1}
+.cb-v{flex:1;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 20px,#000 calc(100% - 20px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 20px,#000 calc(100% - 20px),transparent 100%)}
+.cb-track{display:flex;width:max-content;animation:tk 90s linear infinite}
+.cbar:hover .cb-track,.cbar:focus-within .cb-track,.cbar:active .cb-track{animation-play-state:paused}
+.cb-run{display:flex;gap:22px;padding:0 22px 0 12px;white-space:nowrap}
+.cbar .cb-run a{flex:none;font-size:13.5px;font-weight:500;color:var(--ink);padding:8px 0}
+.cbar .cb-run a:hover,.cbar .cb-run a.on{color:var(--blue)}.cbar .cb-run a.on{font-weight:700}
+.cbar a.all{flex:none;display:flex;align-items:center;padding:0 20px 0 12px;font-size:13.5px;font-weight:700;color:var(--blue);background:var(--soft);position:relative;z-index:1}
+@media (prefers-reduced-motion:reduce){.cb-track{animation:none}.cb-v{overflow-x:auto}}
+@media (max-width:640px){.cb-l{padding:0 8px 0 14px;font-size:10.5px}.cbar a.all{padding:0 14px 0 8px}}
+.cgrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.ctile{display:grid;gap:3px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.ctile:hover{border-color:var(--ink)}.ctile b{font-size:16px;color:var(--ink)}.ctile:hover b{color:var(--blue)}
+.ct-c{font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--coral)}.ctile.empty{background:var(--soft)}.ctile.empty .meta{color:var(--faint)}
+.vfile{display:block;width:100%;aspect-ratio:16/9;background:#000;border-radius:8px;margin:22px 0 10px}
+.v-video .vfile{margin:0}
