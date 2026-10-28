@@ -4,6 +4,6 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/((?!admin|images|documents|site\\.zip|kit|robots\\.txt|sitemap\\.xml|favicon|icon-|site\\.webmanifest).*)", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
