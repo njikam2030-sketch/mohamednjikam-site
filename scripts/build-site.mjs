@@ -58,9 +58,9 @@ const charts = readDir('charts').filter((c) => !c.draft).map((c) => ({ ...c, kin
 const reports = readDir('reports').filter((r) => !r.draft).map((r) => ({ ...r, date: iso(r.date), countries: r.countries || [], html: render(r.md), path: `/reports/${r.id}` }))
   .sort((a, b) => b.date.localeCompare(a.date));
 const ytId = (u) => (String(u || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/) || [])[1];
-const videos = readDir('videos').filter((v) => !v.draft && ytId(v.youtube)).map((v) => ({
+const videos = readDir('videos').filter((v) => !v.draft && (ytId(v.youtube) || v.file)).map((v) => ({
   ...v, kind: 'video', date: iso(v.date), yt: ytId(v.youtube), sections: v.sections || [], countries: v.countries || [], html: render(v.md), path: `/videos/${v.id}`,
-  thumb: v.thumbnail || (fs.existsSync(path.join(PUB, `images/videos/${ytId(v.youtube)}.jpg`)) ? `/images/videos/${ytId(v.youtube)}.jpg` : `https://i.ytimg.com/vi/${ytId(v.youtube)}/hqdefault.jpg`),
+  thumb: v.thumbnail || (!ytId(v.youtube) ? '/images/og.jpg' : fs.existsSync(path.join(PUB, `images/videos/${ytId(v.youtube)}.jpg`)) ? `/images/videos/${ytId(v.youtube)}.jpg` : `https://i.ytimg.com/vi/${ytId(v.youtube)}/hqdefault.jpg`),
 })).sort((a, b) => b.date.localeCompare(a.date));
 const events = readDir('events').filter((v) => !v.draft).map((v) => ({ ...v, date: iso(v.date), html: render(v.md), path: `/events/${v.id}` })).sort((a, b) => a.date.localeCompare(b.date));
 const notes = readDir('notes').filter((n) => !n.draft).sort((a, b) => (a.order ?? 999) - (b.order ?? 999)).map((n) => ({
@@ -72,6 +72,10 @@ const byId = Object.fromEntries(articles.map((a) => [a.id, a]));
 
 function videoBlock(id, title = 'Video') {
   return `<div class="vplay" data-yt="${id}" role="button" tabindex="0" aria-label="Play the video"><img class="vimg" src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="${title.replace(/"/g, '&quot;')}" loading="lazy"><i class="play big" aria-hidden="true"></i></div>`;
+}
+
+function videoFile(src, poster) {
+  return `<video class="vfile" controls preload="metadata" playsinline${poster ? ` poster="${poster}"` : ''}><source src="${src}">Your browser cannot play this video. <a href="${src}">Download it</a>.</video>`;
 }
 
 function render(md) {
@@ -104,7 +108,7 @@ function build() {
   const AV = '<span class="av avi"></span>', AVL = '<span class="av lg avi"></span>';
 
   const card = (a, { ex = true, img = true } = {}) => A(a.path, (img && a.image ? pic(a.image, a.image_alt) : '') + `<span class="k">${e(kicker(a))}</span><b>${e(a.title)}</b>`
-    + (ex && a.standfirst ? `<span class="ex">${e(a.standfirst)}</span>` : '') + `<span class="meta">${TYPE[a.type]} · ${fd(a.date)} · ${a.min} min read${a.video ? ' · Video' : ''}${a.pdf || (a.documents || []).length ? ' · PDF' : ''}</span>`, 'card' + (img && a.image ? ' has-im' : ''));
+    + (ex && a.standfirst ? `<span class="ex">${e(a.standfirst)}</span>` : '') + `<span class="meta">${TYPE[a.type]} · ${fd(a.date)} · ${a.min} min read${a.video || a.video_file ? ' · Video' : ''}${a.pdf || (a.documents || []).length ? ' · PDF' : ''}</span>`, 'card' + (img && a.image ? ' has-im' : ''));
   const opCard = (a) => A(a.path, `${AVL}<span class="k">${e(site.name)}</span><b>${e(a.title)}</b><span class="ex">${e(a.standfirst)}</span><span class="meta">${fd(a.date)} · ${a.min} min read</span>`, 'opc');
   const chartCard = (c) => A(c.path, `<img src="${asset(c.image)}" alt="" loading="lazy"><span class="k">Chart</span><b>${e(c.title)}</b>`, 'chartcard');
   const noteCard = (n) => A(n.path, `<span class="nk">${DESK[n.desk] || n.desk}</span><blockquote>“${e(n.quote)}”</blockquote><span class="by-n">${e(n.author)}</span><span class="tease">${e(n.first)}</span><span class="rm">Read more →</span>`, 'nt').replace('<a class="nt"', `<a class="nt" data-d="${n.desk}"`);
@@ -151,7 +155,7 @@ function build() {
       + (a.standfirst ? `<p class="lede">${e(a.standfirst)}</p>` : '') + (a.type === 'opinion' ? '<p class="op-note">Opinion. The views expressed are the author\'s own.</p>' : '')
       + `<div class="by">${AV}<span><b>${e(site.name)}</b><br>${fd(a.date)} · ${a.min} min read</span><span class="tags">${tags}</span></div>${shareBar(a.title, a.path)}`
       + (a.image ? `<figure class="v-hero">${pic(a.image, a.image_alt, 'hero-im')}<figcaption>${e(a.image_alt || '')}${a.image_credit ? '. ' + e(a.image_credit) : '. Photo: Pexels'}</figcaption></figure>` : '')
-      + (a.video && ytId(a.video) ? `<figure class="v-video">${videoBlock(ytId(a.video), a.title)}${a.video_caption ? `<figcaption>${e(a.video_caption)}</figcaption>` : ''}</figure>` : '')
+      + ((a.video && ytId(a.video)) || a.video_file ? `<figure class="v-video">${a.video_file ? videoFile(a.video_file, a.image) : videoBlock(ytId(a.video), a.title)}${a.video_caption ? `<figcaption>${e(a.video_caption)}</figcaption>` : ''}</figure>` : '')
       + `<div class="prose">${a.html}</div>` + (acts ? `<div class="acts">${acts}</div>` : '')
       + ((a.documents || []).length ? `<aside class="docs"><h3>Documents</h3>${a.documents.map((d) => `<a href="${e(d.file)}" target="_blank" rel="noopener"><span class="pdf">PDF</span><b>${e(d.title || d.file.split('/').pop())}</b><span class="dl">Open ↗</span></a>`).join('')}</aside>` : '')
       + ((a.links || []).length ? `<aside class="links"><h3>Links and further reading</h3>${a.links.map((l) => `<a href="${e(l.url)}" target="_blank" rel="noopener"><b>${e(l.title || l.url)}</b><span>${e(l.source || new URL(l.url).hostname.replace(/^www\./, ''))} ↗</span></a>`).join('')}</aside>` : '')
@@ -168,8 +172,8 @@ function build() {
   videos.forEach((v) => {
     const more = videos.filter((x) => x !== v).slice(0, 3);
     view(v.path, `<a class="back" href="/videos">← All videos</a><p class="kick">Video${v.channel ? ' · ' + e(v.channel) : ''}</p><h1>${e(v.title)}</h1>`
-      + `<div class="vplay" data-yt="${v.yt}" role="button" tabindex="0" aria-label="Play the video">${pic(v.thumb, v.title, 'hero-im')}<i class="play big" aria-hidden="true"></i></div>`
-      + `<p class="vnote">${v.origin === 'mine' ? 'A video by ' + e(site.name) + '.' : 'Selected by ' + e(site.name) + '. Video: ' + e(v.channel || 'YouTube') + '.'} <a href="https://www.youtube.com/watch?v=${v.yt}" target="_blank" rel="noopener">Watch on YouTube</a></p>`
+      + (v.yt ? `<div class="vplay" data-yt="${v.yt}" role="button" tabindex="0" aria-label="Play the video">${pic(v.thumb, v.title, 'hero-im')}<i class="play big" aria-hidden="true"></i></div>` : videoFile(v.file, v.thumbnail))
+      + `<p class="vnote">${v.origin === 'mine' ? 'A video by ' + e(site.name) + '.' : 'Selected by ' + e(site.name) + '. Video: ' + e(v.channel || 'YouTube') + '.'}${v.yt ? ` <a href="https://www.youtube.com/watch?v=${v.yt}" target="_blank" rel="noopener">Watch on YouTube</a>` : ''}</p>`
       + `<div class="by">${AV}<span><b>${v.origin === 'mine' ? e(site.name) : 'Why it is worth watching'}</b><br>${fd(v.date)}</span></div><div class="prose nodrop">${v.html}</div>${authorBox(v.title, v.path)}`
       + (more.length ? `<div class="rel"><h3>More videos</h3><div class="grid g3">${more.map(videoCard).join('')}</div></div>` : ''));
   });
@@ -213,6 +217,10 @@ function build() {
   const inC = (c) => ({ arts: articles.filter((a) => a.countries.includes(c)), chs: charts.filter((x) => x.countries.includes(c)), ns: notes.filter((n) => n.countries.includes(c)), vs: videos.filter((v) => v.countries.includes(c)) });
   const allC = Object.keys(COUNTRY).sort((a, b) => COUNTRY[a].localeCompare(COUNTRY[b]));
   const CPIC = { GB: ['/images/photos/westminster.jpg', 'Westminster, London'], US: ['/images/photos/nyse.jpg', 'The New York Stock Exchange'], KE: ['/images/photos/nairobi.jpg', 'Nairobi'], NG: ['/images/photos/lagos.jpg', 'Lagos'] };
+  const cTile = (c) => { const x = inC(c), n = x.arts.length + x.chs.length + x.ns.length + x.vs.length; return A(`/country/${c.toLowerCase()}`, `<span class="ct-c">${c}</span><b>${e(COUNTRY[c])}</b><span class="meta">${n ? n + (n === 1 ? ' item' : ' items') : 'Coming soon'}</span>`, 'ctile' + (n ? '' : ' empty')); };
+  page('/countries', `<div class="ph"><p class="kick">World</p><h1>Countries</h1><p>Analyses, opinion, charts, notes and videos, country by country.</p></div>`
+    + `<div class="sh"><h2>Featured</h2></div><div class="cgrid">${site.countries_bar.map(cTile).join('')}</div>`
+    + `<div class="sh mt"><h2>All countries</h2></div><div class="cgrid">${allC.map(cTile).join('')}</div>`);
   allC.forEach((c) => {
     const { arts, chs, ns, vs } = inC(c);
     const head = CPIC[c] ? pic(CPIC[c][0], CPIC[c][1], 'c-im') : `<span class="c-code">${c}</span>`;
@@ -234,7 +242,7 @@ function build() {
   const stack = (keys) => articles.filter((a) => a.sections.some((s) => keys.includes(s))).slice(0, 4).map((a) => card(a, { ex: false, img: false })).join('');
   const r0 = reports[0];
   const rArt = r0 && r0.article && byId[r0.article];
-  const NAV = [['/', 'Home'], ['/uk-budget-2026', 'UK Budget 2026'], ...SECTIONS.map(([k, n]) => [`/${k}`, n]), ['/opinion', 'Opinion'], ['/essays', 'Long Read'], ['/videos', 'Video'], ['/notes', 'Notes'], ['/charts', 'Charts'], ['/reports', 'Reports'], ['/events', 'Events'], ['/about', 'About']];
+  const NAV = [['/', 'Home'], ['/countries', 'Countries'], ['/uk-budget-2026', 'UK Budget 2026'], ...SECTIONS.map(([k, n]) => [`/${k}`, n]), ['/opinion', 'Opinion'], ['/essays', 'Long Read'], ['/videos', 'Video'], ['/notes', 'Notes'], ['/charts', 'Charts'], ['/reports', 'Reports'], ['/events', 'Events'], ['/about', 'About']];
   const ICO_S = '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>';
   const ICO_M = '<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
   const MARK = '<svg class="mk" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0B1F3A"/><circle cx="45" cy="19" r="6" fill="#E8573C"/><path d="M8 50 25 24l8 11 6-8 17 23z" fill="#fff"/></svg>';
@@ -300,7 +308,10 @@ ${reports.length > 1 ? `<div class="rgrid mt2">${reports.slice(1, 5).map(reportC
 <div class="ft8-bar"><div class="w ft8-bar-in"><span class="ft8-w">${MARK}${e(site.name)}</span><span>Economics · Finance · AI · Leadership · Africa</span></div></div></footer>`;
 
   // Index de recherche
-  const idx = [...articles.map((a) => ({ p: a.path, t: a.title, x: a.standfirst || '', k: kicker(a), s: (a.title + ' ' + (a.standfirst || '') + ' ' + a.html.replace(/<[^>]+>/g, ' ')).toLowerCase() })),
+  const ALIAS = { GB: 'uk britain england london royaume-uni', US: 'usa america united states washington etats-unis', CM: 'cameroun yaounde douala', CI: 'ivory coast abidjan', CD: 'drc congo kinshasa', CG: 'congo brazzaville', NG: 'lagos abuja', KE: 'nairobi', ZA: 'johannesburg', SN: 'dakar', CN: 'beijing shanghai chine', KR: 'korea seoul coree', FR: 'paris', DE: 'berlin allemagne frankfurt' };
+  const idx = [...allC.map((c) => { const x = inC(c), n = x.arts.length + x.chs.length + x.ns.length + x.vs.length; return { p: `/country/${c.toLowerCase()}`, t: COUNTRY[c], x: n ? `${n} items: analyses, charts, notes and videos` : 'Country page', k: 'Country', s: (COUNTRY[c] + ' ' + c + ' ' + (ALIAS[c] || '')).toLowerCase(), r: 2 }; }),
+    ...NAV.filter(([h]) => h !== '/').map(([h, n]) => ({ p: h, t: n, x: 'Section', k: 'Section', s: n.toLowerCase(), r: 1 })),
+    ...articles.map((a) => ({ p: a.path, t: a.title, x: a.standfirst || '', k: kicker(a), s: (a.title + ' ' + (a.standfirst || '') + ' ' + a.countries.map((c) => (COUNTRY[c] || '') + ' ' + (ALIAS[c] || '')).join(' ') + ' ' + a.sections.join(' ') + ' ' + a.html.replace(/<[^>]+>/g, ' ')).toLowerCase() })),
     ...charts.map((c) => ({ p: c.path, t: c.title, x: c.source || '', k: 'Chart', s: (c.title + ' ' + c.md).toLowerCase() })),
     ...videos.map((v) => ({ p: v.path, t: v.title, x: v.channel || '', k: 'Video', s: (v.title + ' ' + (v.channel || '') + ' ' + v.md).toLowerCase() })),
     ...reports.map((r) => ({ p: r.path, t: r.title, x: r.series || '', k: 'Report', s: (r.title + ' ' + (r.standfirst || '') + ' ' + (r.key_messages || []).join(' ')).toLowerCase() })),
@@ -333,7 +344,7 @@ ${SPRITE}
 <a class="btn sm" href="/contact">Contact</a>
 </div>
 <nav class="tabs"><div class="w tabs-in">${NAV.map(([h, n]) => A(h, e(n))).join('')}</div></nav>
-<div class="cbar"><div class="w cbar-in"><span>Countries</span>${site.countries_bar.map((c) => A(`/country/${c.toLowerCase()}`, e(COUNTRY[c]))).join('')}<a href="/" data-menu class="all">All →</a></div></div>
+<div class="cbar"><span class="cb-l">Countries</span><div class="cb-v"><div class="cb-track">${[0, 1].map((k) => `<div class="cb-run"${k ? ' aria-hidden="true"' : ''}>${[...new Set([...site.countries_bar, ...allC.filter((c) => countOpt(c))])].map((c) => `<a href="/country/${c.toLowerCase()}"${k ? ' tabindex="-1"' : ''}>${e(COUNTRY[c])}</a>`).join('')}</div>`).join('')}</div></div><a href="/countries" class="all">All</a></div>
 </header>
 ${drawer}
 ${home}
@@ -412,8 +423,9 @@ var ANCH = ${JSON.stringify(homeAnchors)};
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function search() {
     var s = q.value.trim().toLowerCase(); if (s.length < 2) { out.hidden = true; return; }
-    var terms = s.split(/\\s+/), hits = IDX.filter(function (r) { return terms.every(function (t) { return r.s.indexOf(t) >= 0; }); });
-    hits.sort(function (a, b) { return (a.p.indexOf('/notes/') === 0) - (b.p.indexOf('/notes/') === 0); });
+    var terms = s.split(/\\s+/).map(function (t) { return t.length > 4 && /s$/.test(t) ? t.slice(0, -1) : t; }), hits = IDX.filter(function (r) { return terms.every(function (t) { return r.s.indexOf(t) >= 0; }); });
+    function score(r) { var t = (r.t + ' ' + r.x).toLowerCase(), n = (r.r || 0) * 10 - (r.p.indexOf('/notes/') === 0 ? 2 : 0); terms.forEach(function (w) { if (t.indexOf(w) >= 0) n += 3; }); return n; }
+    hits.sort(function (a, b) { return score(b) - score(a); });
     out.hidden = false;
     out.innerHTML = '<div class="r-h"><b>' + hits.length + ' result' + (hits.length === 1 ? '' : 's') + ' for “' + esc(q.value.trim()) + '”</b><button type="button" id="rclose">Close</button></div>'
       + (hits.length ? hits.slice(0, 40).map(function (r) { return '<a class="r" href="' + r.p + '"><span class="k">' + esc(r.k) + '</span><b>' + esc(r.t) + '</b><span class="meta">' + esc(r.x) + '</span></a>'; }).join('') : '<p class="empty">No results yet. Try another word.</p>');

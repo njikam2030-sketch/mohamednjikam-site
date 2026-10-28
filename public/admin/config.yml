@@ -91,6 +91,7 @@ collections:
       - { name: pick, label: "Dans « Editor's picks »", widget: boolean, default: false, required: false }
       - { name: budget, label: "Dossier UK Budget 2026", widget: boolean, default: false, required: false }
       - { name: video, label: "Vidéo YouTube en tête d'article (lien, facultatif)", widget: string, required: false }
+      - { name: video_file, label: "Ou fichier vidéo MP4 en tête d'article (50 Mo maximum)", widget: file, required: false, media_folder: /public/videos, public_folder: /videos }
       - { name: video_caption, label: "Légende de la vidéo", widget: string, required: false }
       - { name: linkedin, label: "Lien LinkedIn (facultatif)", widget: string, required: false }
       - { name: pdf, label: "PDF principal à télécharger (facultatif)", widget: file, required: false, media_folder: /public/documents, public_folder: /documents }
@@ -226,7 +227,8 @@ collections:
     fields:
       - { name: title, label: "Titre", widget: string }
       - { name: date, label: "Date", widget: datetime, time_format: false, format: "YYYY-MM-DD" }
-      - { name: youtube, label: "Lien YouTube", widget: string }
+      - { name: youtube, label: "Lien YouTube (ou bien envoyez un fichier ci-dessous)", widget: string, required: false }
+      - { name: file, label: "Fichier vidéo MP4 (votre vidéo, 50 Mo maximum ; au-delà, passez par YouTube)", widget: file, required: false, media_folder: /public/videos, public_folder: /videos }
       - name: origin
         label: "Origine"
         widget: select
