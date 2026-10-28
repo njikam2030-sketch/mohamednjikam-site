@@ -12,7 +12,7 @@ const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
 const C = (p) => path.join(ROOT, 'content', p);
 const PUB = path.join(ROOT, 'public');
 const DIST = path.join(ROOT, 'dist');
-const SITE_URL = 'https://moharamadan.com';
+const SITE_URL = 'https://www.moharamadan.com';
 
 // ---------- Lecture du contenu ----------
 const site = JSON.parse(fs.readFileSync(C('site.json'), 'utf8'));
@@ -113,8 +113,28 @@ function build() {
   const reportCard = (r) => A(r.path, cover(r) + `<span class="k">${e(r.series || 'Report')}</span><b>${e(r.title)}</b><span class="meta">${fd(r.date)}${r.pdf ? ' · PDF' : ''}</span>`, 'rcard');
   const rail = (id, title, items, more, cls = '') => `<section class="w blk" id="${id}"><div class="rail-h ${cls}"><h2>${e(title)}</h2><div class="r-r">${more ? A(more[0], e(more[1]), 'more') : ''}<button class="arw" data-rail="${id}" data-dir="-1" aria-label="Previous">‹</button><button class="arw" data-rail="${id}" data-dir="1" aria-label="Next">›</button></div></div><div class="track">${items.join('')}</div></section>`;
 
-  const authorBox = (title) => `<div class="author">${AVL}<div><b>${e(site.name)}</b><p>${e(site.bio[0])}</p><p class="contact">${e(site.phone)} · <a href="mailto:${e(site.email)}">${e(site.email)}</a></p>`
-    + `<p class="share">Share: <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(SITE_URL)}" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://x.com/intent/post?text=${encodeURIComponent(title)}&url=${encodeURIComponent(SITE_URL)}" target="_blank" rel="noopener">X</a> · <a href="mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(SITE_URL)}">Email</a></p></div></div>`;
+  // Partage : LinkedIn, X, WhatsApp, Facebook, email, copier le lien, partage du téléphone
+  const ICO = {
+    li: '<svg viewBox="0 0 24 24"><rect x="3" y="9" width="4" height="12"/><circle cx="5" cy="5" r="2.2"/><path d="M10 9h3.8v1.7c.6-1 1.9-2 4-2 3.5 0 4.2 2.2 4.2 5.2V21h-4v-6.3c0-1.5 0-3.3-2.1-3.3s-2.3 1.6-2.3 3.2V21H10z"/></svg>',
+    x: '<svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
+    wa: '<svg viewBox="0 0 24 24"><path d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1 0 12 2.5zm0 17.2c-1.5 0-3-.4-4.2-1.2l-.3-.2-2.8.8.8-2.7-.2-.3A7.7 7.7 0 1 1 12 19.7z"/><path d="M16.4 14.1c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1-.7-.3-1.4-.7-2-1.3-.5-.5-1-1.1-1.3-1.7-.1-.2 0-.4.1-.5l.4-.5.2-.4v-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5a.9.9 0 0 0-.6.3c-.5.5-.8 1.2-.8 2 .1.8.4 1.6.9 2.3 1 1.4 2.2 2.5 3.8 3.2.4.2.9.3 1.3.4.5.1 1 .1 1.5 0 .6-.1 1.2-.5 1.5-1 .1-.3.2-.7.1-1 0-.1-.2-.2-.4-.3z"/></svg>',
+    fb: '<svg viewBox="0 0 24 24"><path d="M14 8.5V6.8c0-.8.5-1.3 1.4-1.3H17V2h-2.6C11.6 2 10 3.7 10 6.4v2.1H7.5V12H10v10h4V12h2.7l.5-3.5z"/></svg>',
+    em: '<svg viewBox="0 0 24 24" class="st"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6 8.5 7 8.5-7"/></svg>',
+    ln: '<svg viewBox="0 0 24 24" class="st"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1.2 1.2"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2"/></svg>',
+    sh: '<svg viewBox="0 0 24 24" class="st"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>',
+  };
+  const use = (k) => `<svg${/class="st"/.test(ICO[k]) ? ' class="st"' : ''}><use href="#i-${k}"/></svg>`;
+  const SPRITE = `<svg width="0" height="0" style="position:absolute" aria-hidden="true">${Object.entries(ICO).map(([k, v]) => v.replace(/<svg viewBox="([^"]+)"(?: class="st")?>/, `<symbol id="i-${k}" viewBox="$1">`).replace('</svg>', '</symbol>')).join('')}</svg>`;
+  // La barre est remplie par le script quand la page s'affiche (le HTML reste léger)
+  const shareBar = (title, p, cls = '') => `<div class="share-bar ${cls}" data-url="${SITE_URL + p}" data-title="${e(title)}"></div>`;
+  const SHARE_TPL = `<span class="sb-l">Share</span><a class="sb sb-li" target="_blank" rel="noopener" aria-label="Share on LinkedIn" title="LinkedIn" data-h="https://www.linkedin.com/sharing/share-offsite/?url={u}">${use('li')}</a>`
+    + `<a class="sb sb-x" target="_blank" rel="noopener" aria-label="Share on X" title="X" data-h="https://x.com/intent/post?text={t}&url={u}">${use('x')}</a>`
+    + `<a class="sb sb-wa" target="_blank" rel="noopener" aria-label="Share on WhatsApp" title="WhatsApp" data-h="https://wa.me/?text={t}%20{u}">${use('wa')}</a>`
+    + `<a class="sb sb-fb" target="_blank" rel="noopener" aria-label="Share on Facebook" title="Facebook" data-h="https://www.facebook.com/sharer/sharer.php?u={u}">${use('fb')}</a>`
+    + `<a class="sb sb-em" aria-label="Share by email" title="Email" data-h="mailto:?subject={t}&body={u}">${use('em')}</a>`
+    + `<button class="sb sb-ln" type="button" data-copy aria-label="Copy the link" title="Copy the link">${use('ln')}</button>`
+    + `<button class="sb sb-sh" type="button" data-native hidden aria-label="Share" title="Share">${use('sh')}</button><span class="sb-ok" hidden>Link copied</span>`;
+  const authorBox = (title, p) => `<div class="author">${AVL}<div><b>${e(site.name)}</b><p>${e(site.bio[0])}</p><p class="contact">${e(site.phone)} · <a href="mailto:${e(site.email)}">${e(site.email)}</a></p></div></div>${shareBar(title, p, 'end')}`;
 
   // ---------- Vues ----------
   const views = [];
@@ -129,13 +149,13 @@ function build() {
     const acts = (a.pdf ? `<a class="btn" href="${asset(a.pdf)}" download="${a.id}.pdf">Download the PDF</a>` : '') + (a.linkedin ? `<a class="btn ghost" href="${e(a.linkedin)}" target="_blank" rel="noopener">Read on LinkedIn</a>` : '');
     view(a.path, `${back}<p class="kick">${e(kicker(a))}${a.type === 'essay' ? '<span class="essay-mark">Essay</span>' : ''}</p><h1>${e(a.title)}</h1>`
       + (a.standfirst ? `<p class="lede">${e(a.standfirst)}</p>` : '') + (a.type === 'opinion' ? '<p class="op-note">Opinion. The views expressed are the author\'s own.</p>' : '')
-      + `<div class="by">${AV}<span><b>${e(site.name)}</b><br>${fd(a.date)} · ${a.min} min read</span><span class="tags">${tags}</span></div>`
+      + `<div class="by">${AV}<span><b>${e(site.name)}</b><br>${fd(a.date)} · ${a.min} min read</span><span class="tags">${tags}</span></div>${shareBar(a.title, a.path)}`
       + (a.image ? `<figure class="v-hero">${pic(a.image, a.image_alt, 'hero-im')}<figcaption>${e(a.image_alt || '')}${a.image_credit ? '. ' + e(a.image_credit) : '. Photo: Pexels'}</figcaption></figure>` : '')
       + (a.video && ytId(a.video) ? `<figure class="v-video">${videoBlock(ytId(a.video), a.title)}${a.video_caption ? `<figcaption>${e(a.video_caption)}</figcaption>` : ''}</figure>` : '')
       + `<div class="prose">${a.html}</div>` + (acts ? `<div class="acts">${acts}</div>` : '')
       + ((a.documents || []).length ? `<aside class="docs"><h3>Documents</h3>${a.documents.map((d) => `<a href="${e(d.file)}" target="_blank" rel="noopener"><span class="pdf">PDF</span><b>${e(d.title || d.file.split('/').pop())}</b><span class="dl">Open ↗</span></a>`).join('')}</aside>` : '')
       + ((a.links || []).length ? `<aside class="links"><h3>Links and further reading</h3>${a.links.map((l) => `<a href="${e(l.url)}" target="_blank" rel="noopener"><b>${e(l.title || l.url)}</b><span>${e(l.source || new URL(l.url).hostname.replace(/^www\./, ''))} ↗</span></a>`).join('')}</aside>` : '')
-      + authorBox(a.title)
+      + authorBox(a.title, a.path)
       + `<nav class="pn">${prev ? A(prev.path, `<span>← Previous</span><b>${e(prev.title)}</b>`) : '<span></span>'}${next ? A(next.path, `<span>Next →</span><b>${e(next.title)}</b>`, 'nx') : ''}</nav>`
       + (rel.length ? `<div class="rel"><h3>Read next</h3><div class="grid g3">${rel.map((b) => card(b, { ex: false })).join('')}</div></div>` : ''));
   });
@@ -143,14 +163,14 @@ function build() {
     const art = c.article && byId[c.article];
     view(c.path, `${back}<p class="kick">Chart</p><h1>${e(c.title)}</h1><div class="by">${AV}<span><b>${e(site.name)}</b><br>${fd(c.date)}</span></div>`
       + `<figure class="v-chart chart-v"><img src="${asset(c.image)}" alt="${e(c.title)}"><figcaption><b>Source:</b> ${e(c.source || '')}</figcaption></figure><div class="prose">${c.html}</div>`
-      + (art ? `<p class="end">From ${A(art.path, e(art.title))}</p>` : '') + authorBox(c.title));
+      + (art ? `<p class="end">From ${A(art.path, e(art.title))}</p>` : '') + authorBox(c.title, c.path));
   });
   videos.forEach((v) => {
     const more = videos.filter((x) => x !== v).slice(0, 3);
     view(v.path, `<a class="back" href="/videos">← All videos</a><p class="kick">Video${v.channel ? ' · ' + e(v.channel) : ''}</p><h1>${e(v.title)}</h1>`
       + `<div class="vplay" data-yt="${v.yt}" role="button" tabindex="0" aria-label="Play the video">${pic(v.thumb, v.title, 'hero-im')}<i class="play big" aria-hidden="true"></i></div>`
       + `<p class="vnote">${v.origin === 'mine' ? 'A video by ' + e(site.name) + '.' : 'Selected by ' + e(site.name) + '. Video: ' + e(v.channel || 'YouTube') + '.'} <a href="https://www.youtube.com/watch?v=${v.yt}" target="_blank" rel="noopener">Watch on YouTube</a></p>`
-      + `<div class="by">${AV}<span><b>${v.origin === 'mine' ? e(site.name) : 'Why it is worth watching'}</b><br>${fd(v.date)}</span></div><div class="prose nodrop">${v.html}</div>${authorBox(v.title)}`
+      + `<div class="by">${AV}<span><b>${v.origin === 'mine' ? e(site.name) : 'Why it is worth watching'}</b><br>${fd(v.date)}</span></div><div class="prose nodrop">${v.html}</div>${authorBox(v.title, v.path)}`
       + (more.length ? `<div class="rel"><h3>More videos</h3><div class="grid g3">${more.map(videoCard).join('')}</div></div>` : ''));
   });
   reports.forEach((r) => {
@@ -158,7 +178,7 @@ function build() {
     view(r.path, `<a class="back" href="/reports">← Reports and documents</a><div class="rep big">${cover(r)}<div><p class="kick">${e(r.series || 'Report')}</p><h1 class="ip-h">${e(r.title)}</h1><p class="lede">${e(r.standfirst || '')}</p>`
       + `<div class="acts">${r.pdf ? `<a class="btn" href="${r.pdf}" download>Download the PDF</a><a class="btn ghost" href="${r.pdf}" target="_blank" rel="noopener">Open in the browser</a>` : ''}${art ? A(art.path, 'Read online', 'btn ghost') : ''}</div></div></div>`
       + ((r.key_messages || []).length ? `<aside class="keys"><h2>Key messages</h2><ul>${r.key_messages.map((m) => `<li>${e(m)}</li>`).join('')}</ul></aside>` : '')
-      + (r.md ? `<div class="prose nodrop">${r.html}</div>` : '') + authorBox(r.title));
+      + (r.md ? `<div class="prose nodrop">${r.html}</div>` : '') + authorBox(r.title, r.path));
   });
   events.forEach((v) => view(v.path, `<a class="back" href="/events">← Events</a><p class="kick">${e(v.kind || 'Event')}</p><h1>${e(v.title)}</h1><p class="lede">${fd(v.date)}${v.place ? ' · ' + e(v.place) : ''}</p>`
     + (v.link ? `<div class="acts"><a class="btn" href="${e(v.link)}" target="_blank" rel="noopener">Details and registration</a></div>` : '') + `<div class="prose nodrop">${v.html}</div>`));
@@ -167,8 +187,8 @@ function build() {
     const k = notes.indexOf(n) % Math.max(1, same.length);
     const more = same.slice(k, k + 3);
     view(n.path, `<a class="back" href="/notes">← All notes</a><p class="kick">Note · ${DESK[n.desk] || ''}</p><blockquote class="nq">“${e(n.quote)}”</blockquote><p class="nw">${e(n.author)}</p>`
-      + `<div class="by">${AV}<span><b>Commentary by ${e(site.name)}</b><br>${Math.max(1, Math.round(n.md.split(/\s+/).length / 200))} min read</span></div>`
-      + `<div class="prose">${n.html}</div>${authorBox(n.quote)}`
+      + `<div class="by">${AV}<span><b>Commentary by ${e(site.name)}</b><br>${Math.max(1, Math.round(n.md.split(/\s+/).length / 200))} min read</span></div>${shareBar(n.quote, n.path)}`
+      + `<div class="prose">${n.html}</div>${authorBox(n.quote, n.path)}`
       + (more.length ? `<div class="rel"><h3>More ${DESK[n.desk]} notes</h3><div class="notes">${more.map(noteCard).join('')}</div></div>` : ''));
   });
   const BUDGET = articles.filter((a) => a.budget);
@@ -222,7 +242,7 @@ function build() {
   const countOpt = (c) => { const x = inC(c); return x.arts.length + x.chs.length + x.ns.length + x.vs.length; };
 
   const home = `<main data-path="/" id="home">
-<div class="figs"><div class="w figs-in"><span class="figs-l">Key numbers</span>${(site.key_figures || []).map(({ label: l, value: v }) => `<span class="fig">${e(l)} <b>${e(v)}</b></span>`).join('')}<span class="figs-d">${e(site.key_figures_date || '')}</span></div></div>
+<div class="ticker" aria-label="Key numbers and latest headlines"><span class="tk-l">Highlights</span><div class="tk-v"><div class="tk-track">${[0, 1].map((k) => `<div class="tk-run"${k ? ' aria-hidden="true"' : ''}>${(site.key_figures || []).map(({ label: l, value: v }) => `<span class="fig">${e(l)} <b>${e(v)}</b></span>`).join('')}<span class="figs-d">${e(site.key_figures_date || '')}</span>${articles.slice(0, 8).map((a) => `<a class="tk-h" href="${a.path}"${k ? ' tabindex="-1"' : ''}><i>${e(kicker(a))}</i>${e(a.title)}</a>`).join('')}</div>`).join('')}</div></div></div>
 <section class="finder"><div class="w"><form class="sbox" onsubmit="return false">${ICO_S}<input id="q" type="search" placeholder="Search analyses, opinion, essays and notes: gilts, AI, Budget, Africa…" autocomplete="off" aria-label="Search">
 <select id="country" aria-label="Choose a country"><option value="">Choose a country</option>${allC.map((c) => `<option value="${c.toLowerCase()}">${e(COUNTRY[c])} (${countOpt(c)})</option>`).join('')}</select></form>
 <div class="chips">${(site.search_chips || []).map((c) => `<button data-q="${e(c)}">${e(c)}</button>`).join('')}</div><div id="results" hidden></div></div></section>
@@ -305,6 +325,7 @@ ${reports.length > 1 ? `<div class="rgrid mt2">${reports.slice(1, 5).map(reportC
 <style>${css}</style>
 </head>
 <body>
+${SPRITE}
 <div class="strip"></div>
 <header class="mast"><div class="w mast-in">
 <div class="m-left"><button class="ico" data-menu aria-label="Menu">${ICO_M}<span>Menu</span></button><button class="ico" data-search aria-label="Search">${ICO_S}<span>Search</span></button></div>
@@ -320,6 +341,7 @@ ${views.join('\n')}
 ${footer}
 <script>
 var IDX = ${JSON.stringify(idx)};
+var SHARE = ${JSON.stringify(SHARE_TPL)};
 var ANCH = ${JSON.stringify(homeAnchors)};
 (function () {
   var home = document.getElementById('home'), drawer = document.getElementById('drawer');
@@ -335,6 +357,7 @@ var ANCH = ${JSON.stringify(homeAnchors)};
     var el = anchor ? home : (V[p] || home);
     closeDrawer();
     for (var k in V) V[k].hidden = V[k] !== el;
+    fillShare(el);
     mark(anchor ? '/' + anchor : (V[p] ? p : '/'));
     if (push && canPush && location.pathname !== p) history.pushState({}, '', p);
     if (anchor) setTimeout(function () { document.getElementById(anchor).scrollIntoView({ behavior: 'smooth' }); }, 30); else window.scrollTo(0, 0);
@@ -362,6 +385,23 @@ var ANCH = ${JSON.stringify(homeAnchors)};
   function play(el) { el.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + el.dataset.yt + '?autoplay=1&rel=0" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'; el.classList.add('on'); }
   document.addEventListener('click', function (ev) { var el = ev.target.closest('.vplay'); if (el && !el.classList.contains('on')) play(el); });
   document.addEventListener('keydown', function (ev) { var el = ev.target.closest && ev.target.closest('.vplay'); if (el && (ev.key === 'Enter' || ev.key === ' ') && !el.classList.contains('on')) { ev.preventDefault(); play(el); } });
+  // Partage : barres remplies à l'affichage, copier le lien, partage natif du téléphone
+  function fillShare(root) {
+    [].forEach.call(root.querySelectorAll('.share-bar:empty'), function (bar) {
+      var u = encodeURIComponent(bar.dataset.url), t = encodeURIComponent(bar.dataset.title);
+      bar.innerHTML = SHARE;
+      [].forEach.call(bar.querySelectorAll('[data-h]'), function (a) { a.href = a.dataset.h.replace('{u}', u).replace('{t}', t); });
+      if (navigator.share) bar.querySelector('[data-native]').hidden = false;
+    });
+  }
+  document.addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-copy],[data-native]'); if (!b) return;
+    var bar = b.closest('.share-bar'), url = bar.dataset.url, title = bar.dataset.title;
+    if (b.hasAttribute('data-native')) { navigator.share({ title: title, url: url }).catch(function () {}); return; }
+    var ok = bar.querySelector('.sb-ok');
+    function done() { ok.hidden = false; setTimeout(function () { ok.hidden = true; }, 2000); }
+    if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, done); else { var t = document.createElement('input'); t.value = url; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (x) {} t.remove(); done(); }
+  });
   // Flèches des rails
   [].forEach.call(document.querySelectorAll('.track'), function (t) {
     var id = t.parentNode.id; function upd() { var bs = document.querySelectorAll('[data-rail="' + id + '"]'); bs[0].disabled = t.scrollLeft < 8; bs[1].disabled = t.scrollLeft + t.clientWidth >= t.scrollWidth - 8; var none = t.scrollWidth <= t.clientWidth + 8; bs[0].hidden = bs[1].hidden = none; }
@@ -383,10 +423,10 @@ var ANCH = ${JSON.stringify(homeAnchors)};
   q2.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); show('/', true); q.value = q2.value; search(); q.focus(); } });
   sel.addEventListener('change', function () { if (sel.value) { var c = sel.value; sel.value = ''; show('/country/' + c, true); } });
   // Notes
-  var notes = [].slice.call(document.querySelectorAll('#nl .nt')), more = document.getElementById('more'), f = 'all', shown = 12;
+  var STEP = window.innerWidth < 700 ? 6 : 12, notes = [].slice.call(document.querySelectorAll('#nl .nt')), more = document.getElementById('more'), f = 'all', shown = STEP;
   function draw() { var l = notes.filter(function (n) { return f === 'all' || n.dataset.d === f; }); notes.forEach(function (n) { n.hidden = true; }); l.slice(0, shown).forEach(function (n) { n.hidden = false; }); more.hidden = l.length <= shown; }
-  [].forEach.call(document.querySelectorAll('.f'), function (b) { b.addEventListener('click', function () { [].forEach.call(document.querySelectorAll('.f'), function (x) { x.classList.toggle('on', x === b); }); f = b.dataset.f; shown = 12; draw(); }); });
-  more.addEventListener('click', function () { shown += 12; draw(); });
+  [].forEach.call(document.querySelectorAll('.f'), function (b) { b.addEventListener('click', function () { [].forEach.call(document.querySelectorAll('.f'), function (x) { x.classList.toggle('on', x === b); }); f = b.dataset.f; shown = STEP; draw(); }); });
+  more.addEventListener('click', function () { shown += STEP; draw(); });
   draw();
   show(canPush ? location.pathname : '/', false);
 })();
