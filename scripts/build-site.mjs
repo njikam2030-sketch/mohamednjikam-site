@@ -55,7 +55,14 @@ for (const a of articles) {
 }
 const charts = readDir('charts').filter((c) => !c.draft).map((c) => ({ ...c, kind: 'chart', date: iso(c.date), sections: c.sections || [], countries: c.countries || [], html: render(c.md), path: `/charts/${c.id}` }))
   .sort((a, b) => b.date.localeCompare(a.date));
-const reports = readDir('reports').filter((r) => !r.draft).map((r) => ({ ...r, date: iso(r.date) }));
+const reports = readDir('reports').filter((r) => !r.draft).map((r) => ({ ...r, date: iso(r.date), countries: r.countries || [], html: render(r.md), path: `/reports/${r.id}` }))
+  .sort((a, b) => b.date.localeCompare(a.date));
+const ytId = (u) => (String(u || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/) || [])[1];
+const videos = readDir('videos').filter((v) => !v.draft && ytId(v.youtube)).map((v) => ({
+  ...v, kind: 'video', date: iso(v.date), yt: ytId(v.youtube), sections: v.sections || [], countries: v.countries || [], html: render(v.md), path: `/videos/${v.id}`,
+  thumb: v.thumbnail || (fs.existsSync(path.join(PUB, `images/videos/${ytId(v.youtube)}.jpg`)) ? `/images/videos/${ytId(v.youtube)}.jpg` : `https://i.ytimg.com/vi/${ytId(v.youtube)}/hqdefault.jpg`),
+})).sort((a, b) => b.date.localeCompare(a.date));
+const events = readDir('events').filter((v) => !v.draft).map((v) => ({ ...v, date: iso(v.date), html: render(v.md), path: `/events/${v.id}` })).sort((a, b) => a.date.localeCompare(b.date));
 const notes = readDir('notes').filter((n) => !n.draft).sort((a, b) => (a.order ?? 999) - (b.order ?? 999)).map((n) => ({
   ...n, kind: 'note', path: `/notes/${n.id}`, html: render(n.md), first: n.md.split(/(?<=[.!?])\s/)[0],
   countries: [...new Set(NOTE_COUNTRY.filter(([k]) => String(n.author).includes(k)).map(([, c]) => c))],
@@ -92,6 +99,9 @@ function build() {
   const opCard = (a) => A(a.path, `${AVL}<span class="k">${e(site.name)}</span><b>${e(a.title)}</b><span class="ex">${e(a.standfirst)}</span><span class="meta">${fd(a.date)} · ${a.min} min read</span>`, 'opc');
   const chartCard = (c) => A(c.path, `<img src="${asset(c.image)}" alt="" loading="lazy"><span class="k">Chart</span><b>${e(c.title)}</b>`, 'chartcard');
   const noteCard = (n) => A(n.path, `<span class="nk">${DESK[n.desk] || n.desk}</span><blockquote>“${e(n.quote)}”</blockquote><span class="by-n">${e(n.author)}</span><span class="tease">${e(n.first)}</span><span class="rm">Read more →</span>`, 'nt').replace('<a class="nt"', `<a class="nt" data-d="${n.desk}"`);
+  const videoCard = (v) => A(v.path, `<span class="vth">${pic(v.thumb, v.title, 'th')}<i class="play" aria-hidden="true"></i></span><span class="k">${v.origin === 'mine' ? 'My video' : e(v.channel || 'Video')}</span><b>${e(v.title)}</b><span class="meta">${fd(v.date)}</span>`, 'card vcard has-im');
+  const cover = (r) => `<div class="rep-c"><span>${e(r.series || 'Report')}${r.number ? ' · ' + e(r.number) : ''}</span><b>${e(r.title)}</b><small>${e(site.name)} · ${MONTHS[Number(r.date.slice(5, 7)) - 1]} ${r.date.slice(0, 4)}</small></div>`;
+  const reportCard = (r) => A(r.path, cover(r) + `<span class="k">${e(r.series || 'Report')}</span><b>${e(r.title)}</b><span class="meta">${fd(r.date)}${r.pdf ? ' · PDF' : ''}</span>`, 'rcard');
   const rail = (id, title, items, more, cls = '') => `<section class="w blk" id="${id}"><div class="rail-h ${cls}"><h2>${e(title)}</h2><div class="r-r">${more ? A(more[0], e(more[1]), 'more') : ''}<button class="arw" data-rail="${id}" data-dir="-1" aria-label="Previous">‹</button><button class="arw" data-rail="${id}" data-dir="1" aria-label="Next">›</button></div></div><div class="track">${items.join('')}</div></section>`;
 
   const authorBox = (title) => `<div class="author">${AVL}<div><b>${e(site.name)}</b><p>${e(site.bio[0])}</p><p class="contact">${e(site.phone)} · <a href="mailto:${e(site.email)}">${e(site.email)}</a></p>`
@@ -122,6 +132,23 @@ function build() {
       + `<figure class="v-chart chart-v"><img src="${asset(c.image)}" alt="${e(c.title)}"><figcaption><b>Source:</b> ${e(c.source || '')}</figcaption></figure><div class="prose">${c.html}</div>`
       + (art ? `<p class="end">From ${A(art.path, e(art.title))}</p>` : '') + authorBox(c.title));
   });
+  videos.forEach((v) => {
+    const more = videos.filter((x) => x !== v).slice(0, 3);
+    view(v.path, `<a class="back" href="/videos">← All videos</a><p class="kick">Video${v.channel ? ' · ' + e(v.channel) : ''}</p><h1>${e(v.title)}</h1>`
+      + `<div class="vplay" data-yt="${v.yt}" role="button" tabindex="0" aria-label="Play the video">${pic(v.thumb, v.title, 'hero-im')}<i class="play big" aria-hidden="true"></i></div>`
+      + `<p class="vnote">${v.origin === 'mine' ? 'A video by ' + e(site.name) + '.' : 'Selected by ' + e(site.name) + '. Video: ' + e(v.channel || 'YouTube') + '.'} <a href="https://www.youtube.com/watch?v=${v.yt}" target="_blank" rel="noopener">Watch on YouTube</a></p>`
+      + `<div class="by">${AV}<span><b>${v.origin === 'mine' ? e(site.name) : 'Why it is worth watching'}</b><br>${fd(v.date)}</span></div><div class="prose nodrop">${v.html}</div>${authorBox(v.title)}`
+      + (more.length ? `<div class="rel"><h3>More videos</h3><div class="grid g3">${more.map(videoCard).join('')}</div></div>` : ''));
+  });
+  reports.forEach((r) => {
+    const art = r.article && byId[r.article];
+    view(r.path, `<a class="back" href="/reports">← Reports and documents</a><div class="rep big">${cover(r)}<div><p class="kick">${e(r.series || 'Report')}</p><h1 class="ip-h">${e(r.title)}</h1><p class="lede">${e(r.standfirst || '')}</p>`
+      + `<div class="acts">${r.pdf ? `<a class="btn" href="${r.pdf}" download>Download the PDF</a><a class="btn ghost" href="${r.pdf}" target="_blank" rel="noopener">Open in the browser</a>` : ''}${art ? A(art.path, 'Read online', 'btn ghost') : ''}</div></div></div>`
+      + ((r.key_messages || []).length ? `<aside class="keys"><h2>Key messages</h2><ul>${r.key_messages.map((m) => `<li>${e(m)}</li>`).join('')}</ul></aside>` : '')
+      + (r.md ? `<div class="prose nodrop">${r.html}</div>` : '') + authorBox(r.title));
+  });
+  events.forEach((v) => view(v.path, `<a class="back" href="/events">← Events</a><p class="kick">${e(v.kind || 'Event')}</p><h1>${e(v.title)}</h1><p class="lede">${fd(v.date)}${v.place ? ' · ' + e(v.place) : ''}</p>`
+    + (v.link ? `<div class="acts"><a class="btn" href="${e(v.link)}" target="_blank" rel="noopener">Details and registration</a></div>` : '') + `<div class="prose nodrop">${v.html}</div>`));
   notes.forEach((n) => {
     const same = notes.filter((m) => m.desk === n.desk && m !== n);
     const k = notes.indexOf(n) % Math.max(1, same.length);
@@ -139,18 +166,27 @@ function build() {
   SECTIONS.forEach(([k, n, intro]) => secPage(k, n, intro, articles.filter((a) => a.sections.includes(k)), notes.filter((m) => m.desk === k)));
   secPage('opinion', 'Opinion', 'Arguments, not summaries. Where I take a position on the debates of the moment.', articles.filter((a) => a.type === 'opinion'));
   secPage('essays', 'The Long Read', 'Longer essays on development, money and institutions, written to be read slowly.', articles.filter((a) => a.type === 'essay'));
+  page('/videos', `<div class="ph"><p class="kick">Video</p><h1>Video</h1><p>Interviews, market programmes and explainers I recommend, each with a short commentary, and my own videos.</p></div><div class="grid g3">${videos.map(videoCard).join('') || '<p class="empty">First videos coming soon.</p>'}</div>`);
+  page('/reports', `<div class="ph"><p class="kick">Library</p><h1>Reports and documents</h1><p>Research reports, briefings and presentations to read online or download as PDF.</p></div><div class="rgrid">${reports.map(reportCard).join('') || '<p class="empty">First reports coming soon.</p>'}</div>`);
+  const today = new Date().toISOString().slice(0, 10);
+  const upcoming = events.filter((v) => v.date >= today), past = events.filter((v) => v.date < today).reverse();
+  const evRow = (v) => A(v.path, `<span class="ev-d"><b>${Number(v.date.slice(8, 10))}</b>${MONTHS[Number(v.date.slice(5, 7)) - 1].slice(0, 3)} ${v.date.slice(0, 4)}</span><span><span class="k">${e(v.kind || 'Event')}</span><b>${e(v.title)}</b><span class="meta">${e(v.place || '')}</span></span>`, 'ev');
+  page('/events', `<div class="ph"><p class="kick">Community & Events</p><h1>Events</h1><p>Talks, panels and conferences where I speak, and community events with YouthShare Initiatives.</p></div>`
+    + `<div class="sh"><h2>Upcoming</h2></div>${upcoming.map(evRow).join('') || `<p class="empty">No events announced yet. To invite me to speak, see <a href="/services">Speaking and advisory</a>.</p>`}`
+    + (past.length ? `<div class="sh mt"><h2>Past events</h2></div>${past.map(evRow).join('')}` : ''));
   pages.forEach((p) => page(p.path, `${back}<p class="kick">${e(site.name)}</p><h1 class="ip-h">${e(p.title)}</h1><div class="prose nodrop">${p.html}</div>`, false));
 
   // Pays
-  const inC = (c) => ({ arts: articles.filter((a) => a.countries.includes(c)), chs: charts.filter((x) => x.countries.includes(c)), ns: notes.filter((n) => n.countries.includes(c)) });
+  const inC = (c) => ({ arts: articles.filter((a) => a.countries.includes(c)), chs: charts.filter((x) => x.countries.includes(c)), ns: notes.filter((n) => n.countries.includes(c)), vs: videos.filter((v) => v.countries.includes(c)) });
   const allC = Object.keys(COUNTRY).sort((a, b) => COUNTRY[a].localeCompare(COUNTRY[b]));
   const CPIC = { GB: ['/images/photos/westminster.jpg', 'Westminster, London'], US: ['/images/photos/nyse.jpg', 'The New York Stock Exchange'], KE: ['/images/photos/nairobi.jpg', 'Nairobi'], NG: ['/images/photos/lagos.jpg', 'Lagos'] };
   allC.forEach((c) => {
-    const { arts, chs, ns } = inC(c);
+    const { arts, chs, ns, vs } = inC(c);
     const head = CPIC[c] ? pic(CPIC[c][0], CPIC[c][1], 'c-im') : `<span class="c-code">${c}</span>`;
     page(`/country/${c.toLowerCase()}`, `<div class="c-head">${head}<div><p class="kick">Country</p><h1>${e(COUNTRY[c])}</h1><p>${arts.length} articles, ${chs.length} charts and ${ns.length} notes about ${e(COUNTRY[c])}.</p></div></div>`
       + `<div class="sh"><h2>Analysis, opinion and essays</h2></div>` + (arts.length ? `<div class="list">${arts.map((a) => card(a)).join('')}</div>` : `<p class="empty">Nothing on ${e(COUNTRY[c])} yet. It is on my list; write to me if there is a subject you would like covered.</p>`)
       + (chs.length ? `<div class="sh mt"><h2>Charts</h2></div><div class="grid g3">${chs.map(chartCard).join('')}</div>` : '')
+      + (vs.length ? `<div class="sh mt"><h2>Video</h2></div><div class="grid g3">${vs.map(videoCard).join('')}</div>` : '')
       + (ns.length ? `<div class="sh mt"><h2>Notes</h2></div><div class="notes">${ns.map(noteCard).join('')}</div>` : '')
       + `<p class="cnav">Other countries: ${site.countries_bar.filter((x) => x !== c).map((x) => A(`/country/${x.toLowerCase()}`, e(COUNTRY[x]))).join(' · ')}</p>`);
   });
@@ -165,12 +201,12 @@ function build() {
   const stack = (keys) => articles.filter((a) => a.sections.some((s) => keys.includes(s))).slice(0, 4).map((a) => card(a, { ex: false, img: false })).join('');
   const r0 = reports[0];
   const rArt = r0 && r0.article && byId[r0.article];
-  const NAV = [['/', 'Home'], ['/uk-budget-2026', 'UK Budget 2026'], ...SECTIONS.map(([k, n]) => [`/${k}`, n]), ['/opinion', 'Opinion'], ['/essays', 'Long Read'], ['/notes', 'Notes'], ['/charts', 'Charts'], ['/reports', 'Reports'], ['/about', 'About']];
+  const NAV = [['/', 'Home'], ['/uk-budget-2026', 'UK Budget 2026'], ...SECTIONS.map(([k, n]) => [`/${k}`, n]), ['/opinion', 'Opinion'], ['/essays', 'Long Read'], ['/videos', 'Video'], ['/notes', 'Notes'], ['/charts', 'Charts'], ['/reports', 'Reports'], ['/events', 'Events'], ['/about', 'About']];
   const ICO_S = '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>';
   const ICO_M = '<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
   const MARK = '<svg class="mk" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0B1F3A"/><circle cx="45" cy="19" r="6" fill="#E8573C"/><path d="M8 50 25 24l8 11 6-8 17 23z" fill="#fff"/></svg>';
   const FAV = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B1F3A'/%3E%3Ccircle cx='45' cy='19' r='6' fill='%23E8573C'/%3E%3Cpath d='M8 50 25 24l8 11 6-8 17 23z' fill='%23fff'/%3E%3C/svg%3E";
-  const countOpt = (c) => { const x = inC(c); return x.arts.length + x.chs.length + x.ns.length; };
+  const countOpt = (c) => { const x = inC(c); return x.arts.length + x.chs.length + x.ns.length + x.vs.length; };
 
   const home = `<main data-path="/" id="home">
 <div class="figs"><div class="w figs-in"><span class="figs-l">Key numbers</span>${(site.key_figures || []).map(({ label: l, value: v }) => `<span class="fig">${e(l)} <b>${e(v)}</b></span>`).join('')}<span class="figs-d">${e(site.key_figures_date || '')}</span></div></div>
@@ -185,6 +221,7 @@ function build() {
 ${BUDGET.length ? `<section class="band"><div class="w"><div class="sh"><h2><span class="lab">Special</span> UK Autumn Budget 2026</h2><a href="/uk-budget-2026">All coverage →</a></div><div class="grid g3">${BUDGET.filter((a) => a.type === 'analysis').slice(0, 3).map((a) => card(a)).join('')}</div></div></section>` : ''}
 ${opinions.length ? rail('opinion-rail', 'Opinion', opinions.map(opCard), ['/opinion', 'All opinion →'], 'op') : ''}
 ${essays.length ? `<section class="long"><div class="w"><div class="rail-h"><h2>The Long Read</h2><div class="r-r"><a class="more" href="/essays">All essays →</a></div></div><div class="lr">${essays.slice(0, 2).map((a) => A(a.path, pic(a.image, a.image_alt, 'lr-im') + `<span class="k">The Long Read · ${a.min} min</span><b>${e(a.title)}</b><span class="ex">${e(a.standfirst)}</span>`)).join('')}</div></div></section>` : ''}
+${videos.length ? `<div class="vband">${rail('video-rail', 'Video', videos.map(videoCard), ['/videos', 'All videos →'], 'dark')}</div>` : ''}
 ${rail('latest', 'Latest analysis', analyses.map((a) => card(a)), ['/economics', 'More →'])}
 <section class="w blk duo">
 <div><div class="sh"><h2>AI</h2><a href="/ai">More →</a></div><div class="stack">${stack(['ai'])}</div></div>
@@ -197,8 +234,9 @@ ${rail('latest', 'Latest analysis', analyses.map((a) => card(a)), ['/economics',
 <div class="filters"><button class="f on" data-f="all">All</button>${Object.entries(DESK).map(([k, v]) => `<button class="f" data-f="${k}">${v}</button>`).join('')}</div>
 <div class="notes" id="nl">${notes.map(noteCard).join('')}</div><div class="more-w"><button class="btn ghost" id="more">Show more notes</button></div></section>
 <section class="w blk" id="charts"><div class="sh"><h2>Charts</h2></div><div class="grid g3">${charts.map(chartCard).join('')}</div></section>
-<section class="w blk" id="reports"><div class="sh"><h2>Reports</h2></div>
-${r0 ? `<div class="rep"><div class="rep-c"><span>${e(r0.series || 'Report')} · ${e(r0.number || '')}</span><b>${e(r0.title)}</b><small>${e(site.name)} · ${MONTHS[Number(r0.date.slice(5, 7)) - 1]} ${r0.date.slice(0, 4)}</small></div><div><h3>${e(r0.title)}</h3><p>${e(r0.standfirst || '')}</p><ol>${(r0.key_messages || []).map((m) => `<li>${e(m)}</li>`).join('')}</ol><div class="acts">${r0.pdf ? `<a class="btn" href="${asset(r0.pdf)}" download="${r0.id}.pdf">Download the PDF</a>` : ''}${rArt ? A(rArt.path, 'Read online', 'btn ghost') : ''}</div></div></div>` : ''}
+<section class="w blk" id="reports"><div class="sh"><h2>Reports and documents</h2><a href="/reports">Library →</a></div>
+${r0 ? `<div class="rep">${cover(r0)}<div><h3>${e(r0.title)}</h3><p>${e(r0.standfirst || '')}</p><ol>${(r0.key_messages || []).map((m) => `<li>${e(m)}</li>`).join('')}</ol><div class="acts">${r0.pdf ? `<a class="btn" href="${r0.pdf}" download>Download the PDF</a>` : ''}${A(r0.path, 'Details', 'btn ghost')}${rArt ? A(rArt.path, 'Read online', 'btn ghost') : ''}</div></div></div>` : ''}
+${reports.length > 1 ? `<div class="rgrid mt2">${reports.slice(1, 5).map(reportCard).join('')}</div>` : ''}
 </section>
 <section class="w blk" id="about"><div class="about"><img src="${asset('/images/headshot.jpg')}" alt="${e(site.name)}" width="180" height="180"><div><p class="kick light">About</p><h2>${e(site.name)}</h2>${site.bio.map((p) => `<p>${e(p)}</p>`).join('')}
 <div class="facts">${(site.facts || []).map(({ title: b, text: s }) => `<span><b>${e(b)}</b>${e(s)}</span>`).join('')}</div></div></div></section>
@@ -216,8 +254,8 @@ ${r0 ? `<div class="rep"><div class="rep-c"><span>${e(r0.series || 'Report')} ·
     ['Support', [['/contact', 'Contact'], ['/corrections', 'Corrections'], ['#search', 'Search the site'], ['#menu', 'Countries']]],
     ['Legal & Privacy', [['/terms', 'Terms of use'], ['/privacy', 'Privacy'], ['/cookies', 'Cookies'], ['/disclaimer', 'Disclaimer']]],
     ['Services', [['/services', 'Speaking'], ['/services', 'Advisory'], ['/services', 'Press enquiries'], ['/terms', 'Republishing']]],
-    ['Tools', [['/notes', 'Notes'], ['/charts', 'Charts'], ['/reports', 'Reports'], ['/essays', 'The Long Read']]],
-    ['Community & Events', [['/youthshare', 'YouthShare Initiatives'], [site.linkedin, 'LinkedIn'], [site.x, 'X'], ['/services', 'Speaking events']]],
+    ['Tools', [['/videos', 'Video'], ['/reports', 'Reports and PDF'], ['/notes', 'Notes'], ['/charts', 'Charts'], ['/essays', 'The Long Read']]],
+    ['Community & Events', [['/youthshare', 'YouthShare Initiatives'], [site.linkedin, 'LinkedIn'], [site.x, 'X'], ['/events', 'Events']]],
     ['More', [['/about', 'About'], ['/why', 'Why I write'], ['/opinion', 'Opinion'], ['/uk-budget-2026', 'UK Budget 2026'], ['/economics', 'Economics'], ['/africa', 'Africa']]],
   ];
   const flink = ([h, t]) => h.startsWith('http') ? `<a href="${e(h)}" target="_blank" rel="noopener">${e(t)}</a>` : h === '#search' ? `<a href="/" data-search>${e(t)}</a>` : h === '#menu' ? `<a href="/" data-menu>${e(t)}</a>` : A(h, e(t));
@@ -231,11 +269,13 @@ ${r0 ? `<div class="rep"><div class="rep-c"><span>${e(r0.series || 'Report')} ·
   // Index de recherche
   const idx = [...articles.map((a) => ({ p: a.path, t: a.title, x: a.standfirst || '', k: kicker(a), s: (a.title + ' ' + (a.standfirst || '') + ' ' + a.html.replace(/<[^>]+>/g, ' ')).toLowerCase() })),
     ...charts.map((c) => ({ p: c.path, t: c.title, x: c.source || '', k: 'Chart', s: (c.title + ' ' + c.md).toLowerCase() })),
+    ...videos.map((v) => ({ p: v.path, t: v.title, x: v.channel || '', k: 'Video', s: (v.title + ' ' + (v.channel || '') + ' ' + v.md).toLowerCase() })),
+    ...reports.map((r) => ({ p: r.path, t: r.title, x: r.series || '', k: 'Report', s: (r.title + ' ' + (r.standfirst || '') + ' ' + (r.key_messages || []).join(' ')).toLowerCase() })),
     ...notes.map((n) => ({ p: n.path, t: `“${n.quote}”`, x: n.author, k: 'Note · ' + (DESK[n.desk] || ''), s: (n.quote + ' ' + n.author + ' ' + n.md + ' ' + n.desk).toLowerCase() }))];
   const css = fs.readFileSync(path.join(ROOT, 'site/style.css'), 'utf8')
     + Object.entries(imgClass).map(([src, cls]) => `.${cls}{background-image:url("${asset(src)}")}`).join('')
     + `.avi{display:inline-block;background:url("${asset('/images/avatar.jpg')}") center/cover}`;
-  const homeAnchors = ['notes', 'charts', 'reports', 'about', 'contact', 'why'];
+  const homeAnchors = ['notes', 'charts', 'about', 'contact', 'why'];
 
   const html = `<!doctype html>
 <html lang="en">
@@ -305,6 +345,10 @@ var ANCH = ${JSON.stringify(homeAnchors)};
     ev.preventDefault(); show(h, true);
   });
   document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { if (!drawer.hidden) closeDrawer(); else show('/', true); } });
+  // Vidéo : chargée seulement au clic (youtube-nocookie)
+  function play(el) { el.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + el.dataset.yt + '?autoplay=1&rel=0" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'; el.classList.add('on'); }
+  document.addEventListener('click', function (ev) { var el = ev.target.closest('.vplay'); if (el && !el.classList.contains('on')) play(el); });
+  document.addEventListener('keydown', function (ev) { var el = ev.target.closest && ev.target.closest('.vplay'); if (el && (ev.key === 'Enter' || ev.key === ' ') && !el.classList.contains('on')) { ev.preventDefault(); play(el); } });
   // Flèches des rails
   [].forEach.call(document.querySelectorAll('.track'), function (t) {
     var id = t.parentNode.id; function upd() { var bs = document.querySelectorAll('[data-rail="' + id + '"]'); bs[0].disabled = t.scrollLeft < 8; bs[1].disabled = t.scrollLeft + t.clientWidth >= t.scrollWidth - 8; var none = t.scrollWidth <= t.clientWidth + 8; bs[0].hidden = bs[1].hidden = none; }
