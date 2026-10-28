@@ -13,7 +13,7 @@ collections:
   - name: articles
     label: "Articles"
     label_singular: "Article"
-    description: "Analyses, tribunes (Opinion) et essais longs (The Long Read). Les sources vont à la fin, sous un titre « Sources »."
+    description: "Analyses, tribunes (Opinion) et essais longs (The Long Read). Les sources vont à la fin, sous un titre « Sources ». Pour intégrer une vidéo dans le texte, collez le lien YouTube seul sur une ligne."
     folder: content/articles
     create: true
     slug: "{{slug}}"
@@ -90,8 +90,25 @@ collections:
       - { name: second, label: "Deuxième article de la une", widget: boolean, default: false, required: false }
       - { name: pick, label: "Dans « Editor's picks »", widget: boolean, default: false, required: false }
       - { name: budget, label: "Dossier UK Budget 2026", widget: boolean, default: false, required: false }
+      - { name: video, label: "Vidéo YouTube en tête d'article (lien, facultatif)", widget: string, required: false }
+      - { name: video_caption, label: "Légende de la vidéo", widget: string, required: false }
       - { name: linkedin, label: "Lien LinkedIn (facultatif)", widget: string, required: false }
-      - { name: pdf, label: "PDF à télécharger (facultatif)", widget: file, required: false }
+      - { name: pdf, label: "PDF principal à télécharger (facultatif)", widget: file, required: false, media_folder: /public/documents, public_folder: /documents }
+      - name: documents
+        label: "Autres documents PDF"
+        widget: list
+        required: false
+        fields:
+          - { name: title, label: "Titre", widget: string }
+          - { name: file, label: "Fichier", widget: file, media_folder: /public/documents, public_folder: /documents }
+      - name: links
+        label: "Liens (sources, lectures, vidéos externes)"
+        widget: list
+        required: false
+        fields:
+          - { name: title, label: "Titre", widget: string }
+          - { name: url, label: "Adresse (https://…)", widget: string }
+          - { name: source, label: "Média (facultatif, ex. Financial Times)", widget: string, required: false }
       - { name: draft, label: "Brouillon (non publié)", widget: boolean, default: false, required: false }
       - { name: body, label: "Texte", widget: markdown }
 

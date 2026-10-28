@@ -273,3 +273,14 @@ a.nt{transition:box-shadow .2s}a.nt:hover{box-shadow:0 8px 24px rgba(11,31,58,.0
 .ev-d{display:grid;place-items:center;text-align:center;background:var(--soft);border-radius:8px;padding:10px 6px;font-size:12.5px;color:var(--muted)}.ev-d b{font-size:26px;color:var(--ink);line-height:1}
 .ev b{display:block;font-size:18px;color:var(--ink)}.ev:hover b{color:var(--blue)}
 .rcard .rep-c b{color:#fff;font-size:17px;line-height:1.25}.rcard:hover .rep-c b{color:#fff}
+
+/* v11 : vidéo, documents et liens dans les articles */
+.vimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.v-video{margin:0 0 26px}.v-video .vplay{margin:0}.v-video figcaption{font-size:13px;color:var(--faint);margin-top:8px}
+.prose .vplay{margin:1.6em 0}
+.docs,.links{margin-top:32px;border-top:2px solid var(--ink);padding-top:12px}
+.docs h3,.links h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.docs a{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
+.docs .pdf{font-size:11px;font-weight:800;color:#fff;background:var(--coral);border-radius:4px;padding:4px 7px}.docs b{color:var(--ink);font-size:16px}.docs .dl{font-size:13.5px;font-weight:600;color:var(--blue)}
+.links a{display:grid;gap:2px;padding:12px 0;border-bottom:1px solid var(--line)}.links b{color:var(--ink);font-size:16px}.links span{font-size:13.5px;color:var(--blue)}
+.docs a:hover b,.links a:hover b{color:var(--blue)}

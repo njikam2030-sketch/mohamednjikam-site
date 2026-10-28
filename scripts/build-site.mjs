@@ -70,9 +70,18 @@ const notes = readDir('notes').filter((n) => !n.draft).sort((a, b) => (a.order ?
 const pages = readDir('pages').sort((a, b) => (a.order ?? 99) - (b.order ?? 99)).map((p) => ({ ...p, path: `/${p.id}`, html: render(p.md) }));
 const byId = Object.fromEntries(articles.map((a) => [a.id, a]));
 
+function videoBlock(id, title = 'Video') {
+  return `<div class="vplay" data-yt="${id}" role="button" tabindex="0" aria-label="Play the video"><img class="vimg" src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="${title.replace(/"/g, '&quot;')}" loading="lazy"><i class="play big" aria-hidden="true"></i></div>`;
+}
+
 function render(md) {
   let h = marked.parse(md || '', { mangle: false, headerIds: false });
   h = h.replace(/<h2>Sources<\/h2>/, '<h2 id="sources">Sources</h2>');
+  // Un lien YouTube seul sur sa ligne devient une vidéo intégrée
+  h = h.replace(/<p>(?:<a href="([^"]+)">[^<]*<\/a>|(https?:\/\/[^\s<]+))<\/p>/g, (m, a, b) => {
+    const id = (String(a || b).match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/embed\/)([\w-]{11})/) || [])[1];
+    return id ? videoBlock(id) : m;
+  });
   return h;
 }
 
@@ -95,7 +104,7 @@ function build() {
   const AV = '<span class="av avi"></span>', AVL = '<span class="av lg avi"></span>';
 
   const card = (a, { ex = true, img = true } = {}) => A(a.path, (img && a.image ? pic(a.image, a.image_alt) : '') + `<span class="k">${e(kicker(a))}</span><b>${e(a.title)}</b>`
-    + (ex && a.standfirst ? `<span class="ex">${e(a.standfirst)}</span>` : '') + `<span class="meta">${TYPE[a.type]} · ${fd(a.date)} · ${a.min} min read</span>`, 'card' + (img && a.image ? ' has-im' : ''));
+    + (ex && a.standfirst ? `<span class="ex">${e(a.standfirst)}</span>` : '') + `<span class="meta">${TYPE[a.type]} · ${fd(a.date)} · ${a.min} min read${a.video ? ' · Video' : ''}${a.pdf || (a.documents || []).length ? ' · PDF' : ''}</span>`, 'card' + (img && a.image ? ' has-im' : ''));
   const opCard = (a) => A(a.path, `${AVL}<span class="k">${e(site.name)}</span><b>${e(a.title)}</b><span class="ex">${e(a.standfirst)}</span><span class="meta">${fd(a.date)} · ${a.min} min read</span>`, 'opc');
   const chartCard = (c) => A(c.path, `<img src="${asset(c.image)}" alt="" loading="lazy"><span class="k">Chart</span><b>${e(c.title)}</b>`, 'chartcard');
   const noteCard = (n) => A(n.path, `<span class="nk">${DESK[n.desk] || n.desk}</span><blockquote>“${e(n.quote)}”</blockquote><span class="by-n">${e(n.author)}</span><span class="tease">${e(n.first)}</span><span class="rm">Read more →</span>`, 'nt').replace('<a class="nt"', `<a class="nt" data-d="${n.desk}"`);
@@ -122,7 +131,11 @@ function build() {
       + (a.standfirst ? `<p class="lede">${e(a.standfirst)}</p>` : '') + (a.type === 'opinion' ? '<p class="op-note">Opinion. The views expressed are the author\'s own.</p>' : '')
       + `<div class="by">${AV}<span><b>${e(site.name)}</b><br>${fd(a.date)} · ${a.min} min read</span><span class="tags">${tags}</span></div>`
       + (a.image ? `<figure class="v-hero">${pic(a.image, a.image_alt, 'hero-im')}<figcaption>${e(a.image_alt || '')}${a.image_credit ? '. ' + e(a.image_credit) : '. Photo: Pexels'}</figcaption></figure>` : '')
-      + `<div class="prose">${a.html}</div>` + (acts ? `<div class="acts">${acts}</div>` : '') + authorBox(a.title)
+      + (a.video && ytId(a.video) ? `<figure class="v-video">${videoBlock(ytId(a.video), a.title)}${a.video_caption ? `<figcaption>${e(a.video_caption)}</figcaption>` : ''}</figure>` : '')
+      + `<div class="prose">${a.html}</div>` + (acts ? `<div class="acts">${acts}</div>` : '')
+      + ((a.documents || []).length ? `<aside class="docs"><h3>Documents</h3>${a.documents.map((d) => `<a href="${e(d.file)}" target="_blank" rel="noopener"><span class="pdf">PDF</span><b>${e(d.title || d.file.split('/').pop())}</b><span class="dl">Open ↗</span></a>`).join('')}</aside>` : '')
+      + ((a.links || []).length ? `<aside class="links"><h3>Links and further reading</h3>${a.links.map((l) => `<a href="${e(l.url)}" target="_blank" rel="noopener"><b>${e(l.title || l.url)}</b><span>${e(l.source || new URL(l.url).hostname.replace(/^www\./, ''))} ↗</span></a>`).join('')}</aside>` : '')
+      + authorBox(a.title)
       + `<nav class="pn">${prev ? A(prev.path, `<span>← Previous</span><b>${e(prev.title)}</b>`) : '<span></span>'}${next ? A(next.path, `<span>Next →</span><b>${e(next.title)}</b>`, 'nx') : ''}</nav>`
       + (rel.length ? `<div class="rel"><h3>Read next</h3><div class="grid g3">${rel.map((b) => card(b, { ex: false })).join('')}</div></div>` : ''));
   });
