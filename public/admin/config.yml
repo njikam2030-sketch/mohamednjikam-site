@@ -177,8 +177,9 @@ collections:
       - { name: body, label: "Commentaire", widget: markdown }
 
   - name: reports
-    label: "Rapports"
-    label_singular: "Rapport"
+    label: "Rapports et PDF"
+    label_singular: "Rapport ou document PDF"
+    description: "Rapports, notes de synthèse, présentations : un PDF à télécharger, avec sa couverture fabriquée automatiquement."
     folder: content/reports
     create: true
     slug: "{{slug}}"
@@ -187,11 +188,58 @@ collections:
       - { name: title, label: "Titre", widget: string }
       - { name: standfirst, label: "Résumé", widget: text }
       - { name: date, label: "Date", widget: datetime, time_format: false, format: "YYYY-MM-DD" }
-      - { name: series, label: "Collection", widget: string, default: "Research Report" }
+      - { name: series, label: "Collection (ex. Research Report, Briefing, Presentation)", widget: string, default: "Research Report" }
       - { name: number, label: "Numéro", widget: string }
-      - { name: pdf, label: "PDF", widget: file }
+      - { name: pdf, label: "PDF", widget: file, media_folder: /public/documents, public_folder: /documents }
       - { name: article, label: "Article lié (nom du fichier)", widget: string, required: false }
-      - { name: key_messages, label: "Messages clés", widget: list, field: { name: m, label: Message, widget: string } }
+      - { name: key_messages, label: "Messages clés", widget: list, required: false, field: { name: m, label: Message, widget: string } }
+      - { name: countries, label: "Pays (codes : GB, CM…)", widget: list, required: false, field: { name: c, label: Code, widget: string } }
+      - { name: body, label: "Présentation (facultatif)", widget: markdown, required: false }
+
+  - name: videos
+    label: "Vidéos"
+    label_singular: "Vidéo"
+    description: "Une vidéo YouTube (la vôtre ou une sélection) et votre commentaire."
+    folder: content/videos
+    create: true
+    slug: "{{slug}}"
+    identifier_field: title
+    summary: "{{title}} · {{date}}"
+    sortable_fields: [date, title]
+    fields:
+      - { name: title, label: "Titre", widget: string }
+      - { name: date, label: "Date", widget: datetime, time_format: false, format: "YYYY-MM-DD" }
+      - { name: youtube, label: "Lien YouTube", widget: string }
+      - name: origin
+        label: "Origine"
+        widget: select
+        default: selection
+        options:
+          - { label: "Ma vidéo", value: mine }
+          - { label: "Sélection (vidéo d'un autre)", value: selection }
+      - { name: channel, label: "Chaîne (ex. Bloomberg Television)", widget: string, required: false }
+      - { name: thumbnail, label: "Vignette (facultatif, sinon celle de YouTube)", widget: image, required: false }
+      - { name: sections, label: "Rubriques", widget: select, multiple: true, required: false, options: [economics, finance, ai, leadership, africa, world] }
+      - { name: countries, label: "Pays (codes : GB, US, CM…)", widget: list, required: false, field: { name: c, label: Code, widget: string } }
+      - { name: draft, label: "Brouillon", widget: boolean, default: false, required: false }
+      - { name: body, label: "Commentaire", widget: markdown }
+
+  - name: events
+    label: "Événements"
+    label_singular: "Événement"
+    description: "Conférences, panels, interventions, événements YouthShare."
+    folder: content/events
+    create: true
+    slug: "{{year}}-{{month}}-{{slug}}"
+    identifier_field: title
+    fields:
+      - { name: title, label: "Titre", widget: string }
+      - { name: date, label: "Date", widget: datetime, time_format: false, format: "YYYY-MM-DD" }
+      - { name: kind, label: "Type (Talk, Panel, Conference, Community)", widget: string, default: "Talk" }
+      - { name: place, label: "Lieu", widget: string, required: false }
+      - { name: link, label: "Lien d'inscription (facultatif)", widget: string, required: false }
+      - { name: draft, label: "Brouillon", widget: boolean, default: false, required: false }
+      - { name: body, label: "Présentation", widget: markdown, required: false }
 
   - name: pages
     label: "Pages"
