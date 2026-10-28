@@ -1,0 +1,361 @@
+// Fabrique le site à partir du dossier content/ (rempli depuis l'espace admin).
+//   dist/                 site en ligne (Vercel) : index.html + images, documents, admin
+//   dist/site.zip         paquet pour Hostinger : index.html + images + .htaccess
+// Lancer : node scripts/build-site.mjs
+import fs from 'node:fs';
+import path from 'node:path';
+import matter from 'gray-matter';
+import { marked } from 'marked';
+import { zipSync, strToU8 } from 'fflate';
+
+const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const C = (p) => path.join(ROOT, 'content', p);
+const PUB = path.join(ROOT, 'public');
+const DIST = path.join(ROOT, 'dist');
+const SITE_URL = 'https://moharamadan.com';
+
+// ---------- Lecture du contenu ----------
+const site = JSON.parse(fs.readFileSync(C('site.json'), 'utf8'));
+const readDir = (dir) => fs.existsSync(C(dir)) ? fs.readdirSync(C(dir)).filter((f) => f.endsWith('.md') && !f.startsWith('_')).map((f) => {
+  const { data, content } = matter(fs.readFileSync(C(`${dir}/${f}`), 'utf8'));
+  return { id: f.replace(/\.md$/, ''), ...data, md: content.trim() };
+}) : [];
+const iso = (d) => (d instanceof Date ? d.toISOString() : String(d || '')).slice(0, 10);
+
+const SECTIONS = [
+  ['economics', 'Economics', 'Growth, inflation, public debt and the price of time.'],
+  ['finance', 'Finance', 'Markets, listings, deals and where capital is deployed.'],
+  ['ai', 'AI', 'The economics of artificial intelligence, and what it changes for companies and finance teams.'],
+  ['leadership', 'Leadership', 'Judgement, decisions and the dynamics of organisations.'],
+  ['africa', 'Africa', 'Capital, markets and growth across the continent.'],
+  ['world', 'World', 'The United States, the United Kingdom, Europe and Asia.'],
+];
+const SEC = Object.fromEntries(SECTIONS.map(([k, n]) => [k, n]));
+const TYPE = { analysis: 'Analysis', opinion: 'Opinion', essay: 'The Long Read' };
+const TYPE_PATH = { analysis: 'analysis', opinion: 'opinion', essay: 'essays' };
+const DESK = { economics: 'Economics', finance: 'Finance', leadership: 'Leadership', ai: 'AI', africa: 'Africa' };
+const COUNTRY = {
+  GB: 'United Kingdom', US: 'United States', CN: 'China', KR: 'South Korea', JP: 'Japan', IN: 'India', SG: 'Singapore', AE: 'United Arab Emirates',
+  SA: 'Saudi Arabia', FR: 'France', DE: 'Germany', CM: 'Cameroon', NG: 'Nigeria', GH: 'Ghana', CI: "Côte d'Ivoire", CD: 'DR Congo', KE: 'Kenya',
+  ZA: 'South Africa', SN: 'Senegal', EG: 'Egypt', MA: 'Morocco', ET: 'Ethiopia', RW: 'Rwanda', GA: 'Gabon', CG: 'Congo', TD: 'Chad',
+  CF: 'Central African Republic', GQ: 'Equatorial Guinea', BF: 'Burkina Faso', MZ: 'Mozambique', ZM: 'Zambia', TZ: 'Tanzania', UG: 'Uganda',
+};
+// Pays associés aux notes selon l'auteur cité
+const NOTE_COUNTRY = [['Keynes', 'GB'], ['Churchill', 'GB'], ['Franklin', 'US'], ['Federal Reserve', 'US'], ['Greenspan', 'US'], ['Buffett', 'US'],
+  ['Carville', 'US'], ['Truman', 'US'], ['Eisenhower', 'US'], ['Nkrumah', 'GH'], ['Aggrey', 'GH'], ['Annan', 'GH'], ['Achebe', 'NG'], ['Mandela', 'ZA'],
+  ['Tutu', 'ZA'], ['Biko', 'ZA'], ['Maathai', 'KE'], ['Sankara', 'BF'], ['Machel', 'MZ'], ['Draghi', 'FR'], ['Price of Time', 'CM'], ['Intelligence on Tap', 'CM']];
+
+const articles = readDir('articles').filter((a) => !a.draft).map((a) => ({
+  ...a, kind: 'article', date: iso(a.date), type: a.type || 'analysis', sections: a.sections || [], countries: a.countries || [],
+  html: render(a.md),
+})).sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
+for (const a of articles) {
+  a.path = `/${TYPE_PATH[a.type]}/${a.id}`;
+  a.min = Math.max(1, Math.round(a.html.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length / 200));
+}
+const charts = readDir('charts').filter((c) => !c.draft).map((c) => ({ ...c, kind: 'chart', date: iso(c.date), sections: c.sections || [], countries: c.countries || [], html: render(c.md), path: `/charts/${c.id}` }))
+  .sort((a, b) => b.date.localeCompare(a.date));
+const reports = readDir('reports').filter((r) => !r.draft).map((r) => ({ ...r, date: iso(r.date) }));
+const notes = readDir('notes').filter((n) => !n.draft).sort((a, b) => (a.order ?? 999) - (b.order ?? 999)).map((n) => ({
+  ...n, kind: 'note', path: `/notes/${n.id}`, html: render(n.md), first: n.md.split(/(?<=[.!?])\s/)[0],
+  countries: [...new Set(NOTE_COUNTRY.filter(([k]) => String(n.author).includes(k)).map(([, c]) => c))],
+}));
+const pages = readDir('pages').sort((a, b) => (a.order ?? 99) - (b.order ?? 99)).map((p) => ({ ...p, path: `/${p.id}`, html: render(p.md) }));
+const byId = Object.fromEntries(articles.map((a) => [a.id, a]));
+
+function render(md) {
+  let h = marked.parse(md || '', { mangle: false, headerIds: false });
+  h = h.replace(/<h2>Sources<\/h2>/, '<h2 id="sources">Sources</h2>');
+  return h;
+}
+
+// ---------- Outils ----------
+const e = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const fd = (s) => { const [y, m, d] = s.split('-').map(Number); return `${d} ${MONTHS[m - 1]} ${y}`; };
+const kicker = (a) => a.kicker || (a.type === 'opinion' ? 'Opinion' : a.type === 'essay' ? 'The Long Read' : a.budget ? 'UK Autumn Budget 2026' : SEC[a.sections[0]] || 'Analysis');
+const A = (href, inner, cls = '') => `<a${cls ? ` class="${cls}"` : ''} href="${href}">${inner}</a>`;
+
+function build() {
+  // Images de fond : une classe CSS par image
+  const imgClass = {};
+  const asset = (p) => p;
+  const pic = (src, alt, cls = 'th') => {
+    if (!src) return '';
+    if (!imgClass[src]) imgClass[src] = `im${Object.keys(imgClass).length}`;
+    return `<span class="${cls} im ${imgClass[src]}" role="img" aria-label="${e(alt || '')}"></span>`;
+  };
+  const AV = '<span class="av avi"></span>', AVL = '<span class="av lg avi"></span>';
+
+  const card = (a, { ex = true, img = true } = {}) => A(a.path, (img && a.image ? pic(a.image, a.image_alt) : '') + `<span class="k">${e(kicker(a))}</span><b>${e(a.title)}</b>`
+    + (ex && a.standfirst ? `<span class="ex">${e(a.standfirst)}</span>` : '') + `<span class="meta">${TYPE[a.type]} · ${fd(a.date)} · ${a.min} min read</span>`, 'card' + (img && a.image ? ' has-im' : ''));
+  const opCard = (a) => A(a.path, `${AVL}<span class="k">${e(site.name)}</span><b>${e(a.title)}</b><span class="ex">${e(a.standfirst)}</span><span class="meta">${fd(a.date)} · ${a.min} min read</span>`, 'opc');
+  const chartCard = (c) => A(c.path, `<img src="${asset(c.image)}" alt="" loading="lazy"><span class="k">Chart</span><b>${e(c.title)}</b>`, 'chartcard');
+  const noteCard = (n) => A(n.path, `<span class="nk">${DESK[n.desk] || n.desk}</span><blockquote>“${e(n.quote)}”</blockquote><span class="by-n">${e(n.author)}</span><span class="tease">${e(n.first)}</span><span class="rm">Read more →</span>`, 'nt').replace('<a class="nt"', `<a class="nt" data-d="${n.desk}"`);
+  const rail = (id, title, items, more, cls = '') => `<section class="w blk" id="${id}"><div class="rail-h ${cls}"><h2>${e(title)}</h2><div class="r-r">${more ? A(more[0], e(more[1]), 'more') : ''}<button class="arw" data-rail="${id}" data-dir="-1" aria-label="Previous">‹</button><button class="arw" data-rail="${id}" data-dir="1" aria-label="Next">›</button></div></div><div class="track">${items.join('')}</div></section>`;
+
+  const authorBox = (title) => `<div class="author">${AVL}<div><b>${e(site.name)}</b><p>${e(site.bio[0])}</p><p class="contact">${e(site.phone)} · <a href="mailto:${e(site.email)}">${e(site.email)}</a></p>`
+    + `<p class="share">Share: <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(SITE_URL)}" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://x.com/intent/post?text=${encodeURIComponent(title)}&url=${encodeURIComponent(SITE_URL)}" target="_blank" rel="noopener">X</a> · <a href="mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(SITE_URL)}">Email</a></p></div></div>`;
+
+  // ---------- Vues ----------
+  const views = [];
+  const view = (p, inner) => views.push(`<article class="view" data-path="${p}" hidden><div class="w read">${inner}</div></article>`);
+  const page = (p, inner, wide = true) => views.push(`<section class="page" data-path="${p}" hidden><div class="w${wide ? '' : ' read'}">${inner}</div></section>`);
+  const back = '<a class="back" href="/">← Home</a>';
+
+  articles.forEach((a, i) => {
+    const prev = articles[i + 1], next = articles[i - 1];
+    const rel = articles.filter((b) => b !== a && b.sections.some((s) => a.sections.includes(s))).slice(0, 3);
+    const tags = a.sections.map((s) => `<a class="tag" href="/${s}">${e(SEC[s] || s)}</a>`).join('') + a.countries.slice(0, 4).map((c) => `<a class="tag" href="/country/${c.toLowerCase()}">${e(COUNTRY[c] || c)}</a>`).join('');
+    const acts = (a.pdf ? `<a class="btn" href="${asset(a.pdf)}" download="${a.id}.pdf">Download the PDF</a>` : '') + (a.linkedin ? `<a class="btn ghost" href="${e(a.linkedin)}" target="_blank" rel="noopener">Read on LinkedIn</a>` : '');
+    view(a.path, `${back}<p class="kick">${e(kicker(a))}${a.type === 'essay' ? '<span class="essay-mark">Essay</span>' : ''}</p><h1>${e(a.title)}</h1>`
+      + (a.standfirst ? `<p class="lede">${e(a.standfirst)}</p>` : '') + (a.type === 'opinion' ? '<p class="op-note">Opinion. The views expressed are the author\'s own.</p>' : '')
+      + `<div class="by">${AV}<span><b>${e(site.name)}</b><br>${fd(a.date)} · ${a.min} min read</span><span class="tags">${tags}</span></div>`
+      + (a.image ? `<figure class="v-hero">${pic(a.image, a.image_alt, 'hero-im')}<figcaption>${e(a.image_alt || '')}${a.image_credit ? '. ' + e(a.image_credit) : '. Photo: Pexels'}</figcaption></figure>` : '')
+      + `<div class="prose">${a.html}</div>` + (acts ? `<div class="acts">${acts}</div>` : '') + authorBox(a.title)
+      + `<nav class="pn">${prev ? A(prev.path, `<span>← Previous</span><b>${e(prev.title)}</b>`) : '<span></span>'}${next ? A(next.path, `<span>Next →</span><b>${e(next.title)}</b>`, 'nx') : ''}</nav>`
+      + (rel.length ? `<div class="rel"><h3>Read next</h3><div class="grid g3">${rel.map((b) => card(b, { ex: false })).join('')}</div></div>` : ''));
+  });
+  charts.forEach((c) => {
+    const art = c.article && byId[c.article];
+    view(c.path, `${back}<p class="kick">Chart</p><h1>${e(c.title)}</h1><div class="by">${AV}<span><b>${e(site.name)}</b><br>${fd(c.date)}</span></div>`
+      + `<figure class="v-chart chart-v"><img src="${asset(c.image)}" alt="${e(c.title)}"><figcaption><b>Source:</b> ${e(c.source || '')}</figcaption></figure><div class="prose">${c.html}</div>`
+      + (art ? `<p class="end">From ${A(art.path, e(art.title))}</p>` : '') + authorBox(c.title));
+  });
+  notes.forEach((n) => {
+    const same = notes.filter((m) => m.desk === n.desk && m !== n);
+    const k = notes.indexOf(n) % Math.max(1, same.length);
+    const more = same.slice(k, k + 3);
+    view(n.path, `<a class="back" href="/notes">← All notes</a><p class="kick">Note · ${DESK[n.desk] || ''}</p><blockquote class="nq">“${e(n.quote)}”</blockquote><p class="nw">${e(n.author)}</p>`
+      + `<div class="by">${AV}<span><b>Commentary by ${e(site.name)}</b><br>${Math.max(1, Math.round(n.md.split(/\s+/).length / 200))} min read</span></div>`
+      + `<div class="prose">${n.html}</div>${authorBox(n.quote)}`
+      + (more.length ? `<div class="rel"><h3>More ${DESK[n.desk]} notes</h3><div class="notes">${more.map(noteCard).join('')}</div></div>` : ''));
+  });
+  const BUDGET = articles.filter((a) => a.budget);
+  const secPage = (slug, name, intro, list, deskNotes) => page(`/${slug}`, `<div class="ph"><p class="kick">Section</p><h1>${e(name)}</h1><p>${e(intro)}</p></div>`
+    + `<div class="list">${list.map((a) => card(a)).join('') || '<p class="empty">First pieces coming soon.</p>'}</div>`
+    + (deskNotes && deskNotes.length ? `<div class="sh mt"><h2>${e(name)} notes</h2><a href="/notes">All notes →</a></div><div class="notes">${deskNotes.slice(0, 6).map(noteCard).join('')}</div>` : ''));
+  secPage('uk-budget-2026', 'UK Autumn Budget 2026', "John Healey's first Budget, delivered on 28 October 2026, and what comes next for rates and gilts.", BUDGET);
+  SECTIONS.forEach(([k, n, intro]) => secPage(k, n, intro, articles.filter((a) => a.sections.includes(k)), notes.filter((m) => m.desk === k)));
+  secPage('opinion', 'Opinion', 'Arguments, not summaries. Where I take a position on the debates of the moment.', articles.filter((a) => a.type === 'opinion'));
+  secPage('essays', 'The Long Read', 'Longer essays on development, money and institutions, written to be read slowly.', articles.filter((a) => a.type === 'essay'));
+  pages.forEach((p) => page(p.path, `${back}<p class="kick">${e(site.name)}</p><h1 class="ip-h">${e(p.title)}</h1><div class="prose nodrop">${p.html}</div>`, false));
+
+  // Pays
+  const inC = (c) => ({ arts: articles.filter((a) => a.countries.includes(c)), chs: charts.filter((x) => x.countries.includes(c)), ns: notes.filter((n) => n.countries.includes(c)) });
+  const allC = Object.keys(COUNTRY).sort((a, b) => COUNTRY[a].localeCompare(COUNTRY[b]));
+  const CPIC = { GB: ['/images/photos/westminster.jpg', 'Westminster, London'], US: ['/images/photos/nyse.jpg', 'The New York Stock Exchange'], KE: ['/images/photos/nairobi.jpg', 'Nairobi'], NG: ['/images/photos/lagos.jpg', 'Lagos'] };
+  allC.forEach((c) => {
+    const { arts, chs, ns } = inC(c);
+    const head = CPIC[c] ? pic(CPIC[c][0], CPIC[c][1], 'c-im') : `<span class="c-code">${c}</span>`;
+    page(`/country/${c.toLowerCase()}`, `<div class="c-head">${head}<div><p class="kick">Country</p><h1>${e(COUNTRY[c])}</h1><p>${arts.length} articles, ${chs.length} charts and ${ns.length} notes about ${e(COUNTRY[c])}.</p></div></div>`
+      + `<div class="sh"><h2>Analysis, opinion and essays</h2></div>` + (arts.length ? `<div class="list">${arts.map((a) => card(a)).join('')}</div>` : `<p class="empty">Nothing on ${e(COUNTRY[c])} yet. It is on my list; write to me if there is a subject you would like covered.</p>`)
+      + (chs.length ? `<div class="sh mt"><h2>Charts</h2></div><div class="grid g3">${chs.map(chartCard).join('')}</div>` : '')
+      + (ns.length ? `<div class="sh mt"><h2>Notes</h2></div><div class="notes">${ns.map(noteCard).join('')}</div>` : '')
+      + `<p class="cnav">Other countries: ${site.countries_bar.filter((x) => x !== c).map((x) => A(`/country/${x.toLowerCase()}`, e(COUNTRY[x]))).join(' · ')}</p>`);
+  });
+
+  // ---------- Accueil ----------
+  const lead = articles.find((a) => a.lead) || articles[0];
+  const second = articles.find((a) => a.second && a !== lead) || articles[1];
+  const picks = articles.filter((a) => a.pick && a !== lead && a !== second).slice(0, 5);
+  const opinions = articles.filter((a) => a.type === 'opinion');
+  const essays = articles.filter((a) => a.type === 'essay');
+  const analyses = articles.filter((a) => a.type === 'analysis' && a !== lead);
+  const stack = (keys) => articles.filter((a) => a.sections.some((s) => keys.includes(s))).slice(0, 4).map((a) => card(a, { ex: false, img: false })).join('');
+  const r0 = reports[0];
+  const rArt = r0 && r0.article && byId[r0.article];
+  const NAV = [['/', 'Home'], ['/uk-budget-2026', 'UK Budget 2026'], ...SECTIONS.map(([k, n]) => [`/${k}`, n]), ['/opinion', 'Opinion'], ['/essays', 'Long Read'], ['/notes', 'Notes'], ['/charts', 'Charts'], ['/reports', 'Reports'], ['/about', 'About']];
+  const ICO_S = '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>';
+  const ICO_M = '<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
+  const MARK = '<svg class="mk" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0B1F3A"/><circle cx="45" cy="19" r="6" fill="#E8573C"/><path d="M8 50 25 24l8 11 6-8 17 23z" fill="#fff"/></svg>';
+  const FAV = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B1F3A'/%3E%3Ccircle cx='45' cy='19' r='6' fill='%23E8573C'/%3E%3Cpath d='M8 50 25 24l8 11 6-8 17 23z' fill='%23fff'/%3E%3C/svg%3E";
+  const countOpt = (c) => { const x = inC(c); return x.arts.length + x.chs.length + x.ns.length; };
+
+  const home = `<main data-path="/" id="home">
+<div class="figs"><div class="w figs-in"><span class="figs-l">Key numbers</span>${(site.key_figures || []).map(({ label: l, value: v }) => `<span class="fig">${e(l)} <b>${e(v)}</b></span>`).join('')}<span class="figs-d">${e(site.key_figures_date || '')}</span></div></div>
+<section class="finder"><div class="w"><form class="sbox" onsubmit="return false">${ICO_S}<input id="q" type="search" placeholder="Search analyses, opinion, essays and notes: gilts, AI, Budget, Africa…" autocomplete="off" aria-label="Search">
+<select id="country" aria-label="Choose a country"><option value="">Choose a country</option>${allC.map((c) => `<option value="${c.toLowerCase()}">${e(COUNTRY[c])} (${countOpt(c)})</option>`).join('')}</select></form>
+<div class="chips">${(site.search_chips || []).map((c) => `<button data-q="${e(c)}">${e(c)}</button>`).join('')}</div><div id="results" hidden></div></div></section>
+<section class="w front">
+<div class="f-lead">${A(lead.path, pic(lead.image, lead.image_alt, 'lead-im') + `<span class="k">${e(kicker(lead))}</span><b class="h1">${e(lead.title)}</b><span class="ex">${e(lead.standfirst)}</span><span class="meta">${e(site.name)} · ${fd(lead.date)} · ${lead.min} min read</span>`)}</div>
+<div class="f-mid">${A(second.path, (second.chart ? `<img src="${asset(second.chart)}" alt="${e(second.chart_alt || '')}">` : pic(second.image, second.image_alt, 'lead-im')) + `<span class="k">${e(kicker(second))}</span><b>${e(second.title)}</b><span class="ex">${e(second.standfirst)}</span><span class="meta">${fd(second.date)} · ${second.min} min read</span>`)}</div>
+<aside class="f-side"><h3>Editor's picks</h3>${picks.map((a) => A(a.path, `<span class="k">${e(kicker(a))}</span><b>${e(a.title)}</b><span class="meta">${a.min} min read</span>`, 'pick')).join('')}</aside>
+</section>
+${BUDGET.length ? `<section class="band"><div class="w"><div class="sh"><h2><span class="lab">Special</span> UK Autumn Budget 2026</h2><a href="/uk-budget-2026">All coverage →</a></div><div class="grid g3">${BUDGET.filter((a) => a.type === 'analysis').slice(0, 3).map((a) => card(a)).join('')}</div></div></section>` : ''}
+${opinions.length ? rail('opinion-rail', 'Opinion', opinions.map(opCard), ['/opinion', 'All opinion →'], 'op') : ''}
+${essays.length ? `<section class="long"><div class="w"><div class="rail-h"><h2>The Long Read</h2><div class="r-r"><a class="more" href="/essays">All essays →</a></div></div><div class="lr">${essays.slice(0, 2).map((a) => A(a.path, pic(a.image, a.image_alt, 'lr-im') + `<span class="k">The Long Read · ${a.min} min</span><b>${e(a.title)}</b><span class="ex">${e(a.standfirst)}</span>`)).join('')}</div></div></section>` : ''}
+${rail('latest', 'Latest analysis', analyses.map((a) => card(a)), ['/economics', 'More →'])}
+<section class="w blk duo">
+<div><div class="sh"><h2>AI</h2><a href="/ai">More →</a></div><div class="stack">${stack(['ai'])}</div></div>
+<div><div class="sh"><h2>Leadership</h2><a href="/leadership">More →</a></div><div class="stack">${stack(['leadership'])}</div></div>
+<div><div class="sh"><h2>Africa</h2><a href="/africa">More →</a></div><div class="stack">${stack(['africa'])}</div></div>
+</section>
+<section class="why" id="why"><div class="w why-in"><p class="kick light">Why I write</p><p class="why-q">${e(site.why_title)}</p><div class="why-c">${site.why.map((p) => `<p>${e(p)}</p>`).join('')}</div></div></section>
+<section class="w blk" id="notes"><div class="sh"><h2>Notes</h2><span class="cnt">${notes.length} notes</span></div>
+<p class="intro">The words that shape my thinking, from economists, investors, leaders and African thinkers, and a few lines from my own essays. Each comes with a commentary: open a note to read why it matters today.</p>
+<div class="filters"><button class="f on" data-f="all">All</button>${Object.entries(DESK).map(([k, v]) => `<button class="f" data-f="${k}">${v}</button>`).join('')}</div>
+<div class="notes" id="nl">${notes.map(noteCard).join('')}</div><div class="more-w"><button class="btn ghost" id="more">Show more notes</button></div></section>
+<section class="w blk" id="charts"><div class="sh"><h2>Charts</h2></div><div class="grid g3">${charts.map(chartCard).join('')}</div></section>
+<section class="w blk" id="reports"><div class="sh"><h2>Reports</h2></div>
+${r0 ? `<div class="rep"><div class="rep-c"><span>${e(r0.series || 'Report')} · ${e(r0.number || '')}</span><b>${e(r0.title)}</b><small>${e(site.name)} · ${MONTHS[Number(r0.date.slice(5, 7)) - 1]} ${r0.date.slice(0, 4)}</small></div><div><h3>${e(r0.title)}</h3><p>${e(r0.standfirst || '')}</p><ol>${(r0.key_messages || []).map((m) => `<li>${e(m)}</li>`).join('')}</ol><div class="acts">${r0.pdf ? `<a class="btn" href="${asset(r0.pdf)}" download="${r0.id}.pdf">Download the PDF</a>` : ''}${rArt ? A(rArt.path, 'Read online', 'btn ghost') : ''}</div></div></div>` : ''}
+</section>
+<section class="w blk" id="about"><div class="about"><img src="${asset('/images/headshot.jpg')}" alt="${e(site.name)}" width="180" height="180"><div><p class="kick light">About</p><h2>${e(site.name)}</h2>${site.bio.map((p) => `<p>${e(p)}</p>`).join('')}
+<div class="facts">${(site.facts || []).map(({ title: b, text: s }) => `<span><b>${e(b)}</b>${e(s)}</span>`).join('')}</div></div></div></section>
+<section class="w blk" id="contact"><div class="contact-box"><div><h2>Contact</h2><p>For speaking, advisory or press enquiries.</p></div>
+<div class="c-lines"><a href="tel:${site.phone.replace(/\s/g, '')}"><span>Phone</span>${e(site.phone)}</a><a href="mailto:${e(site.email)}"><span>Email</span>${e(site.email)}</a><a href="${e(site.linkedin)}" target="_blank" rel="noopener"><span>LinkedIn</span>${e(site.linkedin.split('/in/')[1] || 'LinkedIn')}</a><a href="${e(site.x)}" target="_blank" rel="noopener"><span>X</span>@${e(site.x.split('/').pop())}</a></div></div></section>
+</main>`;
+
+  const drawer = `<div id="drawer" hidden><div class="dr-bg" data-close></div><nav class="dr" aria-label="Menu"><div class="dr-h"><span class="ft8-w dark">${MARK}${e(site.name)}</span><button class="x" data-close aria-label="Close">×</button></div>
+<form class="sbox sm" onsubmit="return false">${ICO_S}<input id="q2" type="search" placeholder="Search" aria-label="Search"></form>
+<h4>Sections</h4>${NAV.map(([h, n]) => A(h, e(n))).join('')}
+<h4>Countries</h4><div class="dr-c">${allC.map((c) => A(`/country/${c.toLowerCase()}`, e(COUNTRY[c]))).join('')}</div>
+<h4>${e(site.name)}</h4>${A('/about', 'About')}${A('/youthshare', 'YouthShare Initiatives')}${A('/services', 'Speaking and advisory')}${A('/contact', 'Contact')}</nav></div>`;
+
+  const FOOT = [
+    ['Support', [['/contact', 'Contact'], ['/corrections', 'Corrections'], ['#search', 'Search the site'], ['#menu', 'Countries']]],
+    ['Legal & Privacy', [['/terms', 'Terms of use'], ['/privacy', 'Privacy'], ['/cookies', 'Cookies'], ['/disclaimer', 'Disclaimer']]],
+    ['Services', [['/services', 'Speaking'], ['/services', 'Advisory'], ['/services', 'Press enquiries'], ['/terms', 'Republishing']]],
+    ['Tools', [['/notes', 'Notes'], ['/charts', 'Charts'], ['/reports', 'Reports'], ['/essays', 'The Long Read']]],
+    ['Community & Events', [['/youthshare', 'YouthShare Initiatives'], [site.linkedin, 'LinkedIn'], [site.x, 'X'], ['/services', 'Speaking events']]],
+    ['More', [['/about', 'About'], ['/why', 'Why I write'], ['/opinion', 'Opinion'], ['/uk-budget-2026', 'UK Budget 2026'], ['/economics', 'Economics'], ['/africa', 'Africa']]],
+  ];
+  const flink = ([h, t]) => h.startsWith('http') ? `<a href="${e(h)}" target="_blank" rel="noopener">${e(t)}</a>` : h === '#search' ? `<a href="/" data-search>${e(t)}</a>` : h === '#menu' ? `<a href="/" data-menu>${e(t)}</a>` : A(h, e(t));
+  const year = new Date().getFullYear();
+  const footer = `<footer class="ft8"><div class="w"><div class="ft8-cols">${FOOT.map(([h, l]) => `<div><h4>${e(h)}</h4>${l.map(flink).join('')}</div>`).join('')}</div>
+<div class="ft8-c"><div class="ft8-cn">${site.countries_bar.map((c) => A(`/country/${c.toLowerCase()}`, e(COUNTRY[c]))).join('')}</div>
+<p>Articles are written by ${e(site.name)} and sourced at the end of each piece. Nothing on this site is investment advice. Views are my own.</p>
+<p>© ${year} ${e(site.name)}. All rights reserved. Contact: <a href="tel:${site.phone.replace(/\s/g, '')}">${e(site.phone)}</a> · <a href="mailto:${e(site.email)}">${e(site.email)}</a></p></div></div>
+<div class="ft8-bar"><div class="w ft8-bar-in"><span class="ft8-w">${MARK}${e(site.name)}</span><span>Economics · Finance · AI · Leadership · Africa</span></div></div></footer>`;
+
+  // Index de recherche
+  const idx = [...articles.map((a) => ({ p: a.path, t: a.title, x: a.standfirst || '', k: kicker(a), s: (a.title + ' ' + (a.standfirst || '') + ' ' + a.html.replace(/<[^>]+>/g, ' ')).toLowerCase() })),
+    ...charts.map((c) => ({ p: c.path, t: c.title, x: c.source || '', k: 'Chart', s: (c.title + ' ' + c.md).toLowerCase() })),
+    ...notes.map((n) => ({ p: n.path, t: `“${n.quote}”`, x: n.author, k: 'Note · ' + (DESK[n.desk] || ''), s: (n.quote + ' ' + n.author + ' ' + n.md + ' ' + n.desk).toLowerCase() }))];
+  const css = fs.readFileSync(path.join(ROOT, 'site/style.css'), 'utf8')
+    + Object.entries(imgClass).map(([src, cls]) => `.${cls}{background-image:url("${asset(src)}")}`).join('')
+    + `.avi{display:inline-block;background:url("${asset('/images/avatar.jpg')}") center/cover}`;
+  const homeAnchors = ['notes', 'charts', 'reports', 'about', 'contact', 'why'];
+
+  const html = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${e(site.name)}</title>
+<meta name="description" content="${e(site.description)}">
+<meta property="og:title" content="${e(site.name)}"><meta property="og:description" content="${e(site.description)}"><meta property="og:url" content="${SITE_URL}/"><meta property="og:type" content="website">
+<meta property="og:image" content="${SITE_URL}/images/og.jpg"><link rel="canonical" href="${SITE_URL}/">
+<link rel="icon" href="${FAV}">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>${css}</style>
+</head>
+<body>
+<div class="strip"></div>
+<header class="mast"><div class="w mast-in">
+<div class="m-left"><button class="ico" data-menu aria-label="Menu">${ICO_M}<span>Menu</span></button><button class="ico" data-search aria-label="Search">${ICO_S}<span>Search</span></button></div>
+<a class="word" href="/">${e(site.name)}</a>
+<a class="btn sm" href="/contact">Contact</a>
+</div>
+<nav class="tabs"><div class="w tabs-in">${NAV.map(([h, n]) => A(h, e(n))).join('')}</div></nav>
+<div class="cbar"><div class="w cbar-in"><span>Countries</span>${site.countries_bar.map((c) => A(`/country/${c.toLowerCase()}`, e(COUNTRY[c]))).join('')}<a href="/" data-menu class="all">All →</a></div></div>
+</header>
+${drawer}
+${home}
+${views.join('\n')}
+${footer}
+<script>
+var IDX = ${JSON.stringify(idx)};
+var ANCH = ${JSON.stringify(homeAnchors)};
+(function () {
+  var home = document.getElementById('home'), drawer = document.getElementById('drawer');
+  var V = {}; [].forEach.call(document.querySelectorAll('[data-path]'), function (el) { V[el.getAttribute('data-path')] = el; });
+  var canPush = location.protocol !== 'file:';
+  function closeDrawer() { drawer.hidden = true; document.body.classList.remove('lock'); }
+  function mark(p) {
+    [].forEach.call(document.querySelectorAll('.tabs a, .cbar a'), function (a) { var h = a.getAttribute('href'); a.classList.toggle('on', h === p || (h !== '/' && p.indexOf(h + '/') === 0 && a.closest('.cbar'))); });
+  }
+  function show(p, push) {
+    p = (p || '/').replace(/\\/+$/, '') || '/';
+    var anchor = ANCH.indexOf(p.slice(1)) >= 0 ? p.slice(1) : null;
+    var el = anchor ? home : (V[p] || home);
+    closeDrawer();
+    for (var k in V) V[k].hidden = V[k] !== el;
+    mark(anchor ? '/' + anchor : (V[p] ? p : '/'));
+    if (push && canPush && location.pathname !== p) history.pushState({}, '', p);
+    if (anchor) setTimeout(function () { document.getElementById(anchor).scrollIntoView({ behavior: 'smooth' }); }, 30); else window.scrollTo(0, 0);
+  }
+  window.addEventListener('popstate', function () { show(location.pathname, false); });
+  document.addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-menu],[data-close],[data-search],[data-q],[data-rail]');
+    if (b) {
+      ev.preventDefault();
+      if (b.hasAttribute('data-menu')) { drawer.hidden = false; document.body.classList.add('lock'); }
+      else if (b.hasAttribute('data-close')) closeDrawer();
+      else if (b.hasAttribute('data-search')) { show('/', true); q.focus(); }
+      else if (b.dataset.q) { q.value = b.dataset.q; search(); }
+      else if (b.dataset.rail) { var t = document.getElementById(b.dataset.rail).querySelector('.track'); t.scrollBy({ left: Number(b.dataset.dir) * t.clientWidth * 0.9, behavior: 'smooth' }); }
+      return;
+    }
+    var a = ev.target.closest('a[href^="/"]');
+    if (!a || a.target || a.hasAttribute('download') || ev.metaKey || ev.ctrlKey || ev.shiftKey) return;
+    var h = a.getAttribute('href');
+    if (/^\\/(admin|images|documents|site\\.zip|kit)/.test(h)) return;
+    ev.preventDefault(); show(h, true);
+  });
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { if (!drawer.hidden) closeDrawer(); else show('/', true); } });
+  // Flèches des rails
+  [].forEach.call(document.querySelectorAll('.track'), function (t) {
+    var id = t.parentNode.id; function upd() { var bs = document.querySelectorAll('[data-rail="' + id + '"]'); bs[0].disabled = t.scrollLeft < 8; bs[1].disabled = t.scrollLeft + t.clientWidth >= t.scrollWidth - 8; var none = t.scrollWidth <= t.clientWidth + 8; bs[0].hidden = bs[1].hidden = none; }
+    t.addEventListener('scroll', upd); window.addEventListener('resize', upd); setTimeout(upd, 50);
+  });
+  // Recherche et pays
+  var q = document.getElementById('q'), q2 = document.getElementById('q2'), sel = document.getElementById('country'), out = document.getElementById('results');
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function search() {
+    var s = q.value.trim().toLowerCase(); if (s.length < 2) { out.hidden = true; return; }
+    var terms = s.split(/\\s+/), hits = IDX.filter(function (r) { return terms.every(function (t) { return r.s.indexOf(t) >= 0; }); });
+    hits.sort(function (a, b) { return (a.p.indexOf('/notes/') === 0) - (b.p.indexOf('/notes/') === 0); });
+    out.hidden = false;
+    out.innerHTML = '<div class="r-h"><b>' + hits.length + ' result' + (hits.length === 1 ? '' : 's') + ' for “' + esc(q.value.trim()) + '”</b><button type="button" id="rclose">Close</button></div>'
+      + (hits.length ? hits.slice(0, 40).map(function (r) { return '<a class="r" href="' + r.p + '"><span class="k">' + esc(r.k) + '</span><b>' + esc(r.t) + '</b><span class="meta">' + esc(r.x) + '</span></a>'; }).join('') : '<p class="empty">No results yet. Try another word.</p>');
+    document.getElementById('rclose').onclick = function () { out.hidden = true; q.value = ''; };
+  }
+  q.addEventListener('input', search);
+  q2.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); show('/', true); q.value = q2.value; search(); q.focus(); } });
+  sel.addEventListener('change', function () { if (sel.value) { var c = sel.value; sel.value = ''; show('/country/' + c, true); } });
+  // Notes
+  var notes = [].slice.call(document.querySelectorAll('#nl .nt')), more = document.getElementById('more'), f = 'all', shown = 12;
+  function draw() { var l = notes.filter(function (n) { return f === 'all' || n.dataset.d === f; }); notes.forEach(function (n) { n.hidden = true; }); l.slice(0, shown).forEach(function (n) { n.hidden = false; }); more.hidden = l.length <= shown; }
+  [].forEach.call(document.querySelectorAll('.f'), function (b) { b.addEventListener('click', function () { [].forEach.call(document.querySelectorAll('.f'), function (x) { x.classList.toggle('on', x === b); }); f = b.dataset.f; shown = 12; draw(); }); });
+  more.addEventListener('click', function () { shown += 12; draw(); });
+  draw();
+  show(canPush ? location.pathname : '/', false);
+})();
+</script>
+</body>
+</html>`;
+  const allPaths = ['/', ...homeAnchors.map((a) => '/' + a), ...Object.keys(Object.fromEntries(views.map((v) => [v.match(/data-path="([^"]+)"/)[1], 1])))];
+  return { html, allPaths };
+}
+
+// ---------- Écriture ----------
+fs.rmSync(DIST, { recursive: true, force: true });
+fs.cpSync(PUB, DIST, { recursive: true });
+fs.rmSync(path.join(DIST, 'site.zip'), { force: true });
+const web = build();
+fs.writeFileSync(path.join(DIST, 'index.html'), web.html);
+fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+fs.writeFileSync(path.join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${web.allPaths.map((p) => `<url><loc>${SITE_URL}${p === '/' ? '/' : p}</loc></url>`).join('\n')}\n</urlset>\n`);
+
+// Version Hostinger : le même index.html + les fichiers qu'il utilise + .htaccess (adresses propres)
+const HTACCESS = `# Toutes les adresses du site (articles, pays, notes) ouvrent index.html\nOptions -MultiViews\nRewriteEngine On\nRewriteCond %{HTTPS} off\nRewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^ index.html [L]\n`;
+const files = { 'index.html': strToU8(web.html), '.htaccess': strToU8(HTACCESS), 'robots.txt': fs.readFileSync(path.join(DIST, 'robots.txt')), 'sitemap.xml': fs.readFileSync(path.join(DIST, 'sitemap.xml')) };
+for (const m of new Set(web.html.match(/\/(images|documents)\/[\w./-]+\.(jpe?g|png|svg|webp|pdf)/g) || [])) {
+  const f = path.join(PUB, m);
+  if (fs.existsSync(f)) files[m.slice(1)] = fs.readFileSync(f);
+}
+fs.writeFileSync(path.join(DIST, 'site.zip'), zipSync(files, { level: 6 }));
+
+console.log(`${articles.length} articles, ${notes.length} notes, ${charts.length} charts, ${pages.length} pages · index.html ${(web.html.length / 1e6).toFixed(2)} MB · site.zip (Hostinger) ${(fs.statSync(path.join(DIST, 'site.zip')).size / 1e6).toFixed(2)} MB`);
