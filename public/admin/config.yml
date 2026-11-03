@@ -293,5 +293,6 @@ collections:
           - { name: why, label: "Pourquoi j'écris : paragraphes", widget: list, field: { name: p, label: Paragraphe, widget: text } }
           - { name: key_figures_date, label: "Chiffres clés : date", widget: string }
           - { name: key_figures, label: "Chiffres clés (bandeau de l'accueil)", widget: list, fields: [{ name: label, label: Libellé, widget: string }, { name: value, label: Valeur, widget: string }] }
+          - { name: upcoming, label: "À venir ce mois-ci (bandeau défilant)", widget: list, required: false, fields: [{ name: date, label: Date, widget: string }, { name: label, label: Événement, widget: string }] }
           - { name: countries_bar, label: "Pays de la barre du haut (codes : GB, US, CM…)", widget: list, field: { name: c, label: Code, widget: string } }
           - { name: search_chips, label: "Mots proposés sous la recherche", widget: list, field: { name: w, label: Mot, widget: string } }

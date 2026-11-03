@@ -102,5 +102,23 @@
       "label": "China GDP, Q3",
       "value": "4.5%"
     }
+  ],
+  "upcoming": [
+    {
+      "date": "5 Nov",
+      "label": "Bank of England rate decision"
+    },
+    {
+      "date": "10 Nov",
+      "label": "US inflation (October CPI)"
+    },
+    {
+      "date": "November",
+      "label": "Senegal hopes for a first IMF disbursement"
+    },
+    {
+      "date": "December",
+      "label": "ECB and Fed meetings"
+    }
   ]
 }
