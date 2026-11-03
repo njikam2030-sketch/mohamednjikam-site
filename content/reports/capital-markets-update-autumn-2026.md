@@ -5,6 +5,8 @@ date: 2026-11-03
 series: Note to readers
 number: "Autumn 2026"
 pdf: /documents/capital-markets-update-autumn-2026.pdf
+featured: true
+preview: /kit/notes/capital-markets-update-p1.jpg
 key_messages:
   - "US investment-grade issuance reached about $1.76tn by late October, an annual record."
   - "Five hyperscalers issued $218.1bn of investment-grade bonds by early October, more than in all of 2025."
