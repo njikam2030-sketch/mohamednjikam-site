@@ -350,3 +350,4 @@ a.nt{transition:box-shadow .2s}a.nt:hover{box-shadow:0 8px 24px rgba(11,31,58,.0
 .feat-k{display:inline;color:var(--blue)}.feat .ex{color:var(--muted);font-size:17px;margin-top:10px}
 .feat ul{margin:14px 0 0;padding-left:1.2em;display:grid;gap:6px;font-size:15px}
 @media (min-width:860px){.feat-in{grid-template-columns:320px 1fr;gap:40px;padding:36px}}
+.tk-u{font-size:13.5px;font-weight:600;color:#fff}.tk-u i{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9CD3E3;margin-right:8px}
