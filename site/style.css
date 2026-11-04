@@ -351,3 +351,13 @@ a.nt{transition:box-shadow .2s}a.nt:hover{box-shadow:0 8px 24px rgba(11,31,58,.0
 .feat ul{margin:14px 0 0;padding-left:1.2em;display:grid;gap:6px;font-size:15px}
 @media (min-width:860px){.feat-in{grid-template-columns:320px 1fr;gap:40px;padding:36px}}
 .tk-u{font-size:13.5px;font-weight:600;color:#fff}.tk-u i{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9CD3E3;margin-right:8px}
+
+/* v18 : format « mythes » (exhibit, takeaway) */
+.prose h2.myth span{display:block;font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--coral);margin-bottom:6px}
+.prose .takeaway{background:#EEF2F5;border-left:4px solid var(--blue);border-radius:0 8px 8px 0;padding:16px 20px;font-size:17.5px;font-weight:600;color:var(--ink)}
+.prose .takeaway strong{color:var(--blue)}
+.exhibit{border-top:3px solid var(--ink);border-bottom:1px solid var(--line);padding:16px 0 14px;margin:1.6em 0}
+.exhibit .ex-t{font-size:14px;font-weight:700;color:var(--ink)}
+.ex-g{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:14px}@media (min-width:700px){.ex-g{grid-template-columns:repeat(4,1fr)}}
+.ex-g div{background:var(--soft);border-radius:8px;padding:14px}.ex-g b{display:block;font-size:26px;font-weight:800;color:var(--blue);letter-spacing:-.02em}.ex-g span{display:block;font-size:13px;line-height:1.4;color:var(--muted);margin-top:4px}
+.exhibit .ex-s{font-size:12.5px;color:var(--faint);margin-top:10px}
