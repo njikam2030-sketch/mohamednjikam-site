@@ -81,6 +81,7 @@ function videoFile(src, poster) {
 function render(md) {
   let h = marked.parse(md || '', { mangle: false, headerIds: false });
   h = h.replace(/<h2>Sources<\/h2>/, '<h2 id="sources">Sources</h2>');
+  h = h.replace(/<h2>Myth #(\d+): /g, '<h2 class="myth"><span>Myth #$1</span>');
   // Un lien YouTube seul sur sa ligne devient une vidéo intégrée
   h = h.replace(/<p>(?:<a href="([^"]+)">[^<]*<\/a>|(https?:\/\/[^\s<]+))<\/p>/g, (m, a, b) => {
     const id = (String(a || b).match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/embed\/)([\w-]{11})/) || [])[1];

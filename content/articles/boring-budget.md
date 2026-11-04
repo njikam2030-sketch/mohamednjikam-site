@@ -5,7 +5,7 @@ date: 2026-10-28
 type: analysis
 sections: [economics, world]
 budget: true
-lead: true
+lead: false
 countries: [GB]
 image: /images/photos/treasury.jpg
 image_alt: "HM Treasury, London"
