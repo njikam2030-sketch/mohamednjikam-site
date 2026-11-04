@@ -361,3 +361,4 @@ a.nt{transition:box-shadow .2s}a.nt:hover{box-shadow:0 8px 24px rgba(11,31,58,.0
 .ex-g{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:14px}@media (min-width:700px){.ex-g{grid-template-columns:repeat(4,1fr)}}
 .ex-g div{background:var(--soft);border-radius:8px;padding:14px}.ex-g b{display:block;font-size:26px;font-weight:800;color:var(--blue);letter-spacing:-.02em}.ex-g span{display:block;font-size:13px;line-height:1.4;color:var(--muted);margin-top:4px}
 .exhibit .ex-s{font-size:12.5px;color:var(--faint);margin-top:10px}
+.about .motto{font-size:22px;font-weight:700;color:#9CD3E3!important;margin-top:8px}.ft8-m{font-size:15px;font-weight:600;color:#fff;font-style:italic}

@@ -283,6 +283,7 @@ collections:
         fields:
           - { name: name, label: "Nom", widget: string }
           - { name: description, label: "Description (Google, partages)", widget: text }
+          - { name: motto, label: "Devise (citation affichée dans À propos et en bas du site)", widget: string, required: false }
           - { name: phone, label: "Téléphone", widget: string }
           - { name: email, label: "Email", widget: string }
           - { name: linkedin, label: "LinkedIn", widget: string }
