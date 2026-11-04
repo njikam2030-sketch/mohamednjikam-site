@@ -282,7 +282,7 @@ ${rail('latest', 'Latest analysis', analyses.map((a) => card(a)), ['/economics',
 ${r0 ? `<div class="rep">${cover(r0)}<div><h3>${e(r0.title)}</h3><p>${e(r0.standfirst || '')}</p><ol>${(r0.key_messages || []).map((m) => `<li>${e(m)}</li>`).join('')}</ol><div class="acts">${r0.pdf ? `<a class="btn" href="${r0.pdf}" download>Download the PDF</a>` : ''}${A(r0.path, 'Details', 'btn ghost')}${rArt ? A(rArt.path, 'Read online', 'btn ghost') : ''}</div></div></div>` : ''}
 ${reports.length > 1 ? `<div class="rgrid mt2">${reports.slice(1, 5).map(reportCard).join('')}</div>` : ''}
 </section>
-<section class="w blk" id="about"><div class="about"><img src="${asset('/images/headshot.jpg')}" alt="${e(site.name)}" width="180" height="180"><div><p class="kick light">About</p><h2>${e(site.name)}</h2>${site.bio.map((p) => `<p>${e(p)}</p>`).join('')}
+<section class="w blk" id="about"><div class="about"><img src="${asset('/images/headshot.jpg')}" alt="${e(site.name)}" width="180" height="180"><div><p class="kick light">About</p><h2>${e(site.name)}</h2>${site.motto ? `<p class="motto">“${e(site.motto)}”</p>` : ''}${site.bio.map((p) => `<p>${e(p)}</p>`).join('')}
 <div class="facts">${(site.facts || []).map(({ title: b, text: s }) => `<span><b>${e(b)}</b>${e(s)}</span>`).join('')}</div></div></div></section>
 <section class="w blk" id="contact"><div class="contact-box"><div><h2>Contact</h2><p>For speaking, advisory or press enquiries.</p></div>
 <div class="c-lines"><a href="tel:${site.phone.replace(/\s/g, '')}"><span>Phone</span>${e(site.phone)}</a><a href="mailto:${e(site.email)}"><span>Email</span>${e(site.email)}</a><a href="${e(site.linkedin)}" target="_blank" rel="noopener"><span>LinkedIn</span>${e(site.linkedin.split('/in/')[1] || 'LinkedIn')}</a><a href="${e(site.x)}" target="_blank" rel="noopener"><span>X</span>@${e(site.x.split('/').pop())}</a></div></div></section>
@@ -308,7 +308,7 @@ ${reports.length > 1 ? `<div class="rgrid mt2">${reports.slice(1, 5).map(reportC
 <div class="ft8-c"><div class="ft8-cn">${site.countries_bar.map((c) => A(`/country/${c.toLowerCase()}`, e(COUNTRY[c]))).join('')}</div>
 <p>Articles are written by ${e(site.name)} and sourced at the end of each piece. Nothing on this site is investment advice. Views are my own.</p>
 <p>© ${year} ${e(site.name)}. All rights reserved. Contact: <a href="tel:${site.phone.replace(/\s/g, '')}">${e(site.phone)}</a> · <a href="mailto:${e(site.email)}">${e(site.email)}</a></p></div></div>
-<div class="ft8-bar"><div class="w ft8-bar-in"><span class="ft8-w">${MARK}${e(site.name)}</span><span>Economics · Finance · AI · Leadership · Africa</span></div></div></footer>`;
+<div class="ft8-bar"><div class="w ft8-bar-in"><span class="ft8-w">${MARK}${e(site.name)}</span><span class="ft8-m">${site.motto ? `“${e(site.motto)}”` : 'Economics · Finance · AI · Leadership'}</span></div></div></footer>`;
 
   // Index de recherche
   const ALIAS = { GB: 'uk britain england london royaume-uni', US: 'usa america united states washington etats-unis', CM: 'cameroun yaounde douala', CI: 'ivory coast abidjan', CD: 'drc congo kinshasa', CG: 'congo brazzaville', NG: 'lagos abuja', KE: 'nairobi', ZA: 'johannesburg', SN: 'dakar', CN: 'beijing shanghai chine', KR: 'korea seoul coree', FR: 'paris', DE: 'berlin allemagne frankfurt' };
