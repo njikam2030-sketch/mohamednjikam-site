@@ -4,7 +4,7 @@ standfirst: "Africa's infrastructure is often described as too risky, too fragme
 date: 2026-11-04
 type: analysis
 sections: [africa, finance]
-lead: true
+lead: false
 pick: true
 countries: [CI, CM, NG, KE, SN, GH, ZA]
 image: /images/photos/nairobi.jpg

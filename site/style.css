@@ -362,3 +362,19 @@ a.nt{transition:box-shadow .2s}a.nt:hover{box-shadow:0 8px 24px rgba(11,31,58,.0
 .ex-g div{background:var(--soft);border-radius:8px;padding:14px}.ex-g b{display:block;font-size:26px;font-weight:800;color:var(--blue);letter-spacing:-.02em}.ex-g span{display:block;font-size:13px;line-height:1.4;color:var(--muted);margin-top:4px}
 .exhibit .ex-s{font-size:12.5px;color:var(--faint);margin-top:10px}
 .about .motto{font-size:22px;font-weight:700;color:#9CD3E3!important;margin-top:8px}.ft8-m{font-size:15px;font-weight:600;color:#fff;font-style:italic}
+
+/* v23 : newsletter et page Contact */
+.nl{display:grid;gap:18px;align-items:center;background:#EEF2F5;border-radius:12px;padding:24px;margin-top:36px;border-top:4px solid var(--blue)}
+.nl h3{font-size:22px;margin-top:4px}.nl p{color:var(--muted);margin-top:6px;font-size:15px}.nl .kick{color:var(--blue);margin-top:0}
+.nl-f{display:flex;gap:8px;flex-wrap:wrap}.nl-f input{flex:1;min-width:200px;font:500 16px Inter,sans-serif;padding:12px 14px;border:1px solid #C5CED8;border-radius:6px;background:#fff}
+.nl-f input:focus{outline:0;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-l)}
+@media (min-width:860px){.nl.wide{grid-template-columns:1.2fr 1fr;padding:32px 36px}}
+.ct-g{display:grid;gap:28px}@media (min-width:900px){.ct-g{grid-template-columns:1.4fr 1fr;align-items:start}}
+.ct-f{display:grid;gap:14px;padding:26px;border:1px solid var(--line);border-radius:12px}
+.ct-f label{display:grid;gap:6px;font-size:14px;font-weight:600;color:var(--ink)}
+.ct-f input,.ct-f select,.ct-f textarea{font:500 16px Inter,sans-serif;padding:11px 13px;border:1px solid #C5CED8;border-radius:6px;background:#fff;color:var(--ink)}
+.ct-f input:focus,.ct-f select:focus,.ct-f textarea:focus{outline:0;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-l)}
+.ct-f .btn{justify-self:start}.ct-n{font-size:13px;color:var(--faint)}
+.ct-side{grid-template-columns:1fr!important}
+.mt{margin-top:36px}
+.prose figure figcaption{font-size:14px;line-height:1.5;color:var(--muted);margin-top:8px}
