@@ -17,7 +17,7 @@ Start with a simple observation. Every time someone sells a share, a bond or a c
 
 The economist William Sharpe set this out in 1991 in a short paper called "The Arithmetic of Active Management". Taken together, investors own the market. Before costs, the average active investor must therefore earn the market return, because collectively they are the market. After costs, which active trading always incurs, the average active investor must earn less. It is not a theory about skill. It is arithmetic.
 
-[INSÉRER L'IMAGE : who-wins-short-term.png]
+[IMAGE : who-wins-short-term.png]
 Figure 1. Before costs, short-term trading is a contest in which one side's gain is the other's loss. After costs, the group loses, and the intermediary is paid either way.
 
 This is the first answer to the question. In the short term, the reliable winner is not the trader who guesses right. It is whoever is paid on every transaction, whichever way the market moves: the broker's commission, the market maker's spread, the platform's fee, the fund's charges. When markets rise, they are paid. When markets fall, they are paid. When interest rates jump, volumes rise and they are paid more.
@@ -34,11 +34,25 @@ Three decades later, the pattern has not changed. Morningstar's 2026 "Mind the G
 
 Professionals do not escape the arithmetic. S&P Dow Jones Indices' SPIVA scorecards show that over 15 years, more than 90 per cent of actively managed US large-cap funds have lagged the S&P 500. And in 2008 Buffett wagered $1m that a simple S&P 500 index fund would beat a selection of hedge funds over ten years. By the end of 2017, the index fund had compounded at about 7.1 per cent a year; the hedge fund selection at about 2.2 per cent.
 
+Measuring the losses, and who collects them
+
+The gap is not spread evenly. Morningstar found that investors in the least volatile funds lost only about 0.4 percentage points a year to bad timing, while those in the most volatile funds lost more than 2 points. The starkest example is recent: investors in US spot bitcoin ETFs trailed the funds they owned by more than 14 percentage points a year, losing 5.8 per cent a year since January 2024 while the funds themselves returned 8.5 per cent. The more exciting the product, the more people trade it, and the more they lose.
+
+Costs compound in the same way as returns. Take $100,000 invested for 30 years at 7 per cent a year: it grows to about $761,000. Reduce the return by one percentage point a year, the typical cost of frequent trading, spreads and active fees, and it grows to about $574,000. The difference, about $187,000 or a quarter of the final sum, does not disappear. It is collected, year after year, by the intermediaries on the other side of the transactions.
+
+IPOs: who wins the first day?
+
+Initial public offerings are where short-term thinking is most visible, and where the question of who wins is easiest to answer. According to Jay Ritter's long-running data, US IPOs rose by an average of about 18 per cent on their first day of trading between 1980 and 2014. That first-day gain goes mostly to the investors who received shares at the offer price, typically large institutions with close relationships to the underwriting banks, and the banks themselves earn their fees on the full amount raised. The company and its existing shareholders, who sold below the price the market was willing to pay, effectively leave money on the table.
+
+Those who buy after the first day face a different arithmetic. Ritter's work shows that, on average, IPOs have underperformed the market over their first three years, and on an equal-weighted basis underperformed companies of similar size by about 3.1 percentage points a year over five years. More than half have lost money over three and five years. Excitement is priced in on day one; performance has to be earned over many years.
+
+The largest test of all is under way. On 10 November, Anthropic launched the roadshow for its Nasdaq listing under the ticker ANT, offering 825m shares at $70 to $78 each. At the top of the range it would raise about $64bn, with a further $26bn of shares committed by strategic partners including Google and Nvidia, and a valuation of up to about $1.4tn. Pricing is expected around 18 November, according to press reports. As I wrote when the company filed its prospectus, the business is real and growing fast: revenue was about $16.3bn in the first half of 2026. But at the top of the range, investors would pay roughly 30 times annualised second-quarter revenue. Those who receive allocations may well enjoy a first-day gain. Whether long-term buyers do well will depend on something slower and harder: whether the company's growth over the next decade justifies the price paid in the next week.
+
 My own analysis: time turns risk into return
 
 To test the long-term case directly, I used Robert Shiller's monthly data on US stocks going back to 1871, with dividends reinvested and returns adjusted for inflation. I measured every possible holding period, month by month, and asked a simple question: how often did an investor lose money after inflation?
 
-[INSÉRER L'IMAGE : time-in-the-market.png]
+[IMAGE : time-in-the-market.png]
 Figure 2. Over one year, US stocks lost money after inflation in 31 per cent of periods. Over 20 years, in 0.06 per cent. Over 30 years, never. Source: Robert Shiller data, 1871–2023; author's calculations.
 
 Over a single year, an investor lost money in real terms 31 per cent of the time. Over five years, 19 per cent. Over ten years, 11 per cent. Over twenty years, the share falls to 0.06 per cent: a single starting month, with a loss of about 0.2 per cent a year. Over thirty years, there was no period with a real loss at all; the worst thirty-year stretch still delivered about 1.9 per cent a year above inflation, and the median about 6.7 per cent.
@@ -47,7 +61,7 @@ The short term is dominated by noise: news, fear, interest rate surprises, other
 
 The second test concerns timing. I took $1 invested in US stocks in January 1990 and followed it to mid-2023, then asked what would have happened to an investor who missed only a handful of the best months.
 
-[INSÉRER L'IMAGE : missing-best-months.png]
+[IMAGE : missing-best-months.png]
 Figure 3. Missing the ten best months out of more than 400 cut the final result by more than half. Source: Robert Shiller data, monthly averages, nominal total return; author's calculations.
 
 Staying invested turned $1 into about $25, roughly 10 per cent a year. Missing the five best months reduced it to about $15. Missing the ten best, to about $11. Missing the twenty best, to about $6. The best months tend to arrive close to the worst, in periods of panic, exactly when the short-term investor is most tempted to sell.
@@ -85,7 +99,7 @@ The question I would put to any young person is the one this article began with.
 Read the full version with sources and interactive figures on my website:
 https://www.moharamadan.com/essays/who-wins-the-short-term
 
-Sources: my analysis of Robert Shiller's US stock market data (1871–2023); W. F. Sharpe, "The Arithmetic of Active Management" (1991); Barber and Odean, "Trading Is Hazardous to Your Wealth" (2000); Morningstar, "Mind the Gap" (2026); S&P Dow Jones Indices, SPIVA; McKinsey Global Institute and FCLTGlobal (2017); Berkshire Hathaway and Amazon shareholder letters.
+Sources: my analysis of Robert Shiller's US stock market data (1871–2023); W. F. Sharpe, "The Arithmetic of Active Management" (1991); Barber and Odean, "Trading Is Hazardous to Your Wealth" (2000); Morningstar, "Mind the Gap" (2026); S&P Dow Jones Indices, SPIVA; McKinsey Global Institute and FCLTGlobal (2017); Jay Ritter, IPO data; Anthropic and Fortune (IPO terms, November 2026); Berkshire Hathaway and Amazon shareholder letters.
 
 
 TEXTE DU POST QUI ACCOMPAGNE L'ARTICLE
