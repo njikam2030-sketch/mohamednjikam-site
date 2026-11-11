@@ -378,3 +378,16 @@ a.nt{transition:box-shadow .2s}a.nt:hover{box-shadow:0 8px 24px rgba(11,31,58,.0
 .ct-side{grid-template-columns:1fr!important}
 .mt{margin-top:36px}
 .prose figure figcaption{font-size:14px;line-height:1.5;color:var(--muted);margin-top:8px}
+
+/* v24 : mise en avant d'un article, icônes sociales, texte justifié */
+.feat-in.wide-im .feat-im img{max-width:100%;border-radius:8px}
+@media (min-width:860px){.feat-in.wide-im{grid-template-columns:1.05fr 1fr}}
+.soc{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.soc-b{display:inline-flex;align-items:center;gap:9px;padding:10px 16px;border-radius:999px;font-weight:700;font-size:14.5px;color:#fff;transition:opacity .15s}
+.soc-b:hover{opacity:.88}.soc-b svg{width:18px;height:18px;fill:currentColor}
+.soc-li{background:#0A66C2}.soc-x{background:#000}
+.soc.dark{margin-top:0}.soc.dark .soc-b{padding:8px 12px;font-size:13px}.soc.dark .soc-x{background:#1F2937}
+.contact-box .soc,.ct-side .soc{grid-column:1/-1}
+.prose p,.prose li{text-align:justify;-webkit-hyphens:auto;hyphens:auto}
+.prose blockquote p,.prose figcaption,.prose .takeaway,.prose h2#sources~*{text-align:left}
+.feat-in.wide-im{align-items:start}@media (max-width:640px){.prose{font-size:17.5px}.prose p,.prose li{text-justify:inter-word}}

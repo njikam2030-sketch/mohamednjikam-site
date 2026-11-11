@@ -7,6 +7,12 @@ sections: [leadership, finance, economics]
 lead: true
 pick: true
 countries: [US, GB]
+featured: true
+keys:
+  - "Over 1 year, US stocks lost money after inflation in 31% of periods; over 30 years, never."
+  - "Investors lose about 1.2 points a year to bad timing: some $3.8tn over a decade."
+  - "One point a year in costs takes a quarter of a 30-year investment, and the intermediary collects it."
+  - "IPO first-day gains go to those who get allocations; long-term buyers face a slower arithmetic."
 image: /images/photos/long-game-cover.jpg
 image_alt: "Who wins the short term? What 500 leaders taught me about the long game"
 image_credit: "Illustration: Mohamed Ramadan"
@@ -29,6 +35,15 @@ links:
   - title: "Warren Buffett wins his million-dollar long bet"
     url: "https://longnow.org/ideas/warren-buffett-wins-million-dollar-long-bet/"
     source: "The Long Now Foundation"
+  - title: "Anthropic launches roadshow for proposed initial public offering"
+    url: "https://www.anthropic.com/news/roadshow-launch"
+    source: "Anthropic"
+  - title: "Anthropic sets IPO range valuing it at up to $1.4 trillion"
+    url: "https://fortune.com/2026/11/10/anthropic-ipo-price-range-ai-stock-sell-off/"
+    source: "Fortune"
+  - title: "Jay Ritter, IPO data"
+    url: "https://site.warrington.ufl.edu/ritter/ipo-data/"
+    source: "University of Florida"
   - title: "S&P 500 monthly data, from Robert Shiller"
     url: "https://github.com/datasets/s-and-p-500"
     source: "Datasets (GitHub)"
@@ -62,6 +77,20 @@ In a study that has become a classic, Brad Barber and Terrance Odean examined th
 Three decades later, the pattern has not changed. Morningstar's 2026 "Mind the Gap" study found that over the ten years to 2025, the average dollar invested in US funds and ETFs earned 8.7 per cent a year, while the funds themselves returned 9.9 per cent. The 1.2-point gap, worth an estimated $3.8tn of forgone wealth, came not from the funds but from investors' own timing: buying after prices had risen, selling after they had fallen. The gap was largest in the most volatile funds.
 
 Professionals do not escape the arithmetic. S&P Dow Jones Indices' SPIVA scorecards show that over 15 years, more than 90 per cent of actively managed US large-cap funds have lagged the S&P 500. And in 2008 Buffett wagered $1m that a simple S&P 500 index fund would beat a selection of hedge funds over ten years. By the end of 2017, the index fund had compounded at about 7.1 per cent a year; the hedge fund selection at about 2.2 per cent.
+
+## Measuring the losses, and who collects them
+
+The gap is not spread evenly. Morningstar found that investors in the least volatile funds lost only about 0.4 percentage points a year to bad timing, while those in the most volatile funds lost more than 2 points. The starkest example is recent: investors in US spot bitcoin ETFs trailed the funds they owned by more than 14 percentage points a year, losing 5.8 per cent a year since January 2024 while the funds themselves returned 8.5 per cent. The more exciting the product, the more people trade it, and the more they lose.
+
+Costs compound in the same way as returns. Take $100,000 invested for 30 years at 7 per cent a year: it grows to about $761,000. Reduce the return by one percentage point a year, the typical cost of frequent trading, spreads and active fees, and it grows to about $574,000. The difference, about $187,000 or a quarter of the final sum, does not disappear. It is collected, year after year, by the intermediaries on the other side of the transactions.
+
+## IPOs: who wins the first day?
+
+Initial public offerings are where short-term thinking is most visible, and where the question of who wins is easiest to answer. According to Jay Ritter's long-running data, US IPOs rose by an average of about 18 per cent on their first day of trading between 1980 and 2014. That first-day gain goes mostly to the investors who received shares at the offer price, typically large institutions with close relationships to the underwriting banks, and the banks themselves earn their fees on the full amount raised. The company and its existing shareholders, who sold below the price the market was willing to pay, effectively leave money on the table.
+
+Those who buy after the first day face a different arithmetic. Ritter's work shows that, on average, IPOs have underperformed the market over their first three years, and on an equal-weighted basis underperformed companies of similar size by about 3.1 percentage points a year over five years. More than half have lost money over three and five years. Excitement is priced in on day one; performance has to be earned over many years.
+
+The largest test of all is under way. On 10 November, Anthropic launched the roadshow for its Nasdaq listing under the ticker ANT, offering 825m shares at $70 to $78 each. At the top of the range it would raise about $64bn, with a further $26bn of shares committed by strategic partners including Google and Nvidia, and a valuation of up to about $1.4tn. Pricing is expected around 18 November, according to press reports. As I wrote when the company filed its prospectus, the business is real and growing fast: revenue was about $16.3bn in the first half of 2026. But at the top of the range, investors would pay roughly 30 times annualised second-quarter revenue. Those who receive allocations may well enjoy a first-day gain. Whether long-term buyers do well will depend on something slower and harder: whether the company's growth over the next decade justifies the price paid in the next week.
 
 ## My own analysis: time turns risk into return
 
@@ -114,8 +143,10 @@ The question I would put to any young person is the one this article began with.
 - Analysis of US stock returns by the author, using Robert Shiller's monthly data (S&P Composite, dividends and CPI), 1871–2023; figures use monthly average prices
 - W. F. Sharpe, "The Arithmetic of Active Management", Financial Analysts Journal, 1991
 - B. M. Barber and T. Odean, "Trading Is Hazardous to Your Wealth", Journal of Finance, 2000
-- Morningstar, "Mind the Gap" 2026, as reported by Advisor Perspectives, August 2026
+- Morningstar, "Mind the Gap" 2026, as reported by Advisor Perspectives, August 2026; fee illustration by the author
 - S&P Dow Jones Indices, SPIVA U.S. Scorecard, Year-End 2024
 - McKinsey Global Institute and FCLTGlobal, "Measuring the Economic Impact of Short-Termism", 2017
+- Jay R. Ritter, IPO statistics (University of Florida) and Ritter and Welch (2002); Novel Investor summary of Ritter's data
+- Anthropic, roadshow announcement, and Fortune, 10 November 2026
 - Long Now Foundation and Berkshire Hathaway, results of Warren Buffett's ten-year bet, 2018
 - Berkshire Hathaway letter to shareholders, 1988; Amazon letter to shareholders, 1997
