@@ -219,7 +219,7 @@ function build() {
 <label>What is it about?<select name="topic">${TOPICS.map((t) => `<option>${e(t)}</option>`).join('')}</select></label>
 <label>Your message<textarea name="msg" rows="6" maxlength="1500" required placeholder="A few lines are enough."></textarea></label>
 <button class="btn" type="submit">Send the message</button><p class="ct-n">Pressing send opens your email app with the message ready to go.</p></form>
-<div class="c-lines ct-side"><a href="mailto:${e(site.email)}"><span>Email</span>${e(site.email)}</a><a href="tel:${site.phone.replace(/\s/g, '')}"><span>Phone</span>${e(site.phone)}</a><a href="${e(site.linkedin)}" target="_blank" rel="noopener"><span>LinkedIn</span>${e(site.linkedin.split('/in/')[1] || 'LinkedIn')}</a><a href="${e(site.x)}" target="_blank" rel="noopener"><span>X</span>@${e(site.x.split('/').pop())}</a></div></div>
+<div class="c-lines ct-side"><a href="mailto:${e(site.email)}"><span>Email</span>${e(site.email)}</a><a href="tel:${site.phone.replace(/\s/g, '')}"><span>Phone</span>${e(site.phone)}</a></div><div class="soc"><a class="soc-b soc-li" href="${e(site.linkedin)}" target="_blank" rel="noopener" aria-label="LinkedIn"><svg><use href="#i-li"/></svg><span>LinkedIn</span></a><a class="soc-b soc-x" href="${e(site.x)}" target="_blank" rel="noopener" aria-label="X (Twitter)"><svg><use href="#i-x"/></svg><span>X</span></a></div></div>
 <div class="mt">${newsletter('wide')}</div>`);
   pages.forEach((p) => page(p.path, `${back}<p class="kick">${e(site.name)}</p><h1 class="ip-h">${e(p.title)}</h1><div class="prose nodrop">${p.html}</div>`, false));
 
@@ -251,7 +251,10 @@ function build() {
   const analyses = articles.filter((a) => a.type === 'analysis' && a !== lead);
   const stack = (keys) => articles.filter((a) => a.sections.some((s) => keys.includes(s))).slice(0, 4).map((a) => card(a, { ex: false, img: false })).join('');
   const r0 = reports[0];
-  const feat = reports.find((r) => r.featured && r.preview);
+  const featA = articles.find((a) => a.featured);
+  const featR = reports.find((r) => r.featured && r.preview);
+  const feat = featA ? { path: featA.path, title: featA.title, standfirst: featA.standfirst, preview: featA.image, label: kicker(featA), sub: `${featA.min} min read`, key_messages: featA.keys || [], acts: A(featA.path, featA.type === 'essay' ? 'Read the essay' : 'Read the analysis', 'btn') }
+    : featR ? { path: featR.path, title: featR.title, standfirst: featR.standfirst, preview: featR.preview, label: featR.series || 'Report', sub: featR.number || '', key_messages: featR.key_messages || [], acts: (featR.pdf ? `<a class="btn" href="${featR.pdf}" download>Download the PDF</a><a class="btn ghost" href="${featR.pdf}" target="_blank" rel="noopener">Read it</a>` : '') } : null;
   const rArt = r0 && r0.article && byId[r0.article];
   const NAV = [['/', 'Home'], ['/countries', 'Countries'], ['/uk-budget-2026', 'UK Budget 2026'], ...SECTIONS.map(([k, n]) => [`/${k}`, n]), ['/opinion', 'Opinion'], ['/essays', 'Long Read'], ['/videos', 'Video'], ['/notes', 'Notes'], ['/charts', 'Charts'], ['/reports', 'Reports'], ['/events', 'Events'], ['/about', 'About']];
   const ICO_S = '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>';
@@ -265,7 +268,7 @@ function build() {
 <section class="finder"><div class="w"><form class="sbox" onsubmit="return false">${ICO_S}<input id="q" type="search" placeholder="Search analyses, opinion, essays and notes: gilts, AI, Budget, Africa…" autocomplete="off" aria-label="Search">
 <select id="country" aria-label="Choose a country"><option value="">Choose a country</option>${allC.map((c) => `<option value="${c.toLowerCase()}">${e(COUNTRY[c])} (${countOpt(c)})</option>`).join('')}</select></form>
 <div class="chips">${(site.search_chips || []).map((c) => `<button data-q="${e(c)}">${e(c)}</button>`).join('')}</div><div id="results" hidden></div></div></section>
-${feat ? `<section class="w blk feat"><div class="feat-in">${A(feat.path, `<img src="${feat.preview}" alt="${e(feat.title)}" loading="lazy">`, 'feat-im')}<div><span class="lab">New</span> <span class="k feat-k">${e(feat.series || 'Report')} · ${e(feat.number || '')}</span><h2>${A(feat.path, e(feat.title))}</h2><p class="ex">${e(feat.standfirst || '')}</p><ul>${(feat.key_messages || []).map((m) => `<li>${e(m)}</li>`).join('')}</ul><div class="acts">${feat.pdf ? `<a class="btn" href="${feat.pdf}" download>Download the PDF</a><a class="btn ghost" href="${feat.pdf}" target="_blank" rel="noopener">Read it</a>` : ''}</div></div></div></section>` : ''}
+${feat ? `<section class="w blk feat"><div class="feat-in${featA ? ' wide-im' : ''}">${A(feat.path, `<img src="${feat.preview}" alt="${e(feat.title)}" loading="lazy">`, 'feat-im')}<div><span class="lab">New</span> <span class="k feat-k">${e(feat.label)}${feat.sub ? ' · ' + e(feat.sub) : ''}</span><h2>${A(feat.path, e(feat.title))}</h2><p class="ex">${e(feat.standfirst || '')}</p><ul>${feat.key_messages.map((m) => `<li>${e(m)}</li>`).join('')}</ul><div class="acts">${feat.acts}</div></div></div></section>` : ''}
 <section class="w front">
 <div class="f-lead">${A(lead.path, pic(lead.image, lead.image_alt, 'lead-im') + `<span class="k">${e(kicker(lead))}</span><b class="h1">${e(lead.title)}</b><span class="ex">${e(lead.standfirst)}</span><span class="meta">${e(site.name)} · ${fd(lead.date)} · ${lead.min} min read</span>`)}</div>
 <div class="f-mid">${A(second.path, (second.chart ? `<img src="${asset(second.chart)}" alt="${e(second.chart_alt || '')}">` : pic(second.image, second.image_alt, 'lead-im')) + `<span class="k">${e(kicker(second))}</span><b>${e(second.title)}</b><span class="ex">${e(second.standfirst)}</span><span class="meta">${fd(second.date)} · ${second.min} min read</span>`)}</div>
@@ -295,7 +298,7 @@ ${reports.length > 1 ? `<div class="rgrid mt2">${reports.slice(1, 5).map(reportC
 <section class="w blk" id="about"><div class="about"><img src="${asset('/images/headshot.jpg')}" alt="${e(site.name)}" width="180" height="180"><div><p class="kick light">About</p><h2>${e(site.name)}</h2>${site.motto ? `<p class="motto">“${e(site.motto)}”</p>` : ''}${site.bio.map((p) => `<p>${e(p)}</p>`).join('')}
 <div class="facts">${(site.facts || []).map(({ title: b, text: s }) => `<span><b>${e(b)}</b>${e(s)}</span>`).join('')}</div></div></div></section>
 <section class="w blk" id="contact"><div class="contact-box"><div><h2>Contact</h2><p>For speaking, advisory or press enquiries.</p></div>
-<div class="c-lines"><a href="tel:${site.phone.replace(/\s/g, '')}"><span>Phone</span>${e(site.phone)}</a><a href="mailto:${e(site.email)}"><span>Email</span>${e(site.email)}</a><a href="${e(site.linkedin)}" target="_blank" rel="noopener"><span>LinkedIn</span>${e(site.linkedin.split('/in/')[1] || 'LinkedIn')}</a><a href="${e(site.x)}" target="_blank" rel="noopener"><span>X</span>@${e(site.x.split('/').pop())}</a></div></div></section>
+<div class="c-lines"><a href="tel:${site.phone.replace(/\s/g, '')}"><span>Phone</span>${e(site.phone)}</a><a href="mailto:${e(site.email)}"><span>Email</span>${e(site.email)}</a></div><div class="soc"><a class="soc-b soc-li" href="${e(site.linkedin)}" target="_blank" rel="noopener" aria-label="LinkedIn"><svg><use href="#i-li"/></svg><span>LinkedIn</span></a><a class="soc-b soc-x" href="${e(site.x)}" target="_blank" rel="noopener" aria-label="X (Twitter)"><svg><use href="#i-x"/></svg><span>X</span></a></div></div></section>
 </main>`;
 
   const drawer = `<div id="drawer" hidden><div class="dr-bg" data-close></div><nav class="dr" aria-label="Menu"><div class="dr-h"><span class="ft8-w dark">${MARK}${e(site.name)}</span><button class="x" data-close aria-label="Close">×</button></div>
@@ -318,7 +321,7 @@ ${reports.length > 1 ? `<div class="rgrid mt2">${reports.slice(1, 5).map(reportC
 <div class="ft8-c"><div class="ft8-cn">${site.countries_bar.map((c) => A(`/country/${c.toLowerCase()}`, e(COUNTRY[c]))).join('')}</div>
 <p>Articles are written by ${e(site.name)} and sourced at the end of each piece. Nothing on this site is investment advice. Views are my own.</p>
 <p>© ${year} ${e(site.name)}. All rights reserved. Contact: <a href="tel:${site.phone.replace(/\s/g, '')}">${e(site.phone)}</a> · <a href="mailto:${e(site.email)}">${e(site.email)}</a></p></div></div>
-<div class="ft8-bar"><div class="w ft8-bar-in"><span class="ft8-w">${MARK}${e(site.name)}</span><span class="ft8-m">${site.motto ? `“${e(site.motto)}”` : 'Economics · Finance · AI · Leadership'}</span></div></div></footer>`;
+<div class="ft8-bar"><div class="w ft8-bar-in"><span class="ft8-w">${MARK}${e(site.name)}</span><div class="soc dark"><a class="soc-b soc-li" href="${e(site.linkedin)}" target="_blank" rel="noopener" aria-label="LinkedIn"><svg><use href="#i-li"/></svg><span>LinkedIn</span></a><a class="soc-b soc-x" href="${e(site.x)}" target="_blank" rel="noopener" aria-label="X (Twitter)"><svg><use href="#i-x"/></svg><span>X</span></a></div><span class="ft8-m">${site.motto ? `“${e(site.motto)}”` : 'Economics · Finance · AI · Leadership'}</span></div></div></footer>`;
 
   // Index de recherche
   const ALIAS = { GB: 'uk britain england london royaume-uni', US: 'usa america united states washington etats-unis', CM: 'cameroun yaounde douala', CI: 'ivory coast abidjan', CD: 'drc congo kinshasa', CG: 'congo brazzaville', NG: 'lagos abuja', KE: 'nairobi', ZA: 'johannesburg', SN: 'dakar', CN: 'beijing shanghai chine', KR: 'korea seoul coree', FR: 'paris', DE: 'berlin allemagne frankfurt' };
