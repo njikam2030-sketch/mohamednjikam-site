@@ -139,6 +139,7 @@ function build() {
     + `<a class="sb sb-em" aria-label="Share by email" title="Email" data-h="mailto:?subject={t}&body={u}">${use('em')}</a>`
     + `<button class="sb sb-ln" type="button" data-copy aria-label="Copy the link" title="Copy the link">${use('ln')}</button>`
     + `<button class="sb sb-sh" type="button" data-native hidden aria-label="Share" title="Share">${use('sh')}</button><span class="sb-ok" hidden>Link copied</span>`;
+  const newsletter = (cls = '') => `<div class="nl ${cls}"><div><p class="kick">Newsletter</p><h3>Get my analysis by email</h3><p>New analyses, opinion and long reads, a few times a month. No spam; unsubscribe at any time.</p></div><form class="nl-f" data-sub><input type="email" required placeholder="Your email address" aria-label="Your email address"><button class="btn" type="submit">Subscribe</button></form></div>`;
   const authorBox = (title, p) => `<div class="author">${AVL}<div><b>${e(site.name)}</b><p>${e(site.bio[0])}</p><p class="contact">${e(site.phone)} · <a href="mailto:${e(site.email)}">${e(site.email)}</a></p></div></div>${shareBar(title, p, 'end')}`;
 
   // ---------- Vues ----------
@@ -160,7 +161,7 @@ function build() {
       + `<div class="prose">${a.html}</div>` + (acts ? `<div class="acts">${acts}</div>` : '')
       + ((a.documents || []).length ? `<aside class="docs"><h3>Documents</h3>${a.documents.map((d) => `<a href="${e(d.file)}" target="_blank" rel="noopener"><span class="pdf">PDF</span><b>${e(d.title || d.file.split('/').pop())}</b><span class="dl">Open ↗</span></a>`).join('')}</aside>` : '')
       + ((a.links || []).length ? `<aside class="links"><h3>Links and further reading</h3>${a.links.map((l) => `<a href="${e(l.url)}" target="_blank" rel="noopener"><b>${e(l.title || l.url)}</b><span>${e(l.source || new URL(l.url).hostname.replace(/^www\./, ''))} ↗</span></a>`).join('')}</aside>` : '')
-      + authorBox(a.title, a.path)
+      + authorBox(a.title, a.path) + newsletter()
       + `<nav class="pn">${prev ? A(prev.path, `<span>← Previous</span><b>${e(prev.title)}</b>`) : '<span></span>'}${next ? A(next.path, `<span>Next →</span><b>${e(next.title)}</b>`, 'nx') : ''}</nav>`
       + (rel.length ? `<div class="rel"><h3>Read next</h3><div class="grid g3">${rel.map((b) => card(b, { ex: false })).join('')}</div></div>` : ''));
   });
@@ -212,6 +213,14 @@ function build() {
   page('/events', `<div class="ph"><p class="kick">Community & Events</p><h1>Events</h1><p>Talks, panels and conferences where I speak, and community events with YouthShare Initiatives.</p></div>`
     + `<div class="sh"><h2>Upcoming</h2></div>${upcoming.map(evRow).join('') || `<p class="empty">No events announced yet. To invite me to speak, see <a href="/services">Speaking and advisory</a>.</p>`}`
     + (past.length ? `<div class="sh mt"><h2>Past events</h2></div>${past.map(evRow).join('')}` : ''));
+  const TOPICS = ['Speaking invitation', 'Advisory', 'Press or media', 'Feedback on an article', 'Collaboration or partnership', 'YouthShare Initiatives', 'Other'];
+  page('/contact', `<div class="ph"><p class="kick">Contact</p><h1>Get in touch</h1><p>For speaking, advisory, press or simply a reaction to an article. I read every message.</p></div>
+<div class="ct-g"><form class="ct-f" data-contact><label>Your name<input name="name" required></label><label>Your email<input name="email" type="email" required></label>
+<label>What is it about?<select name="topic">${TOPICS.map((t) => `<option>${e(t)}</option>`).join('')}</select></label>
+<label>Your message<textarea name="msg" rows="6" maxlength="1500" required placeholder="A few lines are enough."></textarea></label>
+<button class="btn" type="submit">Send the message</button><p class="ct-n">Pressing send opens your email app with the message ready to go.</p></form>
+<div class="c-lines ct-side"><a href="mailto:${e(site.email)}"><span>Email</span>${e(site.email)}</a><a href="tel:${site.phone.replace(/\s/g, '')}"><span>Phone</span>${e(site.phone)}</a><a href="${e(site.linkedin)}" target="_blank" rel="noopener"><span>LinkedIn</span>${e(site.linkedin.split('/in/')[1] || 'LinkedIn')}</a><a href="${e(site.x)}" target="_blank" rel="noopener"><span>X</span>@${e(site.x.split('/').pop())}</a></div></div>
+<div class="mt">${newsletter('wide')}</div>`);
   pages.forEach((p) => page(p.path, `${back}<p class="kick">${e(site.name)}</p><h1 class="ip-h">${e(p.title)}</h1><div class="prose nodrop">${p.html}</div>`, false));
 
   // Pays
@@ -272,6 +281,7 @@ ${rail('latest', 'Latest analysis', analyses.map((a) => card(a)), ['/economics',
 <div><div class="sh"><h2>Leadership</h2><a href="/leadership">More →</a></div><div class="stack">${stack(['leadership'])}</div></div>
 <div><div class="sh"><h2>Africa</h2><a href="/africa">More →</a></div><div class="stack">${stack(['africa'])}</div></div>
 </section>
+<section class="w blk" id="newsletter">${newsletter('wide')}</section>
 <section class="why" id="why"><div class="w why-in"><p class="kick light">Why I write</p><p class="why-q">${e(site.why_title)}</p><div class="why-c">${site.why.map((p) => `<p>${e(p)}</p>`).join('')}</div></div></section>
 <section class="w blk" id="notes"><div class="sh"><h2>Notes</h2><span class="cnt">${notes.length} notes</span></div>
 <p class="intro">The words that shape my thinking, from economists, investors, leaders and African thinkers, and a few lines from my own essays. Each comes with a commentary: open a note to read why it matters today.</p>
@@ -322,7 +332,7 @@ ${reports.length > 1 ? `<div class="rgrid mt2">${reports.slice(1, 5).map(reportC
   const css = fs.readFileSync(path.join(ROOT, 'site/style.css'), 'utf8')
     + Object.entries(imgClass).map(([src, cls]) => `.${cls}{background-image:url("${asset(src)}")}`).join('')
     + `.avi{display:inline-block;background:url("${asset('/images/avatar.jpg')}") center/cover}`;
-  const homeAnchors = ['notes', 'charts', 'about', 'contact', 'why'];
+  const homeAnchors = ['notes', 'charts', 'about', 'why', 'newsletter'];
 
   const html = `<!doctype html>
 <html lang="en">
@@ -415,6 +425,13 @@ var ANCH = ${JSON.stringify(homeAnchors)};
     var ok = bar.querySelector('.sb-ok');
     function done() { ok.hidden = false; setTimeout(function () { ok.hidden = true; }, 2000); }
     if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, done); else { var t = document.createElement('input'); t.value = url; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (x) {} t.remove(); done(); }
+  });
+  // Contact et newsletter : préparent un email vers l'adresse du site
+  var MAIL = ${JSON.stringify(site.email)};
+  document.addEventListener('submit', function (ev) {
+    var f = ev.target;
+    if (f.hasAttribute('data-sub')) { ev.preventDefault(); var em = f.querySelector('input').value; location.href = 'mailto:' + MAIL + '?subject=' + encodeURIComponent('Newsletter subscription') + '&body=' + encodeURIComponent('Please add ' + em + ' to your mailing list.'); }
+    if (f.hasAttribute('data-contact')) { ev.preventDefault(); var d = new FormData(f); location.href = 'mailto:' + MAIL + '?subject=' + encodeURIComponent(d.get('topic') + ' - ' + d.get('name')) + '&body=' + encodeURIComponent(d.get('msg') + '\\n\\n' + d.get('name') + '\\n' + d.get('email')); }
   });
   // Flèches des rails
   [].forEach.call(document.querySelectorAll('.track'), function (t) {

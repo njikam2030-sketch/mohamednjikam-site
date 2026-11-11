@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" font-family="Inter, Arial, sans-serif">
+<rect width="1200" height="675" fill="#fff"/><rect width="1200" height="6" fill="#0B1F3A"/>
+<text x="40" y="58" font-size="26" font-weight="800" fill="#0B1F3A">Who wins in the short term?</text>
+<text x="40" y="90" font-size="17" fill="#52606D">The arithmetic of trading, after William Sharpe (1991)</text><g font-size="20" font-weight="700" text-anchor="middle">
+<rect x="70" y="200" width="300" height="150" rx="14" fill="#EEF2F5"/><text x="220" y="262" fill="#0B1F3A">Investor A</text><text x="220" y="292" font-size="16" font-weight="500" fill="#52606D">sells today</text>
+<rect x="830" y="200" width="300" height="150" rx="14" fill="#EEF2F5"/><text x="980" y="262" fill="#0B1F3A">Investor B</text><text x="980" y="292" font-size="16" font-weight="500" fill="#52606D">buys today</text>
+<rect x="450" y="185" width="300" height="180" rx="14" fill="#0B1F3A"/><text x="600" y="250" fill="#fff">The intermediary</text><text x="600" y="282" font-size="16" font-weight="500" fill="#C2CDD9">fees, spreads, commissions</text><text x="600" y="330" font-size="16" fill="#E8573C">paid on every trade</text></g>
+<path d="M370 275 H446" stroke="#0F6E8C" stroke-width="4" marker-end="url(#a)"/><path d="M750 275 H826" stroke="#0F6E8C" stroke-width="4" marker-end="url(#a)"/>
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#0F6E8C"/></marker></defs>
+<text x="600" y="440" font-size="20" font-weight="700" fill="#0B1F3A" text-anchor="middle">Before costs, one trader's short-term gain is another's loss.</text>
+<text x="600" y="474" font-size="20" font-weight="700" fill="#E8573C" text-anchor="middle">After costs, the group loses, and the intermediary wins either way.</text>
+<text x="600" y="530" font-size="17" fill="#52606D" text-anchor="middle">Over the long run, the owner earns what the business earns: dividends, coupons and growth.</text>
+<line x1="40" y1="627" x2="1160" y2="627" stroke="#E3E8EE"/>
+<text x="40" y="653" font-size="13" fill="#7B8794">Illustration: Mohamed Ramadan, after W. F. Sharpe, "The Arithmetic of Active Management", 1991.</text><text x="1160" y="653" font-size="13" font-weight="700" fill="#0F6E8C" text-anchor="end">moharamadan.com</text></svg>
